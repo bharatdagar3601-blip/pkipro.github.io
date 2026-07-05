@@ -86,4 +86,29 @@ document.addEventListener("DOMContentLoaded", () => {
   /* Footer year */
   const yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  /* Demo request form -> opens the visitor's email client, prefilled */
+  const demoForm = document.getElementById("demoForm");
+  if (demoForm) {
+    demoForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = new FormData(demoForm);
+      const name = data.get("name") || "";
+      const company = data.get("company") || "";
+      const email = data.get("email") || "";
+      const phone = data.get("phone") || "";
+      const message = data.get("message") || "";
+
+      const subject = `Demo request — ${company || name}`;
+      const body =
+        `Name: ${name}\n` +
+        `Company: ${company}\n` +
+        `Work email: ${email}\n` +
+        `Phone: ${phone}\n\n` +
+        `What they'd like to see:\n${message}`;
+
+      window.location.href =
+        `mailto:info@pkipro.in?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    });
+  }
 });
