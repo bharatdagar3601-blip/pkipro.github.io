@@ -294,13 +294,16 @@
       </div>
 
       <form class="demo-form" id="demoForm">
+        <input type="hidden" name="access_key" value="c0dbbcef-e951-4188-9121-bf8bd8f77942" />
+        <input type="hidden" name="subject" value="New demo request — PKI Pro" />
+        <input type="hidden" name="from_name" value="pkipro.in demo form" />
         <label>Name<input type="text" name="name" required /></label>
         <label>Company<input type="text" name="company" required /></label>
         <label>Work email<input type="email" name="email" required /></label>
         <label>Phone<input type="tel" name="phone" /></label>
         <label>What would you like to see?<textarea name="message" rows="3" placeholder="e.g. bulk-signing invoices with our Thales HSM"></textarea></label>
         <button type="submit" class="btn btn-primary">Request a demo</button>
-        <p class="form-note">Opens your email client, addressed to info@pkipro.in — or just call/WhatsApp +91 88604 98904 directly.</p>
+        <p class="form-note" id="formNote">We'll get back to you at the email or phone you share — or just call/WhatsApp +91 88604 98904 directly.</p>
       </form>
     </div>
   </div>
