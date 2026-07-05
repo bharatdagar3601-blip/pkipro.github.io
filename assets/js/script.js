@@ -23,9 +23,16 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
       },
-      { threshold: 0.15 }
+      { threshold: 0.05, rootMargin: "0px 0px -50px 0px" }
     );
     revealEls.forEach((el) => io.observe(el));
+
+    /* Safety net: if for any reason an element never intersects
+       (fast scroll, tall section, observer glitch), force it
+       visible after a short delay so nothing stays blank forever. */
+    setTimeout(() => {
+      revealEls.forEach((el) => el.classList.add("in"));
+    }, 2500);
   } else {
     revealEls.forEach((el) => el.classList.add("in"));
   }
