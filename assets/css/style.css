@@ -425,6 +425,92 @@ section.block { padding: 96px 0; }
 .blog-cta { text-align: center; margin-top: 44px; }
 
 /* ==========================================================================
+   FAQ
+   ========================================================================== */
+.faq-list { max-width: 800px; }
+.faq-item {
+  border-bottom: 1px solid var(--silver-line-strong);
+  padding: 20px 0;
+}
+.faq-item summary {
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16.5px;
+  color: var(--ink-navy);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: "+";
+  font-family: var(--font-mono);
+  font-size: 20px;
+  color: var(--signal-mint);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.faq-item[open] summary::after { content: "\2212"; }
+.faq-item p {
+  margin-top: 14px;
+  color: var(--ink-soft);
+  font-size: 14.8px;
+  max-width: 68ch;
+}
+
+/* ==========================================================================
+   Demo / contact
+   ========================================================================== */
+.demo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+.contact-info { display: flex; flex-direction: column; gap: 14px; margin-top: 6px; }
+.contact-info a {
+  display: flex; align-items: center; gap: 12px;
+  color: #fff; font-family: var(--font-mono); font-size: 15px;
+}
+.contact-info svg { width: 18px; height: 18px; stroke: var(--signal-mint); flex-shrink: 0; }
+
+.demo-form {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(184,196,209,0.18);
+  border-radius: var(--radius);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.demo-form label {
+  display: flex; flex-direction: column; gap: 7px;
+  font-size: 13px; color: rgba(255,255,255,0.6);
+  font-family: var(--font-mono);
+}
+.demo-form input, .demo-form textarea {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  padding: 11px 13px;
+  border-radius: 8px;
+  border: 1px solid rgba(184,196,209,0.3);
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  resize: vertical;
+}
+.demo-form input::placeholder, .demo-form textarea::placeholder { color: rgba(255,255,255,0.35); }
+.demo-form input:focus, .demo-form textarea:focus { outline: none; border-color: var(--signal-mint); }
+.demo-form button { margin-top: 4px; border: none; }
+.form-note { font-size: 12.5px; color: rgba(255,255,255,0.45); margin-top: -4px; }
+
+@media (max-width: 860px) {
+  .demo-grid { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================================
    CTA band
    ========================================================================== */
 .cta-band {
