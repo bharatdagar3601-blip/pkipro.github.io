@@ -23,6 +23,7 @@
       <a href="#product">SecureSign Pro</a>
       <a href="#how">How it works</a>
       <a href="#usecases">Use cases</a>
+      <a href="#faq">FAQ</a>
       <a href="blog.html">Blog</a>
       <a href="#contact" class="nav-cta">Talk to us</a>
     </nav>
@@ -226,12 +227,82 @@
   </div>
 </section>
 
-<!-- ================= CTA BAND ================= -->
-<section class="cta-band" id="contact">
-  <div class="wrap reveal">
-    <h2>Bring your signing process up to speed.</h2>
-    <p>Tell us how your team signs documents today — we'll show you what SecureSign Pro replaces.</p>
-    <a href="mailto:hello@pkipro.in" class="btn btn-primary">hello@pkipro.in</a>
+<!-- ================= FAQ ================= -->
+<section class="block" id="faq" style="background:var(--paper-dim);">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">Questions</span>
+      <h2>Before you ask, we probably already answered it</h2>
+      <p>The things every security or IT lead asks before rolling out a signing tool.</p>
+    </div>
+    <div class="faq-list reveal">
+      <details class="faq-item" open>
+        <summary>What exactly does SecureSign Pro do?</summary>
+        <p>It's a Windows-based bulk signing engine. Point it at a folder of PDFs — or call it through its API — and every file in that batch gets signed against your certificate in one pass, with the same trusted stamp appearance every time and a per-file result you can check.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Which signing devices does it work with?</summary>
+        <p>Any PKCS#11-compliant device: USB DSC tokens (SafeNet / eToken-class) and enterprise HSMs such as Thales ProtectServer. You point SecureSign Pro at the vendor's PKCS#11 library file and it takes over from there — no vendor lock-in.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Will the signature show the green "trusted" tick in Adobe?</summary>
+        <p>Yes. Signatures are built on the Adobe AATL chain of trust, so Acrobat shows "Signed and all signatures are valid" with a verified checkmark the moment the file is opened — the recipient doesn't need to change any trust settings.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Does our private key ever leave the HSM or token?</summary>
+        <p>No. Signing happens inside the PKCS#11 session on the device itself — SecureSign Pro sends the document hash to be signed and gets the signature back. The private key material never leaves the hardware.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Can it run unattended, without anyone at the machine?</summary>
+        <p>Yes. Set a folder watcher to real-time, a fixed interval, or a specific daily schedule, and SecureSign Pro signs files automatically as they land — no one has to click through Adobe.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Can we see what's been signed, for audit purposes?</summary>
+        <p>The dashboard keeps a live execution log alongside signed/failed counters, so every batch and file result is visible — a running record of what was signed, when, and against which certificate.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Can it plug into our own ERP or DMS instead of a folder?</summary>
+        <p>Yes — the REST API engine lets your own systems trigger signing directly, so it can sit behind an invoicing pipeline, DMS, or ERP without anyone touching a UI in production.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Is this cloud-hosted, or does it stay on our infrastructure?</summary>
+        <p>SecureSign Pro runs on your own Windows machine or server, right next to your HSM or token. Documents and keys never go to an external cloud service.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DEMO / CONTACT ================= -->
+<section class="block on-dark" id="contact">
+  <div class="wrap">
+    <div class="demo-grid reveal">
+      <div>
+        <span class="eyebrow">Get in touch</span>
+        <h2 style="color:#fff;margin:16px 0 16px;font-size:clamp(26px,3vw,36px);">See SecureSign Pro on your own documents.</h2>
+        <p style="color:rgba(255,255,255,0.65);margin-bottom:28px;max-width:42ch;">Tell us a bit about your team and we'll walk you through a live demo — signing your own sample PDFs against a test certificate.</p>
+
+        <div class="contact-info">
+          <a href="mailto:info@pkipro.in">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 6l8 7 8-7"/></svg>
+            info@pkipro.in
+          </a>
+          <a href="tel:+918860498904">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.7a2 2 0 01-.4 2.1L8 9.9a16 16 0 006 6l1.4-1.3a2 2 0 012.1-.4c.9.3 1.8.5 2.7.6a2 2 0 011.8 2.1z"/></svg>
+            +91 88604 98904
+          </a>
+        </div>
+      </div>
+
+      <form class="demo-form" id="demoForm">
+        <label>Name<input type="text" name="name" required /></label>
+        <label>Company<input type="text" name="company" required /></label>
+        <label>Work email<input type="email" name="email" required /></label>
+        <label>Phone<input type="tel" name="phone" /></label>
+        <label>What would you like to see?<textarea name="message" rows="3" placeholder="e.g. bulk-signing invoices with our Thales HSM"></textarea></label>
+        <button type="submit" class="btn btn-primary">Request a demo</button>
+        <p class="form-note">Opens your email client, addressed to info@pkipro.in — or just call/WhatsApp +91 88604 98904 directly.</p>
+      </form>
+    </div>
   </div>
 </section>
 
@@ -255,7 +326,13 @@
         <div class="footer-col">
           <h4>Company</h4>
           <a href="blog.html">Blog</a>
+          <a href="#faq">FAQ</a>
           <a href="#contact">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <a href="mailto:info@pkipro.in">info@pkipro.in</a>
+          <a href="tel:+918860498904">+91 88604 98904</a>
         </div>
       </div>
     </div>
