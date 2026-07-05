@@ -94,28 +94,54 @@ document.addEventListener("DOMContentLoaded", () => {
   const yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-  /* Demo request form -> opens the visitor's email client, prefilled */
+  /* Demo request form -> submits to Web3Forms, shows inline status */
   const demoForm = document.getElementById("demoForm");
   if (demoForm) {
-    demoForm.addEventListener("submit", (e) => {
+    const submitBtn = demoForm.querySelector("button[type=submit]");
+    const noteEl = document.getElementById("formNote");
+    const defaultNote = noteEl ? noteEl.textContent : "";
+
+    demoForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const data = new FormData(demoForm);
-      const name = data.get("name") || "";
-      const company = data.get("company") || "";
-      const email = data.get("email") || "";
-      const phone = data.get("phone") || "";
-      const message = data.get("message") || "";
 
-      const subject = `Demo request — ${company || name}`;
-      const body =
-        `Name: ${name}\n` +
-        `Company: ${company}\n` +
-        `Work email: ${email}\n` +
-        `Phone: ${phone}\n\n` +
-        `What they'd like to see:\n${message}`;
+      const formData = new FormData(demoForm);
+      const payload = Object.fromEntries(formData);
 
-      window.location.href =
-        `mailto:info@pkipro.in?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending...";
+      if (noteEl) {
+        noteEl.textContent = "Sending your request...";
+        noteEl.style.color = "";
+      }
+
+      try {
+        const response = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          demoForm.reset();
+          submitBtn.textContent = "Request a demo";
+          if (noteEl) {
+            noteEl.textContent = "Thanks! We've received your request and will reach out shortly.";
+            noteEl.style.color = "var(--signal-mint)";
+          }
+        } else {
+          throw new Error(result.message || "Submission failed");
+        }
+      } catch (err) {
+        submitBtn.textContent = "Request a demo";
+        if (noteEl) {
+          noteEl.textContent =
+            "Something went wrong. Please email info@pkipro.in or call/WhatsApp +91 88604 98904 directly.";
+          noteEl.style.color = "#ff8a8a";
+        }
+      } finally {
+        submitBtn.disabled = false;
+      }
     });
   }
 });
