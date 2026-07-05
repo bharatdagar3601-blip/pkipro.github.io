@@ -1,12 +1,271 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>PKI Pro - Enterprise Security Solutions</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PKI Pro — Digital Trust Infrastructure | SecureSign Pro</title>
+<meta name="description" content="PKI Pro builds digital trust infrastructure for enterprises. SecureSign Pro automates HSM and USB-token based bulk PDF signing, with an audit-ready dashboard and REST API." />
+<link rel="icon" type="image/png" href="assets/img/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
 </head>
-<body style="text-align: center; padding-top: 100px; font-family: sans-serif;">
-    <h1>PKI Pro</h1>
-    <p>Enterprise-grade Digital Signing, CLM, and Code Signing Solutions.</p>
-    <p><strong>Coming Soon.</strong></p>
-    <p>Contact: info@pkipro.in</p>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <img src="assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+      <span class="brand-word">pki<b>pro</b>.in</span>
+    </a>
+    <nav class="main-nav">
+      <a href="#product">SecureSign Pro</a>
+      <a href="#how">How it works</a>
+      <a href="#usecases">Use cases</a>
+      <a href="blog.html">Blog</a>
+      <a href="#contact" class="nav-cta">Talk to us</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Digital Trust Infrastructure</span>
+      <h1>Every signature,<br /><em>verified before it's questioned.</em></h1>
+      <p class="lede">PKI Pro builds the infrastructure enterprises trust to sign, seal and audit their documents. Our flagship product, <strong>SecureSign Pro</strong>, turns HSM and USB-token signing into a batch job — not a bottleneck.</p>
+      <div class="hero-ctas">
+        <a href="#product" class="btn btn-primary">Explore SecureSign Pro</a>
+        <a href="blog.html" class="btn btn-ghost">Read the journal</a>
+      </div>
+    </div>
+
+    <div class="log-card">
+      <div class="log-titlebar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="label">securesign-pro — live execution log</span>
+      </div>
+      <div class="log-body" id="heroLog"></div>
+      <div class="stamp-row" style="padding-left:18px;padding-right:18px;">
+        <svg viewBox="0 0 40 40" id="heroStamp">
+          <polyline class="stamp-check" points="8,21 17,29 32,10" />
+        </svg>
+        <span class="stamp-text">Signed and all signatures are valid.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMPAT STRIP ================= -->
+<div class="compat">
+  <div class="wrap">
+    <span class="compat-label">Built on open standards</span>
+    <div class="compat-items">
+      <span>PKCS#11</span>
+      <span>Thales ProtectServer HSM</span>
+      <span>SafeNet / eToken</span>
+      <span>Adobe AATL trust chain</span>
+      <span>PAdES / long-term validation</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PRODUCT ================= -->
+<section class="block" id="product">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">Flagship product</span>
+      <h2>SecureSign Pro</h2>
+      <p>An enterprise signing engine for teams who process documents by the hundred, not the handful — connected straight to your HSM or USB token, no manual clicking through Adobe.</p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <span class="num">01</span>
+        <h3>Bulk signing engine</h3>
+        <p>Point it at a folder, walk away. Every PDF inside is signed against your certificate in one pass, with a per-file result you can audit.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">02</span>
+        <h3>HSM &amp; token support</h3>
+        <p>Works with PKCS#11 devices out of the box — Thales ProtectServer, SafeNet, and standard USB DSC tokens — without vendor lock-in.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">03</span>
+        <h3>Adobe-trusted appearance</h3>
+        <p>Signatures render with a verified green check the moment Acrobat opens the file, backed by the Adobe AATL chain of trust.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">04</span>
+        <h3>Scheduled automation</h3>
+        <p>Real-time, interval, or a fixed daily schedule — set a watcher on your input folder and let SecureSign Pro sign as files land.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">05</span>
+        <h3>Enterprise dashboard</h3>
+        <p>Signed-today counters, device health, DSC expiry countdown, and a live execution log — the whole signing operation, at a glance.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">06</span>
+        <h3>REST API engine</h3>
+        <p>Wire signing directly into your ERP, DMS, or invoicing pipeline with a straightforward API — no UI required in production.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section class="block on-dark" id="how">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">How it works</span>
+      <h2>From token to trusted PDF, in three steps</h2>
+      <p>SecureSign Pro is built to disappear into your existing workflow, not add a new one.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step">
+        <h3>Connect your device</h3>
+        <p>Plug in a USB token or point SecureSign Pro at your HSM's PKCS#11 library. It reads live slot and certificate status immediately.</p>
+      </div>
+      <div class="step">
+        <h3>Configure the signature</h3>
+        <p>Set the stamp position, header text, and reason once — every document afterwards inherits the same trusted appearance.</p>
+      </div>
+      <div class="step">
+        <h3>Automate and monitor</h3>
+        <p>Run it on demand, on a schedule, or as a folder watcher, and keep an eye on signed/failed counts from the dashboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= USE CASES ================= -->
+<section class="block" id="usecases">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">Where it fits</span>
+      <h2>Built for teams who sign at scale</h2>
+      <p>Any workflow that ends in "print, sign, scan, email" is a candidate.</p>
+    </div>
+    <div class="usecase-grid reveal">
+      <div class="usecase-card">
+        <div class="icon-badge">
+          <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h3>Contracts &amp; agreements</h3>
+        <p>Vendor, employment, and NDA paperwork signed the moment it's generated, not days later.</p>
+      </div>
+      <div class="usecase-card">
+        <div class="icon-badge">
+          <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M9 17V7h6l4 4v6H9z"/><path d="M9 17H5V9"/></svg>
+        </div>
+        <h3>Invoices &amp; purchase orders</h3>
+        <p>Finance teams batch-sign hundreds of invoices at month-end without touching Acrobat once.</p>
+      </div>
+      <div class="usecase-card">
+        <div class="icon-badge">
+          <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h5"/></svg>
+        </div>
+        <h3>Compliance &amp; filings</h3>
+        <p>Board resolutions, statutory letters, and regulator filings signed with a full audit trail.</p>
+      </div>
+      <div class="usecase-card">
+        <div class="icon-badge">
+          <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg>
+        </div>
+        <h3>Vendor &amp; dealer onboarding</h3>
+        <p>Manufacturing and dealer networks push signed agreements out at the volume onboarding actually needs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BLOG PREVIEW ================= -->
+<section class="block" id="blog-preview" style="background:var(--paper-dim);">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">The PKI Pro journal</span>
+      <h2>Notes on signing, trust, and infrastructure</h2>
+      <p>Write-ups on PKI, digital signatures, and what we're building next.</p>
+    </div>
+    <div class="blog-grid reveal">
+      <a class="blog-card" href="blog.html">
+        <div class="thumb"></div>
+        <div class="body">
+          <span class="tag">Coming soon</span>
+          <h3>Inside SecureSign Pro's signing engine</h3>
+          <p>A first look at how PKCS#11 sessions, stamps, and the audit log fit together.</p>
+          <div class="meta">PKI Pro Team</div>
+        </div>
+      </a>
+      <a class="blog-card" href="blog.html">
+        <div class="thumb"></div>
+        <div class="body">
+          <span class="tag">Coming soon</span>
+          <h3>HSM vs. USB token: choosing the right signing device</h3>
+          <p>Trade-offs in throughput, cost, and compliance for growing teams.</p>
+          <div class="meta">PKI Pro Team</div>
+        </div>
+      </a>
+      <a class="blog-card" href="blog.html">
+        <div class="thumb"></div>
+        <div class="body">
+          <span class="tag">Coming soon</span>
+          <h3>What makes a PDF signature "Adobe trusted"</h3>
+          <p>A plain-language walk-through of the AATL chain of trust.</p>
+          <div class="meta">PKI Pro Team</div>
+        </div>
+      </a>
+    </div>
+    <div class="blog-cta reveal">
+      <a href="blog.html" class="btn btn-primary" style="background:var(--ink-navy);color:#fff;">Visit the journal</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA BAND ================= -->
+<section class="cta-band" id="contact">
+  <div class="wrap reveal">
+    <h2>Bring your signing process up to speed.</h2>
+    <p>Tell us how your team signs documents today — we'll show you what SecureSign Pro replaces.</p>
+    <a href="mailto:hello@pkipro.in" class="btn btn-primary">hello@pkipro.in</a>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="brand">
+          <img src="assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+          <span class="brand-word">pki<b>pro</b>.in</span>
+        </a>
+        <p>Digital trust infrastructure for enterprises — signing, sealing, and audit, built to standards.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="#product">SecureSign Pro</a>
+          <a href="#how">How it works</a>
+          <a href="#usecases">Use cases</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="blog.html">Blog</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> PKI Pro. All rights reserved.</span>
+      <span>pkipro.in</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/script.js"></script>
 </body>
 </html>
