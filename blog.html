@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Journal — PKI Pro</title>
+<meta name="description" content="Notes on PKI, digital signatures, and building SecureSign Pro." />
+<link rel="icon" type="image/png" href="assets/img/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+<style>
+  .journal-hero { background: var(--ink-navy); padding: 64px 0 56px; }
+  .journal-hero .eyebrow { margin-bottom: 16px; }
+  .journal-hero h1 { color: #fff; font-size: clamp(30px,4vw,44px); }
+  .journal-hero p { color: rgba(255,255,255,0.65); margin-top: 14px; max-width: 56ch; }
+  .empty-state {
+    border: 1px dashed var(--silver-line-strong);
+    border-radius: var(--radius);
+    padding: 60px 30px;
+    text-align: center;
+    color: var(--ink-soft);
+    background: #fff;
+  }
+  .empty-state h3 { color: var(--ink-navy); margin-bottom: 10px; font-size: 20px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <img src="assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+      <span class="brand-word">pki<b>pro</b>.in</span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html#product">SecureSign Pro</a>
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#usecases">Use cases</a>
+      <a href="blog.html">Blog</a>
+      <a href="index.html#contact" class="nav-cta">Talk to us</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+  </div>
+</header>
+
+<section class="journal-hero">
+  <div class="wrap">
+    <span class="eyebrow">The PKI Pro journal</span>
+    <h1>Notes on signing, trust, and infrastructure</h1>
+    <p>Write-ups on PKI, digital signature standards, and what we're building into SecureSign Pro next. New posts land here first.</p>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <!--
+      New post card template — duplicate this <a> block for every post,
+      keep the newest post first:
+
+      <a class="blog-card" href="posts/your-post-slug.html">
+        <div class="thumb"></div>
+        <div class="body">
+          <span class="tag">Category</span>
+          <h3>Post title</h3>
+          <p>One or two line summary of the post.</p>
+          <div class="meta">PKI Pro Team &middot; 05 Jul 2026</div>
+        </div>
+      </a>
+    -->
+    <div class="empty-state reveal">
+      <h3>First post is on the way</h3>
+      <p>We're writing up how SecureSign Pro's signing engine works under the hood. Check back soon, or reach out at <a href="mailto:hello@pkipro.in" style="color:var(--trust-blue);">hello@pkipro.in</a> if there's something specific you'd like us to cover.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="brand">
+          <img src="assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+          <span class="brand-word">pki<b>pro</b>.in</span>
+        </a>
+        <p>Digital trust infrastructure for enterprises — signing, sealing, and audit, built to standards.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="index.html#product">SecureSign Pro</a>
+          <a href="index.html#how">How it works</a>
+          <a href="index.html#usecases">Use cases</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="blog.html">Blog</a>
+          <a href="index.html#contact">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> PKI Pro. All rights reserved.</span>
+      <span>pkipro.in</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/script.js"></script>
+</body>
+</html>
