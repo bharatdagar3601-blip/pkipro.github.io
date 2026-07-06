@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>What Makes a PDF Signature "Adobe Trusted" — PKI Pro</title>
+<meta name="description" content="A plain-language walk-through of the Adobe AATL chain of trust — why some signed PDFs show an instant green tick and others show a warning." />
+<link rel="icon" type="image/png" href="../assets/img/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css" />
+<style>
+  .journal-hero { background: var(--ink-navy); padding: 56px 0 48px; }
+  .journal-hero .eyebrow { margin-bottom: 16px; }
+  .journal-hero h1 { color: #fff; font-size: clamp(28px,3.6vw,40px); max-width: 22ch; }
+  .journal-hero .post-meta { color: rgba(255,255,255,0.55); font-family: var(--font-mono); font-size: 13px; margin-top: 16px; }
+  .post-body { max-width: 720px; margin: 0 auto; }
+  .post-body h2 { font-size: 24px; color: var(--ink-navy); margin: 40px 0 14px; }
+  .post-body h3 { font-size: 18px; color: var(--ink-navy); margin: 28px 0 10px; }
+  .post-body p { font-size: 16px; line-height: 1.75; color: var(--ink-soft); margin-bottom: 18px; }
+  .post-body ul, .post-body ol { margin: 0 0 20px 22px; color: var(--ink-soft); font-size: 16px; line-height: 1.75; }
+  .post-body li { margin-bottom: 8px; }
+  .back-link { display: inline-block; margin-bottom: 24px; color: var(--trust-blue); font-family: var(--font-mono); font-size: 13.5px; }
+  .post-cta { border: 1px solid var(--silver-line-strong); border-radius: var(--radius); padding: 28px; margin-top: 44px; background: var(--panel-tint, #f4f7fb); }
+  .post-cta h3 { margin-top: 0; color: var(--ink-navy); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="../index.html" class="brand">
+      <img src="../assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+      <span class="brand-word">pki<b>pro</b>.in</span>
+    </a>
+    <nav class="main-nav">
+      <a href="../index.html#product">SecureSign Pro</a>
+      <a href="../index.html#how">How it works</a>
+      <a href="../index.html#usecases">Use cases</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../blog.html">Blog</a>
+      <a href="../index.html#contact" class="nav-cta">Talk to us</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+  </div>
+</header>
+
+<section class="journal-hero">
+  <div class="wrap">
+    <span class="eyebrow">Standards</span>
+    <h1>What makes a PDF signature "Adobe trusted"</h1>
+    <div class="post-meta">PKI Pro Team &middot; 06 Jul 2026 &middot; 5 min read</div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap post-body">
+    <a class="back-link" href="../blog.html">&larr; Back to the journal</a>
+
+    <p>Open two signed PDFs in Adobe Acrobat and you'll sometimes see two very different results: one shows a clean blue ribbon and "Signed and all signatures are valid" the instant it opens, while the other shows a yellow triangle warning that the signature's validity is unknown. Both documents might be cryptographically signed correctly. The difference is almost always the <strong>AATL</strong>.</p>
+
+    <h2>What AATL actually is</h2>
+    <p>AATL stands for the <strong>Adobe Approved Trust List</strong> — a list of certificate authorities that Adobe has vetted and bundled directly into Acrobat and Reader. When a PDF is signed with a certificate that chains up to one of these trusted authorities, Acrobat already has everything it needs to verify that chain locally, the moment the file is opened. No internet connection, no manual trust configuration, no clicking "trust this certificate" — it just shows as valid.</p>
+    <p>A certificate that <em>isn't</em> chained to the AATL can still produce a technically valid signature, but Acrobat has no built-in reason to trust the issuer, so it shows a warning instead of a green tick — even though nothing about the document itself was tampered with.</p>
+
+    <h2>Why the chain matters more than the signature</h2>
+    <p>It's easy to assume that "signing" and "being trusted" are the same step. They aren't. Signing proves the document hasn't changed since it was signed and identifies who signed it. Trust is a separate question: does the verifying software have a reason to believe that identity is legitimate?</p>
+    <p>The AATL answers that second question in advance. Because Adobe has already vetted the issuing authority and shipped that trust into every copy of Acrobat and Reader, the recipient's software doesn't need to do any extra work — the chain of trust is already sitting on their machine before your document ever reaches them.</p>
+
+    <h2>What this looks like in practice</h2>
+    <ol>
+      <li>A document is signed using a certificate issued by an AATL-listed authority (most Indian licensed Certifying Authorities issuing Class 3 / DSC certificates for organizational use fall into this category, depending on the specific CA and certificate type).</li>
+      <li>The signer's private key — held on a USB token or inside an HSM — signs a hash of the document. The key itself never leaves the device.</li>
+      <li>When the recipient opens the PDF in Acrobat or Reader, the software walks the certificate chain from the signature back up to the AATL-listed root, confirms it, and shows the verified checkmark immediately.</li>
+    </ol>
+
+    <h2>Long-term validation: the other half of trust</h2>
+    <p>A signature that verifies today should ideally still verify years later, even after the signing certificate itself has expired. That's what <strong>PAdES long-term validation (LTV)</strong> is for — it embeds the certificate chain, revocation status, and timestamp information directly into the signed PDF at signing time, so Acrobat can still verify the signature's validity long after the original certificate is gone.</p>
+    <p>This matters most for exactly the kind of documents enterprises can't afford to have quietly become unverifiable: board resolutions, statutory filings, and contracts that may need to be checked years down the line.</p>
+
+    <h2>The practical takeaway</h2>
+    <p>If a signed PDF needs to show as trusted the instant someone opens it — not after they manually add a certificate exception — the certificate behind that signature needs to chain up to the AATL, and the signature itself needs to be built with long-term validation in mind. Get the certificate and the signing process right once, and every document that follows inherits the same instant, trusted appearance.</p>
+
+    <div class="post-cta">
+      <h3>See a trusted signature land in real time</h3>
+      <p>We'll sign one of your own sample PDFs against a test certificate and show you exactly what the recipient sees.</p>
+      <p><a href="../index.html#contact" class="btn btn-primary" style="text-decoration:none;">Request a demo &rarr;</a></p>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="../index.html" class="brand">
+          <img src="../assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+          <span class="brand-word">pki<b>pro</b>.in</span>
+        </a>
+        <p>Digital trust infrastructure for enterprises — signing, sealing, and audit, built to standards.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="../index.html#product">SecureSign Pro</a>
+          <a href="../index.html#how">How it works</a>
+          <a href="../index.html#usecases">Use cases</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="../blog.html">Blog</a>
+          <a href="../index.html#faq">FAQ</a>
+          <a href="../index.html#contact">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <a href="mailto:info@pkipro.in">info@pkipro.in</a>
+          <a href="tel:+918860498904">+91 88604 98904</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> PKI Pro. All rights reserved.</span>
+      <span>pkipro.in</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/script.js"></script>
+</body>
+</html>

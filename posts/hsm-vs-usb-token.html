@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HSM vs. USB Token: Choosing the Right Signing Device — PKI Pro</title>
+<meta name="description" content="Throughput, cost, and compliance trade-offs between HSMs and USB DSC tokens — a practical guide for teams scaling up PDF signing volume." />
+<link rel="icon" type="image/png" href="../assets/img/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css" />
+<style>
+  .journal-hero { background: var(--ink-navy); padding: 56px 0 48px; }
+  .journal-hero .eyebrow { margin-bottom: 16px; }
+  .journal-hero h1 { color: #fff; font-size: clamp(28px,3.6vw,40px); max-width: 22ch; }
+  .journal-hero .post-meta { color: rgba(255,255,255,0.55); font-family: var(--font-mono); font-size: 13px; margin-top: 16px; }
+  .post-body { max-width: 720px; margin: 0 auto; }
+  .post-body h2 { font-size: 24px; color: var(--ink-navy); margin: 40px 0 14px; }
+  .post-body h3 { font-size: 18px; color: var(--ink-navy); margin: 28px 0 10px; }
+  .post-body p { font-size: 16px; line-height: 1.75; color: var(--ink-soft); margin-bottom: 18px; }
+  .post-body ul, .post-body ol { margin: 0 0 20px 22px; color: var(--ink-soft); font-size: 16px; line-height: 1.75; }
+  .post-body li { margin-bottom: 8px; }
+  .back-link { display: inline-block; margin-bottom: 24px; color: var(--trust-blue); font-family: var(--font-mono); font-size: 13.5px; }
+  .compare-table { width: 100%; border-collapse: collapse; margin: 24px 0 32px; font-size: 15px; }
+  .compare-table th, .compare-table td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--silver-line-strong); color: var(--ink-soft); }
+  .compare-table th { color: var(--ink-navy); font-family: var(--font-mono); font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .post-cta { border: 1px solid var(--silver-line-strong); border-radius: var(--radius); padding: 28px; margin-top: 44px; background: var(--panel-tint, #f4f7fb); }
+  .post-cta h3 { margin-top: 0; color: var(--ink-navy); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="../index.html" class="brand">
+      <img src="../assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+      <span class="brand-word">pki<b>pro</b>.in</span>
+    </a>
+    <nav class="main-nav">
+      <a href="../index.html#product">SecureSign Pro</a>
+      <a href="../index.html#how">How it works</a>
+      <a href="../index.html#usecases">Use cases</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../blog.html">Blog</a>
+      <a href="../index.html#contact" class="nav-cta">Talk to us</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+  </div>
+</header>
+
+<section class="journal-hero">
+  <div class="wrap">
+    <span class="eyebrow">Buying guide</span>
+    <h1>HSM vs. USB token: choosing the right signing device</h1>
+    <div class="post-meta">PKI Pro Team &middot; 06 Jul 2026 &middot; 7 min read</div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap post-body">
+    <a class="back-link" href="../blog.html">&larr; Back to the journal</a>
+
+    <p>Every team that starts signing PDFs at volume eventually asks the same question: do we need a hardware security module, or is a USB token enough? The honest answer is "it depends on your volume, your compliance obligations, and how many people need signing access" — but the trade-offs themselves are consistent enough to walk through directly.</p>
+
+    <h2>What each device actually is</h2>
+    <p>A <strong>USB DSC token</strong> (SafeNet eToken, ProxKey, ePass2003, and similar) is a small, tamper-resistant smart card in a USB form factor. It holds one certificate and private key, plugs into a single machine, and is issued to one individual — which is exactly how Indian DSC (Digital Signature Certificate) regulations expect it to work for most use cases.</p>
+    <p>An <strong>HSM</strong> (Thales Luna, Thales ProtectServer, Entrust nShield, Utimaco, and others) is a dedicated, network-attached or server-installed appliance built to hold many keys, serve many concurrent signing requests, and stay online continuously. It's designed for volume and shared access from the ground up, not retrofitted for it.</p>
+
+    <h2>Throughput</h2>
+    <p>This is usually where the decision gets made in practice. A USB token signs one document at a time, gated by however fast the token's own cryptographic operation runs — fine for tens of documents a day, noticeably slow once you're into the hundreds.</p>
+    <p>An HSM is built to handle concurrent signing sessions and sustained request volume, which is why teams signing hundreds or thousands of documents a day — invoice runs, dealer agreements, bulk filings — move to HSMs specifically to remove that bottleneck.</p>
+
+    <h2>Cost</h2>
+    <table class="compare-table">
+      <tr><th>Factor</th><th>USB Token</th><th>HSM</th></tr>
+      <tr><td>Upfront cost</td><td>Low (₹1,500–₹3,000/token, typically)</td><td>Significant capital outlay</td></tr>
+      <tr><td>Scaling cost</td><td>Linear — one token per signer</td><td>Amortized — one HSM serves many signing workflows</td></tr>
+      <tr><td>Best fit</td><td>Individual signers, low-to-moderate volume</td><td>Centralized, high-volume, unattended signing</td></tr>
+    </table>
+    <p>For a handful of signers doing tens of documents daily, tokens are almost always cheaper in absolute terms. Past a certain volume, the per-document cost of a token-based process — largely driven by manual handling time — outweighs the HSM's upfront cost.</p>
+
+    <h2>Compliance and control</h2>
+    <p>Both devices are PKCS#11-compliant and both keep private key material inside tamper-resistant hardware — the private key never leaves the device in either case, which is the core requirement most compliance frameworks care about.</p>
+    <p>Where they differ is <em>access control</em>. A token is physically tied to one person; possession of the token plus its PIN is the access model. An HSM centralizes keys behind its own access policies, audit logging, and (for models like Thales ProtectServer or Entrust nShield) role-based administration — which matters more for organizations that need to prove exactly who could have triggered a signature, independent of who happened to be holding a USB stick that day.</p>
+
+    <h2>Unattended and scheduled signing</h2>
+    <p>This is the practical dividing line for most teams. A USB token has to be physically present in a machine, which makes it awkward for a folder-watcher that needs to sign files as they land overnight or on a fixed schedule with no one at the desk. An HSM, being network-attached and always online, is built for exactly that kind of unattended, scheduled operation.</p>
+
+    <h2>So which one should you pick?</h2>
+    <ul>
+      <li><strong>Choose a USB token</strong> if you have a small number of individual signers, moderate daily volume, and someone available to plug in and authorize signing sessions.</li>
+      <li><strong>Choose an HSM</strong> if you're signing at scale, need unattended or scheduled signing, or need centralized audit control over who can trigger a signature.</li>
+      <li><strong>Run both</strong> if different teams have different needs — SecureSign Pro doesn't force a choice, since it works with either through the same PKCS#11 layer.</li>
+    </ul>
+
+    <p>The good news is that switching later isn't a rebuild. Because the signing engine talks to devices through the standard PKCS#11 interface, moving from a token-based workflow to an HSM — or running both side by side — is a configuration change, not a new integration.</p>
+
+    <div class="post-cta">
+      <h3>Not sure which device fits your volume?</h3>
+      <p>Tell us roughly how many documents you sign a day and we'll walk you through what makes sense — on your own sample PDFs.</p>
+      <p><a href="../index.html#contact" class="btn btn-primary" style="text-decoration:none;">Talk to us &rarr;</a></p>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="../index.html" class="brand">
+          <img src="../assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+          <span class="brand-word">pki<b>pro</b>.in</span>
+        </a>
+        <p>Digital trust infrastructure for enterprises — signing, sealing, and audit, built to standards.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="../index.html#product">SecureSign Pro</a>
+          <a href="../index.html#how">How it works</a>
+          <a href="../index.html#usecases">Use cases</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="../blog.html">Blog</a>
+          <a href="../index.html#faq">FAQ</a>
+          <a href="../index.html#contact">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <a href="mailto:info@pkipro.in">info@pkipro.in</a>
+          <a href="tel:+918860498904">+91 88604 98904</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> PKI Pro. All rights reserved.</span>
+      <span>pkipro.in</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/script.js"></script>
+</body>
+</html>
