@@ -4,12 +4,16 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>PKI Pro — Digital Trust Infrastructure | SecureSign Pro</title>
-<meta name="description" content="PKI Pro builds digital trust infrastructure for enterprises. SecureSign Pro automates HSM and USB-token based bulk PDF signing, with an audit-ready dashboard and REST API." />
+<meta name="description" content="PKI Pro builds digital trust infrastructure for enterprises. SecureSign Pro automates HSM and USB-token based bulk PDF signing, with an audit-ready dashboard and REST API. SecureCLM Pro, our multi-CA certificate lifecycle platform, is coming soon." />
 <link rel="icon" type="image/png" href="assets/img/favicon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css" />
+<style>
+  /* "pro" in the wordmark → gold, overriding the stylesheet's green */
+  .brand-word b { color: #D4AF37; }
+</style>
 </head>
 <body>
 
@@ -21,6 +25,7 @@
     </a>
     <nav class="main-nav">
       <a href="#product">SecureSign Pro</a>
+      <a href="#secureclm">SecureCLM Pro</a>
       <a href="#how">How it works</a>
       <a href="#usecases">Use cases</a>
       <a href="#faq">FAQ</a>
@@ -146,6 +151,54 @@
         <h3>Automate and monitor</h3>
         <p>Run it on demand, on a schedule, or as a folder watcher, and keep an eye on signed/failed counts from the dashboard.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SECURECLM PRO (COMING SOON) ================= -->
+<section class="block" id="secureclm">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">Next from PKI Pro</span>
+      <h2>SecureCLM Pro <span class="tag" style="vertical-align:middle;margin-left:8px;">Coming soon</span></h2>
+      <p>The same trust infrastructure, pointed at your certificate estate. SecureCLM Pro is a multi-CA certificate lifecycle platform that discovers, issues, renews, and deploys certificates across your servers automatically — HSM-backed, audit-ready, and built to stop the 2am expiry outage before it happens.</p>
+    </div>
+
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <span class="num">01</span>
+        <h3>Multi-CA orchestration</h3>
+        <p>DigiCert, Sectigo, GlobalSign, Microsoft ADCS, and your own internal CA — issue and manage from one console instead of five vendor portals.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">02</span>
+        <h3>HSM-backed keys</h3>
+        <p>Thales Luna, Thales ProtectServer, Entrust nShield, and Utimaco — keys are generated and held on the HSM, never exposed in transit.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">03</span>
+        <h3>Zero-touch deployment</h3>
+        <p>Auto-deploy renewed certificates straight to IIS, Linux (nginx/Apache), F5, and FortiGate — agentless over WinRM/SSH, or via a lightweight mTLS agent.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">04</span>
+        <h3>Network discovery</h3>
+        <p>Point it at a subnet and it finds every live certificate on your estate — no more spreadsheet of "which server has which cert."</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">05</span>
+        <h3>Expiry alerts &amp; auto-renewal</h3>
+        <p>See what's expiring before it becomes an outage, and let SecureCLM Pro renew and redeploy it automatically — no calendar reminders required.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">06</span>
+        <h3>Full audit trail</h3>
+        <p>Every issuance, renewal, and deployment is logged — the same audit-ready standard SecureSign Pro already holds for signatures.</p>
+      </div>
+    </div>
+
+    <div class="blog-cta reveal">
+      <a href="#contact" class="btn btn-primary">Get early access</a>
     </div>
   </div>
 </section>
@@ -330,6 +383,7 @@
         <div class="footer-col">
           <h4>Product</h4>
           <a href="#product">SecureSign Pro</a>
+          <a href="#secureclm">SecureCLM Pro</a>
           <a href="#how">How it works</a>
           <a href="#usecases">Use cases</a>
         </div>
