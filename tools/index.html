@@ -1,0 +1,2177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PKI Tools — pkipro.in</title>
+<meta name="description" content="Free client-side certificate tools: generate a CSR, decode a CSR or certificate, match a key to a certificate, and build a PFX/PKCS12 bundle — entirely in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js"></script>
+<style>
+  :root{
+    --bg:#0a0e14;
+    --bg-grid: rgba(45,212,191,0.035);
+    --panel:#10161f;
+    --panel-2:#0d131b;
+    --border:#1c2733;
+    --border-soft:#161f2a;
+    --text:#e7ecf3;
+    --muted:#7d8a9c;
+    --muted-2:#57657a;
+    --accent:#2dd4bf;
+    --accent-dim:#1b7f74;
+    --warn:#f5a623;
+    --success:#34d399;
+    --error:#f87171;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% -10%, rgba(45,212,191,0.08), transparent 40%),
+      radial-gradient(circle at 100% 0%, rgba(245,166,35,0.05), transparent 35%),
+      var(--bg);
+    background-attachment: fixed;
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.5;
+    min-height:100vh;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(var(--bg-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+    background-size: 42px 42px;
+    pointer-events:none;
+    z-index:0;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+  }
+  .wrap{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 24px 80px;}
+
+  /* ---------- Header ---------- */
+  header{padding:48px 0 34px; text-align:center;}
+  .brand{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:var(--mono); font-weight:700; font-size:14px;
+    letter-spacing:0.08em; text-transform:uppercase; color:var(--accent);
+    margin-bottom:18px;
+  }
+  .brand .dot{width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
+  h1{
+    font-family:var(--sans); font-weight:800; font-size:clamp(30px,5vw,46px);
+    letter-spacing:-0.02em; margin:0 0 12px; color:#fff;
+  }
+  h1 span{color:var(--accent);}
+  .sub{color:var(--muted); font-size:16px; max-width:560px; margin:0 auto 22px;}
+  .trust-badge{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(45,212,191,0.08); border:1px solid rgba(45,212,191,0.35);
+    color:var(--accent); font-family:var(--mono); font-size:12.5px; font-weight:500;
+    padding:8px 16px; border-radius:100px;
+  }
+
+  /* ---------- Tabs ---------- */
+  .tabs{
+    display:flex; gap:6px; flex-wrap:wrap; justify-content:center;
+    margin:36px 0 28px; padding:6px; background:var(--panel-2);
+    border:1px solid var(--border); border-radius:12px;
+  }
+  .tab-btn{
+    font-family:var(--mono); font-size:13px; font-weight:500;
+    background:transparent; border:none; color:var(--muted);
+    padding:11px 18px; border-radius:8px; cursor:pointer;
+    transition:all .15s ease; white-space:nowrap;
+  }
+  .tab-btn:hover{color:var(--text); background:rgba(255,255,255,0.03);}
+  .tab-btn.active{background:var(--accent); color:#04211d; font-weight:700;}
+
+  .panel{display:none; animation:fadein .25s ease;}
+  .panel.active{display:block;}
+  @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .tool-head{margin-bottom:22px;}
+  .tool-head h2{font-size:22px; margin:0 0 6px; font-weight:700; color:#fff;}
+  .tool-head p{color:var(--muted); margin:0; font-size:14.5px; max-width:640px;}
+
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:22px;}
+  @media (max-width:860px){.grid-2{grid-template-columns:1fr;}}
+
+  /* ---------- Form card ---------- */
+  .card{
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:14px; padding:24px;
+  }
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block; font-size:12.5px; font-weight:600; color:var(--muted);
+    text-transform:uppercase; letter-spacing:.04em; margin-bottom:7px;
+  }
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  input[type=text], input[type=password], select, textarea{
+    width:100%; background:var(--panel-2); border:1px solid var(--border);
+    color:var(--text); font-family:var(--sans); font-size:14px;
+    padding:10px 12px; border-radius:8px; outline:none;
+    transition:border-color .15s ease;
+  }
+  textarea{font-family:var(--mono); font-size:12.5px; resize:vertical; min-height:120px;}
+  input:focus, select:focus, textarea:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(45,212,191,0.12);}
+  input::placeholder, textarea::placeholder{color:var(--muted-2);}
+  .hint{font-size:12px; color:var(--muted-2); margin-top:5px;}
+
+  .btn{
+    font-family:var(--sans); font-weight:700; font-size:14.5px;
+    border:none; border-radius:9px; padding:13px 22px; cursor:pointer;
+    display:inline-flex; align-items:center; gap:8px;
+    transition:transform .1s ease, filter .15s ease;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:var(--accent); color:#04211d;}
+  .btn-primary:hover{filter:brightness(1.08);}
+  .btn-secondary{background:transparent; color:var(--text); border:1px solid var(--border);}
+  .btn-secondary:hover{border-color:var(--muted);}
+  .btn-block{width:100%; justify-content:center;}
+  .btn:disabled{opacity:0.45; cursor:not-allowed;}
+
+  /* ---------- Terminal output ---------- */
+  .terminal{
+    background:#080b10; border:1px solid var(--border-soft);
+    border-radius:14px; overflow:hidden;
+    box-shadow: 0 0 0 1px rgba(45,212,191,0.04), 0 20px 40px -20px rgba(0,0,0,0.6);
+  }
+  .term-bar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:11px 16px; background:#0d131b; border-bottom:1px solid var(--border-soft);
+  }
+  .term-dots{display:flex; gap:6px;}
+  .term-dots span{width:10px; height:10px; border-radius:50%;}
+  .term-dots span:nth-child(1){background:#f87171;}
+  .term-dots span:nth-child(2){background:#f5a623;}
+  .term-dots span:nth-child(3){background:#34d399;}
+  .term-label{font-family:var(--mono); font-size:11.5px; color:var(--muted-2);}
+  .term-actions{display:flex; gap:8px;}
+  .icon-btn{
+    background:transparent; border:1px solid var(--border); color:var(--muted);
+    font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:6px; cursor:pointer;
+  }
+  .icon-btn:hover{color:var(--accent); border-color:var(--accent-dim);}
+  .term-body{padding:18px 20px; max-height:560px; overflow:auto;}
+  .term-body pre{
+    margin:0; font-family:var(--mono); font-size:12.5px; line-height:1.65;
+    color:#c9f7ee; white-space:pre-wrap; word-break:break-all;
+  }
+  .term-empty{color:var(--muted-2); font-family:var(--mono); font-size:13px;}
+  .term-empty .cursor{display:inline-block; width:8px; height:15px; background:var(--accent); vertical-align:middle; margin-left:2px; animation:blink 1.1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  .kv{font-family:var(--mono); font-size:12.5px; line-height:1.9;}
+  .kv b{color:var(--accent); font-weight:600;}
+  .kv .row{padding:4px 0; border-bottom:1px dashed var(--border-soft);}
+  .kv .row:last-child{border-bottom:none;}
+
+  .status-line{
+    display:inline-flex; align-items:center; gap:8px; font-family:var(--mono);
+    font-size:13px; font-weight:600; padding:8px 14px; border-radius:8px; margin-bottom:14px;
+  }
+  .status-ok{background:rgba(52,211,153,0.1); color:var(--success); border:1px solid rgba(52,211,153,0.3);}
+  .status-bad{background:rgba(248,113,113,0.1); color:var(--error); border:1px solid rgba(248,113,113,0.3);}
+
+  .warn-box{
+    background:rgba(245,166,35,0.07); border:1px solid rgba(245,166,35,0.3);
+    color:#f5c877; font-size:13px; padding:12px 14px; border-radius:9px; margin-bottom:18px;
+  }
+  .warn-box b{color:var(--warn);}
+
+  footer{
+    text-align:center; margin-top:60px; padding-top:28px;
+    border-top:1px solid var(--border-soft); color:var(--muted-2); font-size:12.5px;
+  }
+  footer a{color:var(--accent); text-decoration:none;}
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--accent); color:#04211d; font-family:var(--mono); font-weight:600;
+    font-size:13px; padding:11px 20px; border-radius:9px; opacity:0; pointer-events:none;
+    transition:all .25s ease; z-index:50;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand"><span class="dot"></span> pkipro.in</div>
+    <h1>PKI <span>Tools</span></h1>
+    <p class="sub">Generate CSRs, decode certificates, match keys, and build PFX bundles — free, fast, no signup.</p>
+    <div class="trust-badge">🔒 Everything runs in your browser — nothing is ever uploaded</div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab-btn active" data-tab="csrgen">CSR Generator</button>
+    <button class="tab-btn" data-tab="csrdec">CSR Decoder</button>
+    <button class="tab-btn" data-tab="certdec">Cert Decoder</button>
+    <button class="tab-btn" data-tab="match">Key ↔ Cert Match</button>
+    <button class="tab-btn" data-tab="pfx">PFX Generator</button>
+    <button class="tab-btn" data-tab="jks">JKS Generator</button>
+    <button class="tab-btn" data-tab="keygen">Key Pair / Self-Signed</button>
+    <button class="tab-btn" data-tab="pemder">PEM ⇄ DER</button>
+    <button class="tab-btn" data-tab="chain">Chain Sorter</button>
+    <button class="tab-btn" data-tab="passphrase">Key Passphrase</button>
+    <button class="tab-btn" data-tab="hashtools">Hash / OpenSSL Cmd</button>
+    <button class="tab-btn" data-tab="dnscheck">DNS CAA/TXT</button>
+    <button class="tab-btn" data-tab="health">Cert Health Check</button>
+    <button class="tab-btn" data-tab="bulk">Bulk Decoder</button>
+    <button class="tab-btn" data-tab="sancheck">SAN Coverage</button>
+    <button class="tab-btn" data-tab="crlext">CRL/OCSP Extractor</button>
+    <button class="tab-btn" data-tab="ssllabs">SSL Labs Test</button>
+  </nav>
+
+  <!-- ============ CSR GENERATOR ============ -->
+  <section class="panel active" id="csrgen">
+    <div class="tool-head">
+      <h2>CSR Generator</h2>
+      <p>Creates an RSA, ECDSA, or (experimental) post-quantum ML-DSA key pair and a PKCS#10 Certificate Signing Request. The private key is generated locally and never leaves this page — copy or download it immediately, it isn't stored anywhere.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="field-row">
+          <div class="field"><label>Common Name (CN) *</label><input type="text" id="g_cn" placeholder="www.example.com"></div>
+          <div class="field"><label>Organization (O)</label><input type="text" id="g_o" placeholder="Example Pvt Ltd"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Organizational Unit (OU)</label><input type="text" id="g_ou" placeholder="IT Department"></div>
+          <div class="field"><label>Email</label><input type="text" id="g_email" placeholder="admin@example.com"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>City / Locality (L)</label><input type="text" id="g_l" placeholder="Delhi"></div>
+          <div class="field"><label>State / Province (ST)</label><input type="text" id="g_st" placeholder="Delhi"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Country (C, 2-letter)</label><input type="text" id="g_c" maxlength="2" placeholder="IN"></div>
+          <div class="field"><label>Key Type</label>
+            <select id="g_keytype" onchange="onKeyTypeChange()">
+              <optgroup label="RSA">
+                <option value="rsa-2048" selected>RSA 2048-bit</option>
+                <option value="rsa-4096">RSA 4096-bit (slower)</option>
+              </optgroup>
+              <optgroup label="ECDSA (smaller, faster, widely supported)">
+                <option value="ec-p256">ECDSA P-256</option>
+                <option value="ec-p384">ECDSA P-384</option>
+                <option value="ec-p521">ECDSA P-521</option>
+              </optgroup>
+              <optgroup label="Post-Quantum — experimental">
+                <option value="pq-mldsa44">ML-DSA-44 (NIST L2)</option>
+                <option value="pq-mldsa65">ML-DSA-65 (NIST L3)</option>
+                <option value="pq-mldsa87">ML-DSA-87 (NIST L5)</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Subject Alternative Names (optional)</label>
+          <input type="text" id="g_sans" placeholder="www.example.com, example.com, mail.example.com">
+          <div class="hint">Comma-separated. Add every hostname the certificate needs to cover.</div>
+        </div>
+        <div class="warn-box" id="g_pq_warning" style="display:none;">
+          <b>Experimental / Post-Quantum:</b> ML-DSA (FIPS 204) key and signature math still run 100% locally in your browser, same as everything else on this page — but generating one needs a one-time fetch of a small signing library from a public CDN (jsdelivr), so this option alone requires internet access. Almost no public Certificate Authority accepts ML-DSA CSRs for issuance yet — use this for testing, PQC-ready HSMs/internal CAs, or experimentation, not for a certificate you need issued today.
+        </div>
+        <button class="btn btn-primary btn-block" id="g_btn" onclick="generateCSR()">⚡ Generate Key Pair &amp; CSR</button>
+      </div>
+      <div>
+        <div class="terminal" style="margin-bottom:16px;">
+          <div class="term-bar">
+            <div class="term-dots"><span></span><span></span><span></span></div>
+            <div class="term-label">certificate_signing_request.csr</div>
+            <div class="term-actions">
+              <button class="icon-btn" onclick="copyText('g_csr_out')">copy</button>
+              <button class="icon-btn" onclick="downloadText((document.getElementById('g_cn').value||'request')+'.csr', document.getElementById('g_csr_out').textContent)">download</button>
+            </div>
+          </div>
+          <div class="term-body"><div class="term-empty" id="g_csr_placeholder">Waiting for input<span class="cursor"></span></div><pre id="g_csr_out" style="display:none;"></pre></div>
+        </div>
+        <div class="terminal">
+          <div class="term-bar">
+            <div class="term-dots"><span></span><span></span><span></span></div>
+            <div class="term-label">private_key.pem</div>
+            <div class="term-actions">
+              <button class="icon-btn" onclick="copyText('g_key_out')">copy</button>
+              <button class="icon-btn" onclick="downloadText((document.getElementById('g_cn').value||'private')+'.key', document.getElementById('g_key_out').textContent)">download</button>
+            </div>
+          </div>
+          <div class="term-body"><div class="term-empty" id="g_key_placeholder">—</div><pre id="g_key_out" style="display:none;"></pre></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CSR DECODER ============ -->
+  <section class="panel" id="csrdec">
+    <div class="tool-head">
+      <h2>CSR Decoder</h2>
+      <p>Paste a PEM-encoded Certificate Signing Request to inspect its subject fields, public key, and requested SANs.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="field">
+          <label>CSR (PEM)</label>
+          <textarea id="d_csr_in" rows="16" placeholder="-----BEGIN CERTIFICATE REQUEST-----&#10;...&#10;-----END CERTIFICATE REQUEST-----"></textarea>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="decodeCSR()">🔍 Decode CSR</button>
+      </div>
+      <div class="terminal">
+        <div class="term-bar">
+          <div class="term-dots"><span></span><span></span><span></span></div>
+          <div class="term-label">csr_details</div>
+        </div>
+        <div class="term-body"><div class="term-empty" id="d_csr_placeholder">Paste a CSR and decode it<span class="cursor"></span></div><div id="d_csr_out" style="display:none;"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CERT DECODER ============ -->
+  <section class="panel" id="certdec">
+    <div class="tool-head">
+      <h2>Certificate Decoder</h2>
+      <p>Paste a PEM-encoded X.509 certificate to inspect its subject, issuer, validity window, SANs, and fingerprint.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="field">
+          <label>Certificate (PEM)</label>
+          <textarea id="c_cert_in" rows="16" placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"></textarea>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="decodeCert()">🔍 Decode Certificate</button>
+      </div>
+      <div class="terminal">
+        <div class="term-bar">
+          <div class="term-dots"><span></span><span></span><span></span></div>
+          <div class="term-label">certificate_details</div>
+        </div>
+        <div class="term-body"><div class="term-empty" id="c_cert_placeholder">Paste a certificate and decode it<span class="cursor"></span></div><div id="c_cert_out" style="display:none;"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ KEY <-> CERT MATCH ============ -->
+  <section class="panel" id="match">
+    <div class="tool-head">
+      <h2>Key ↔ Certificate Match</h2>
+      <p>Confirms whether a private key belongs to a given certificate (or CSR) by comparing their public key components. RSA keys are fully supported; EC key support is best-effort.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="field">
+          <label>Private Key (PEM)</label>
+          <textarea id="m_key_in" rows="10" placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----"></textarea>
+        </div>
+        <div class="field">
+          <label>Certificate or CSR (PEM)</label>
+          <textarea id="m_cert_in" rows="10" placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"></textarea>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="matchKeyCert()">🔗 Check Match</button>
+      </div>
+      <div class="terminal">
+        <div class="term-bar">
+          <div class="term-dots"><span></span><span></span><span></span></div>
+          <div class="term-label">match_result</div>
+        </div>
+        <div class="term-body"><div class="term-empty" id="m_placeholder">Paste both and check<span class="cursor"></span></div><div id="m_out" style="display:none;"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PFX GENERATOR ============ -->
+  <section class="panel" id="pfx">
+    <div class="tool-head">
+      <h2>PFX / PKCS#12 Generator</h2>
+      <p>Bundles a certificate, its private key, and an optional chain into a password-protected .pfx file for import into IIS, browsers, or app servers.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="field">
+          <label>Certificate (PEM)</label>
+          <textarea id="p_cert_in" rows="8" placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"></textarea>
+        </div>
+        <div class="field">
+          <label>Private Key (PEM)</label>
+          <textarea id="p_key_in" rows="8" placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----"></textarea>
+        </div>
+        <div class="field">
+          <label>Intermediate / Chain certs (optional)</label>
+          <textarea id="p_chain_in" rows="6" placeholder="Paste one or more chain certificates, one after another"></textarea>
+        </div>
+        <div class="field">
+          <label>PFX Password *</label>
+          <input type="password" id="p_pass" placeholder="Choose a password to protect the .pfx">
+        </div>
+        <button class="btn btn-primary btn-block" onclick="generatePFX()">📦 Build PFX</button>
+        <div id="p_status"></div>
+      </div>
+      <div class="terminal">
+        <div class="term-bar">
+          <div class="term-dots"><span></span><span></span><span></span></div>
+          <div class="term-label">bundle.pfx</div>
+        </div>
+        <div class="term-body">
+          <div class="term-empty" id="p_placeholder">Fill in the fields and build your bundle<span class="cursor"></span></div>
+          <div id="p_out" style="display:none;">
+            <div class="status-line status-ok">✓ PFX bundle created</div>
+            <p style="color:var(--muted); font-size:13px;">Binary files can't be shown as text here — click below to download.</p>
+            <button class="btn btn-secondary" id="p_download_btn">⬇ Download bundle.pfx</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ JKS GENERATOR ============ -->
+  <section class="panel" id="jks">
+    <div class="tool-head">
+      <h2>JKS (Java KeyStore) Generator</h2>
+      <p>Bundles a certificate, its private key, and an optional chain into a password-protected .jks file for Tomcat, generic Java apps, and similar Java-based servers.</p>
+    </div>
+    <div class="warn-box">
+      <b>Verify before relying on it in production:</b> the JKS format is Java's own proprietary (reverse-engineered, not officially published) format. This is built to match that reverse-engineered spec as closely as possible, but always confirm with <code>keytool -list -v -keystore yourfile.jks</code> (comes with any JDK) before deploying it anywhere that matters.
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="field">
+          <label>Certificate (PEM)</label>
+          <textarea id="j_cert_in" rows="8" placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"></textarea>
+        </div>
+        <div class="field">
+          <label>Private Key (PEM)</label>
+          <textarea id="j_key_in" rows="8" placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----"></textarea>
+        </div>
+        <div class="field">
+          <label>Intermediate / Chain certs (optional)</label>
+          <textarea id="j_chain_in" rows="6" placeholder="Paste one or more chain certificates, one after another"></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Alias</label><input type="text" id="j_alias" placeholder="server" value="server"></div>
+          <div class="field"><label>Keystore Password *</label><input type="password" id="j_pass" placeholder="Choose a password"></div>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="generateJKS()">📦 Build JKS</button>
+        <div id="j_status"></div>
+      </div>
+      <div class="terminal">
+        <div class="term-bar">
+          <div class="term-dots"><span></span><span></span><span></span></div>
+          <div class="term-label">keystore.jks</div>
+        </div>
+        <div class="term-body">
+          <div class="term-empty" id="j_placeholder">Fill in the fields and build your keystore<span class="cursor"></span></div>
+          <div id="j_out" style="display:none;">
+            <div class="status-line status-ok">✓ JKS keystore created</div>
+            <p style="color:var(--muted); font-size:13px;">Binary files can't be shown as text here — click below to download, then verify with <code>keytool -list -v</code>.</p>
+            <button class="btn btn-secondary" id="j_download_btn">⬇ Download keystore.jks</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ KEY PAIR / SELF-SIGNED CERT ============ -->
+  <section class="panel" id="keygen">
+    <div class="tool-head">
+      <h2>Key Pair Generator &amp; Self-Signed Certificate</h2>
+      <p>Generates a fresh RSA key pair locally. Optionally signs it into a self-signed X.509 certificate — handy for internal dev/test environments where you don't need a CA-issued cert.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="field-row">
+          <div class="field"><label>Key Size</label>
+            <select id="k_keysize">
+              <option value="2048" selected>RSA 2048-bit</option>
+              <option value="4096">RSA 4096-bit (slower)</option>
+            </select>
+          </div>
+          <div class="field"><label>Validity (days)</label><input type="text" id="k_days" placeholder="365" value="365"></div>
+        </div>
+        <div class="field">
+          <label style="display:flex; align-items:center; gap:8px; text-transform:none; font-size:13.5px; color:var(--text);">
+            <input type="checkbox" id="k_selfsigned" checked style="width:auto;"> Also create a self-signed certificate
+          </label>
+        </div>
+        <div id="k_cert_fields">
+          <div class="field-row">
+            <div class="field"><label>Common Name (CN) *</label><input type="text" id="k_cn" placeholder="dev.example.local"></div>
+            <div class="field"><label>Organization (O)</label><input type="text" id="k_o" placeholder="Example Pvt Ltd"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Organizational Unit (OU)</label><input type="text" id="k_ou" placeholder="IT Department"></div>
+            <div class="field"><label>Country (C, 2-letter)</label><input type="text" id="k_c" maxlength="2" placeholder="IN"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>City / Locality (L)</label><input type="text" id="k_l" placeholder="Delhi"></div>
+            <div class="field"><label>State / Province (ST)</label><input type="text" id="k_st" placeholder="Delhi"></div>
+          </div>
+          <div class="field">
+            <label>Subject Alternative Names (optional)</label>
+            <input type="text" id="k_sans" placeholder="dev.example.local, localhost, 127.0.0.1">
+            <div class="hint">Comma-separated. IPs are detected automatically.</div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block" id="k_btn" onclick="generateKeyKit()">⚡ Generate</button>
+      </div>
+      <div>
+        <div class="terminal" style="margin-bottom:16px;">
+          <div class="term-bar">
+            <div class="term-dots"><span></span><span></span><span></span></div>
+            <div class="term-label">private_key.pem</div>
+            <div class="term-actions">
+              <button class="icon-btn" onclick="copyText('k_key_out')">copy</button>
+              <button class="icon-btn" onclick="downloadText('private.key', document.getElementById('k_key_out').textContent)">download</button>
+            </div>
+          </div>
+          <div class="term-body"><div class="term-empty" id="k_key_placeholder">Waiting for input<span class="cursor"></span></div><pre id="k_key_out" style="display:none;"></pre></div>
+        </div>
+        <div class="terminal" style="margin-bottom:16px;">
+          <div class="term-bar">
+            <div class="term-dots"><span></span><span></span><span></span></div>
+            <div class="term-label">public_key.pem</div>
+            <div class="term-actions">
+              <button class="icon-btn" onclick="copyText('k_pub_out')">copy</button>
+              <button class="icon-btn" onclick="downloadText('public.key', document.getElementById('k_pub_out').textContent)">download</button>
+            </div>
+          </div>
+          <div class="term-body"><div class="term-empty" id="k_pub_placeholder">—</div><pre id="k_pub_out" style="display:none;"></pre></div>
+        </div>
+        <div class="terminal">
+          <div class="term-bar">
+            <div class="term-dots"><span></span><span></span><span></span></div>
+            <div class="term-label">self_signed_cert.pem</div>
+            <div class="term-actions">
+              <button class="icon-btn" onclick="copyText('k_cert_out')">copy</button>
+              <button class="icon-btn" onclick="downloadText((document.getElementById('k_cn').value||'cert')+'.pem', document.getElementById('k_cert_out').textContent)">download</button>
+            </div>
+          </div>
+          <div class="term-body"><div class="term-empty" id="k_cert_placeholder">—</div><pre id="k_cert_out" style="display:none;"></pre></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PEM <-> DER CONVERTER ============ -->
+  <section class="panel" id="pemder">
+    <div class="tool-head">
+      <h2>PEM ⇄ DER Converter</h2>
+      <p>Converts between Base64 PEM (text) and binary DER encoding for certificates, CSRs, and keys — works both directions, entirely offline.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="tool-head" style="margin-bottom:14px;"><h2 style="font-size:16px;">PEM → DER</h2></div>
+        <div class="field">
+          <label>Paste PEM</label>
+          <textarea id="pd_pem_in" rows="12" placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"></textarea>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="pemToDer()">→ Convert to DER</button>
+        <div id="pd_p2d_status" style="margin-top:12px;"></div>
+        <button class="btn btn-secondary btn-block" id="pd_p2d_download_btn" style="display:none; margin-top:10px;">⬇ Download .der</button>
+      </div>
+      <div class="card">
+        <div class="tool-head" style="margin-bottom:14px;"><h2 style="font-size:16px;">DER → PEM</h2></div>
+        <div class="field">
+          <label>Upload .der / .cer / .crt binary file</label>
+          <input type="file" id="pd_der_file" accept=".der,.cer,.crt,.key">
+        </div>
+        <div class="field">
+          <label>PEM Label</label>
+          <select id="pd_pem_label">
+            <option value="CERTIFICATE">CERTIFICATE</option>
+            <option value="CERTIFICATE REQUEST">CERTIFICATE REQUEST</option>
+            <option value="PRIVATE KEY">PRIVATE KEY</option>
+            <option value="RSA PRIVATE KEY">RSA PRIVATE KEY</option>
+            <option value="PUBLIC KEY">PUBLIC KEY</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="derToPem()">→ Convert to PEM</button>
+        <div class="terminal" style="margin-top:14px;">
+          <div class="term-bar">
+            <div class="term-dots"><span></span><span></span><span></span></div>
+            <div class="term-label">converted.pem</div>
+            <div class="term-actions">
+              <button class="icon-btn" onclick="copyText('pd_pem_out')">copy</button>
+              <button class="icon-btn" onclick="downloadText('converted.pem', document.getElementById('pd_pem_out').textContent)">download</button>
+            </div>
+          </div>
+          <div class="term-body"><div class="term-empty" id="pd_pem_placeholder">Upload a file and convert<span class="cursor"></span></div><pre id="pd_pem_out" style="display:none;"></pre></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHAIN SORTER & VALIDATOR ============ -->
+  <section class="panel" id="chain">
+    <div class="tool-head">
+      <h2>Certificate Chain Sorter &amp; Validator</h2>
+      <p>Paste any number of certificates in any order. This sorts them leaf → intermediate(s) → root, verifies each signature link, and flags a broken or incomplete chain.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="field">
+          <label>Certificates (PEM, any order, one after another)</label>
+          <textarea id="ch_in" rows="18" placeholder="-----BEGIN CERTIFICATE-----&#10;...(leaf)...&#10;-----END CERTIFICATE-----&#10;-----BEGIN CERTIFICATE-----&#10;...(root or intermediate)...&#10;-----END CERTIFICATE-----"></textarea>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="sortAndValidateChain()">🔗 Sort &amp; Validate Chain</button>
+      </div>
+      <div>
+        <div class="terminal" style="margin-bottom:16px;">
+          <div class="term-bar">
+            <div class="term-dots"><span></span><span></span><span></span></div>
+            <div class="term-label">chain_report</div>
+          </div>
+          <div class="term-body"><div class="term-empty" id="ch_report_placeholder">Paste certificates and validate<span class="cursor"></span></div><div id="ch_report_out" style="display:none;"></div></div>
+        </div>
+        <div class="terminal">
+          <div class="term-bar">
+            <div class="term-dots"><span></span><span></span><span></span></div>
+            <div class="term-label">sorted_chain.pem</div>
+            <div class="term-actions">
+              <button class="icon-btn" onclick="copyText('ch_pem_out')">copy</button>
+              <button class="icon-btn" onclick="downloadText('sorted_chain.pem', document.getElementById('ch_pem_out').textContent)">download</button>
+            </div>
+          </div>
+          <div class="term-body"><div class="term-empty" id="ch_pem_placeholder">—</div><pre id="ch_pem_out" style="display:none;"></pre></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRIVATE KEY PASSPHRASE ============ -->
+  <section class="panel" id="passphrase">
+    <div class="tool-head">
+      <h2>Private Key Passphrase Add / Remove</h2>
+      <p>Decrypt a passphrase-protected private key, or encrypt a plain one. Leave "New Passphrase" empty to strip encryption; fill it in to add or change it.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="field">
+          <label>Private Key (PEM — encrypted or plain)</label>
+          <textarea id="pp_key_in" rows="14" placeholder="-----BEGIN RSA PRIVATE KEY-----&#10;...&#10;-----END RSA PRIVATE KEY-----"></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Current Passphrase (if encrypted)</label><input type="password" id="pp_pass_cur" placeholder="leave blank if key is plain"></div>
+          <div class="field"><label>New Passphrase (leave blank to strip)</label><input type="password" id="pp_pass_new" placeholder="new passphrase or blank"></div>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="processPassphrase()">🔐 Process Key</button>
+      </div>
+      <div class="terminal">
+        <div class="term-bar">
+          <div class="term-dots"><span></span><span></span><span></span></div>
+          <div class="term-label">output_key.pem</div>
+          <div class="term-actions">
+            <button class="icon-btn" onclick="copyText('pp_out')">copy</button>
+            <button class="icon-btn" onclick="downloadText('output_key.pem', document.getElementById('pp_out').textContent)">download</button>
+          </div>
+        </div>
+        <div class="term-body"><div class="term-empty" id="pp_placeholder">Paste a key and process it<span class="cursor"></span></div><pre id="pp_out" style="display:none;"></pre></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HASH CALCULATOR + OPENSSL COMMAND GENERATOR ============ -->
+  <section class="panel" id="hashtools">
+    <div class="tool-head">
+      <h2>Hash Calculator &amp; OpenSSL Command Generator</h2>
+      <p>Compute common hashes of text or a file, or build the exact <code>openssl</code> command for a task without memorising the flags.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="tool-head" style="margin-bottom:14px;"><h2 style="font-size:16px;">Hash Calculator</h2></div>
+        <div class="field">
+          <label>Text</label>
+          <textarea id="hc_text_in" rows="6" placeholder="Type or paste text to hash"></textarea>
+        </div>
+        <div class="field">
+          <label>...or a file</label>
+          <input type="file" id="hc_file_in">
+        </div>
+        <button class="btn btn-primary btn-block" onclick="calcHashes()">🧮 Calculate Hashes</button>
+        <div class="terminal" style="margin-top:14px;">
+          <div class="term-bar">
+            <div class="term-dots"><span></span><span></span><span></span></div>
+            <div class="term-label">hashes</div>
+          </div>
+          <div class="term-body"><div class="term-empty" id="hc_placeholder">Enter text or pick a file<span class="cursor"></span></div><div id="hc_out" style="display:none;"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tool-head" style="margin-bottom:14px;"><h2 style="font-size:16px;">OpenSSL Command Generator</h2></div>
+        <div class="field">
+          <label>Task</label>
+          <select id="oc_task" onchange="renderOpensslCmd()">
+            <option value="genkey">Generate RSA private key</option>
+            <option value="csr">Generate CSR (with new key)</option>
+            <option value="selfsigned">Generate self-signed certificate</option>
+            <option value="viewcert">View a certificate's details</option>
+            <option value="viewcsr">View a CSR's details</option>
+            <option value="checkexpiry">Check certificate expiry date</option>
+            <option value="pem2der">Convert PEM → DER</option>
+            <option value="der2pem">Convert DER → PEM</option>
+            <option value="pfx2pem">Convert PFX/P12 → PEM</option>
+            <option value="pem2pfx">Bundle cert+key → PFX/P12</option>
+            <option value="removepass">Remove passphrase from key</option>
+            <option value="modmatch">Compare cert/key modulus (match check)</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>File name(s)</label><input type="text" id="oc_file" placeholder="server" value="server"></div>
+          <div class="field"><label>Key size / Days</label><input type="text" id="oc_num" placeholder="2048 or 365" value="2048"></div>
+        </div>
+        <div class="field">
+          <label>Common Name / domain (if relevant)</label>
+          <input type="text" id="oc_cn" placeholder="www.example.com" oninput="renderOpensslCmd()">
+        </div>
+        <div class="terminal">
+          <div class="term-bar">
+            <div class="term-dots"><span></span><span></span><span></span></div>
+            <div class="term-label">command.sh</div>
+            <div class="term-actions"><button class="icon-btn" onclick="copyText('oc_out')">copy</button></div>
+          </div>
+          <div class="term-body"><pre id="oc_out" style="margin:0;"></pre></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DNS CAA / TXT CHECKER ============ -->
+  <section class="panel" id="dnscheck">
+    <div class="tool-head">
+      <h2>DNS CAA &amp; TXT Record Checker</h2>
+      <p>Looks up CAA and TXT records (including <code>_acme-challenge</code>) for a domain via Google's public DNS-over-HTTPS resolver — useful before requesting a certificate or verifying ACME DNS-01 validation.</p>
+    </div>
+    <div class="warn-box">
+      <b>Note:</b> this queries <code>dns.google</code> from your browser, so the domain name you check is visible to Google's resolver (same as any normal DNS lookup). No certificate/key data is involved.
+    </div>
+    <div class="card" style="margin-bottom:22px;">
+      <div class="field-row">
+        <div class="field" style="grid-column:span 2;"><label>Domain</label><input type="text" id="dn_domain" placeholder="example.com"></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="checkDns()">🌐 Check CAA &amp; TXT Records</button>
+    </div>
+    <div class="terminal">
+      <div class="term-bar">
+        <div class="term-dots"><span></span><span></span><span></span></div>
+        <div class="term-label">dns_records</div>
+      </div>
+      <div class="term-body"><div class="term-empty" id="dn_placeholder">Enter a domain and check<span class="cursor"></span></div><div id="dn_out" style="display:none;"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ CERTIFICATE HEALTH CHECKER ============ -->
+  <section class="panel" id="health">
+    <div class="tool-head">
+      <h2>Certificate Health Checker</h2>
+      <p>Paste a certificate to get a quick pass/warn/fail checklist — expiry, key strength, signature algorithm, wildcard usage, self-signed status, and SAN presence.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="field">
+          <label>Certificate (PEM)</label>
+          <textarea id="hh_cert_in" rows="16" placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"></textarea>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="checkCertHealth()">🩺 Run Health Check</button>
+      </div>
+      <div class="terminal">
+        <div class="term-bar">
+          <div class="term-dots"><span></span><span></span><span></span></div>
+          <div class="term-label">health_report</div>
+        </div>
+        <div class="term-body"><div class="term-empty" id="hh_placeholder">Paste a certificate and check<span class="cursor"></span></div><div id="hh_out" style="display:none;"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BULK CERTIFICATE DECODER ============ -->
+  <section class="panel" id="bulk">
+    <div class="tool-head">
+      <h2>Bulk Certificate Decoder</h2>
+      <p>Paste any number of certificates at once to get a summary table — Common Name, Issuer, expiry date, days remaining, and key size — for auditing many certs quickly.</p>
+    </div>
+    <div class="card" style="margin-bottom:22px;">
+      <div class="field">
+        <label>Certificates (PEM, one after another)</label>
+        <textarea id="bk_in" rows="12" placeholder="Paste multiple -----BEGIN CERTIFICATE----- blocks, one after another"></textarea>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="bulkDecode()">📋 Decode All</button>
+    </div>
+    <div class="terminal">
+      <div class="term-bar">
+        <div class="term-dots"><span></span><span></span><span></span></div>
+        <div class="term-label">bulk_summary</div>
+      </div>
+      <div class="term-body" style="overflow:auto;"><div class="term-empty" id="bk_placeholder">Paste certificates and decode<span class="cursor"></span></div><div id="bk_out" style="display:none;"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ SAN / MULTI-DOMAIN COVERAGE CHECKER ============ -->
+  <section class="panel" id="sancheck">
+    <div class="tool-head">
+      <h2>SAN / Multi-Domain Coverage Checker</h2>
+      <p>Paste a certificate and the list of hostnames it needs to cover — this checks each one against the Common Name and Subject Alternative Names (including wildcard matches).</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="field">
+          <label>Certificate (PEM)</label>
+          <textarea id="sc_cert_in" rows="12" placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"></textarea>
+        </div>
+        <div class="field">
+          <label>Domains to check</label>
+          <textarea id="sc_domains_in" rows="4" placeholder="www.example.com, example.com, api.example.com"></textarea>
+          <div class="hint">Comma or newline separated.</div>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="checkSanCoverage()">📡 Check Coverage</button>
+      </div>
+      <div class="terminal">
+        <div class="term-bar">
+          <div class="term-dots"><span></span><span></span><span></span></div>
+          <div class="term-label">coverage_report</div>
+        </div>
+        <div class="term-body"><div class="term-empty" id="sc_placeholder">Paste a cert and domain list<span class="cursor"></span></div><div id="sc_out" style="display:none;"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CRL / OCSP URL EXTRACTOR ============ -->
+  <section class="panel" id="crlext">
+    <div class="tool-head">
+      <h2>CRL / OCSP URL Extractor</h2>
+      <p>Pulls the CRL distribution points and OCSP responder URLs out of a certificate's extensions — useful for tracing how revocation would be checked. This only extracts the URLs; it doesn't perform a live revocation check.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="field">
+          <label>Certificate (PEM)</label>
+          <textarea id="cx_cert_in" rows="16" placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"></textarea>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="extractCrlOcsp()">🔗 Extract URLs</button>
+      </div>
+      <div class="terminal">
+        <div class="term-bar">
+          <div class="term-dots"><span></span><span></span><span></span></div>
+          <div class="term-label">revocation_endpoints</div>
+        </div>
+        <div class="term-body"><div class="term-empty" id="cx_placeholder">Paste a certificate and extract<span class="cursor"></span></div><div id="cx_out" style="display:none;"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SSL LABS TEST (external) ============ -->
+  <section class="panel" id="ssllabs">
+    <div class="tool-head">
+      <h2>SSL Labs Test</h2>
+      <p>Runs a full, live TLS configuration scan of a public domain using Qualys SSL Labs — protocol support, cipher suites, certificate chain, key exchange, and an overall grade. This is an external server-side test, so it opens on ssllabs.com in a new tab rather than running in this page.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="field">
+          <label>Domain to Test</label>
+          <input type="text" id="sl_domain" placeholder="www.example.com">
+          <div class="hint">Just the hostname — no https:// or trailing slash. The domain must be publicly reachable on port 443.</div>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="openSslLabs()">🌐 Run SSL Labs Test ↗</button>
+        <div class="hint" style="margin-top:12px;">Scans usually take 1–2 minutes on ssllabs.com. Results are cached there for a few hours, so re-testing right after a change may show stale data — use the "Clear cache" option on their site if needed.</div>
+      </div>
+      <div class="terminal">
+        <div class="term-bar">
+          <div class="term-dots"><span></span><span></span><span></span></div>
+          <div class="term-label">external_scan</div>
+        </div>
+        <div class="term-body"><div class="term-empty" id="sl_placeholder">Enter a domain and run the test — it'll open on ssllabs.com<span class="cursor"></span></div><div id="sl_out" style="display:none;"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Runs entirely client-side using <a href="https://github.com/digitalbazaar/forge" target="_blank" rel="noopener">forge.js</a> — no certificate, key, or CSR data is ever transmitted anywhere. SSL Labs Test is the one exception: it opens Qualys's own scanning service in a new tab.
+    &nbsp;·&nbsp; <a href="https://pkipro.in">← Back to pkipro.in</a>
+  </footer>
+</div>
+
+<div class="toast" id="toast">Copied</div>
+
+<script>
+// ---------------- Tab switching ----------------
+document.getElementById('tabs').addEventListener('click', (e) => {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn) return;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(btn.dataset.tab).classList.add('active');
+});
+
+// ---------------- Shared helpers ----------------
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1600);
+}
+function copyText(elId){
+  const el = document.getElementById(elId);
+  const text = el.textContent || '';
+  if (!text.trim()) { showToast('Nothing to copy yet'); return; }
+  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+}
+function downloadText(filename, content){
+  if (!content || !content.trim()) { showToast('Nothing to download yet'); return; }
+  const blob = new Blob([content], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function downloadBinary(filename, byteString, mime){
+  const bytes = new Uint8Array(byteString.length);
+  for (let i = 0; i < byteString.length; i++) bytes[i] = byteString.charCodeAt(i) & 0xff;
+  const blob = new Blob([bytes], {type: mime});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function kvRow(label, value){
+  return '<div class="row"><b>' + esc(label) + ':</b> ' + esc(value) + '</div>';
+}
+function showResult(placeholderId, outId, html){
+  document.getElementById(placeholderId).style.display = 'none';
+  const out = document.getElementById(outId);
+  out.style.display = 'block';
+  out.innerHTML = html;
+}
+function showError(placeholderId, outId, msg){
+  document.getElementById(placeholderId).style.display = 'none';
+  const out = document.getElementById(outId);
+  out.style.display = 'block';
+  out.innerHTML = '<div class="status-line status-bad">✕ ' + esc(msg) + '</div>';
+}
+
+function attrsToSubjectArray(cn, o, ou, l, st, c, email){
+  const attrs = [];
+  if (cn) attrs.push({name:'commonName', value: cn});
+  if (o) attrs.push({name:'organizationName', value: o});
+  if (ou) attrs.push({shortName:'OU', value: ou});
+  if (l) attrs.push({name:'localityName', value: l});
+  if (st) attrs.push({name:'stateOrProvinceName', value: st});
+  if (c) attrs.push({shortName:'C', value: c.toUpperCase()});
+  if (email) attrs.push({name:'emailAddress', value: email});
+  return attrs;
+}
+function subjectToLines(subjectAttrs){
+  return subjectAttrs.map(a => (a.shortName || a.name) + '=' + a.value).join(', ');
+}
+function extractSANs(cert){
+  const ext = cert.getExtension ? cert.getExtension('subjectAltName') : null;
+  if (!ext || !ext.altNames) return [];
+  return ext.altNames.map(n => n.value).filter(Boolean);
+}
+
+// ---------------- CSR GENERATOR — shared helpers (RSA / ECDSA / ML-DSA) ----------------
+function onKeyTypeChange(){
+  const v = document.getElementById('g_keytype').value;
+  document.getElementById('g_pq_warning').style.display = v.startsWith('pq-') ? 'block' : 'none';
+}
+
+function u8ToBin(u8){ let s = ''; for (let i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]); return s; }
+function binToU8(binStr){ const u8 = new Uint8Array(binStr.length); for (let i = 0; i < binStr.length; i++) u8[i] = binStr.charCodeAt(i) & 0xff; return u8; }
+function binToAb(binStr){ return binToU8(binStr).buffer; }
+
+const EC_CURVES = {
+  'ec-p256': {webName: 'P-256', oid: '1.2.840.10045.3.1.7', byteLen: 32, bits: 256, hash: 'SHA-256', sigOid: '1.2.840.10045.4.3.2', label: 'ECDSA P-256'},
+  'ec-p384': {webName: 'P-384', oid: '1.3.132.0.34',        byteLen: 48, bits: 384, hash: 'SHA-384', sigOid: '1.2.840.10045.4.3.3', label: 'ECDSA P-384'},
+  'ec-p521': {webName: 'P-521', oid: '1.3.132.0.35',        byteLen: 66, bits: 521, hash: 'SHA-512', sigOid: '1.2.840.10045.4.3.4', label: 'ECDSA P-521'}
+};
+const EC_CURVES_BY_OID = Object.fromEntries(Object.values(EC_CURVES).map(c => [c.oid, c]));
+const EC_SIGOID_TO_HASH = Object.fromEntries(Object.values(EC_CURVES).map(c => [c.sigOid, c.hash]));
+
+const MLDSA_LEVELS = {
+  'pq-mldsa44': {name: 'ml_dsa44', oid: '2.16.840.1.101.3.4.3.17', label: 'ML-DSA-44'},
+  'pq-mldsa65': {name: 'ml_dsa65', oid: '2.16.840.1.101.3.4.3.18', label: 'ML-DSA-65'},
+  'pq-mldsa87': {name: 'ml_dsa87', oid: '2.16.840.1.101.3.4.3.19', label: 'ML-DSA-87'}
+};
+const MLDSA_OID_TO_LEVEL = Object.fromEntries(Object.values(MLDSA_LEVELS).map(l => [l.oid, l]));
+
+let _mldsaModulePromise = null;
+function loadMLDSAModule(){
+  // Loaded lazily, only when a Post-Quantum option is actually used — keeps the page
+  // fully offline-capable for the RSA/ECDSA paths. Pinned version for stability.
+  if (!_mldsaModulePromise){
+    _mldsaModulePromise = import('https://cdn.jsdelivr.net/npm/@noble/post-quantum@0.7.0/ml-dsa.js/+esm');
+  }
+  return _mldsaModulePromise;
+}
+
+// AlgorithmIdentifier with NO parameters field (required for ML-DSA per RFC 9881;
+// also valid/standard for the OID-only style used below).
+function algIdNoParams(oid){
+  return forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.SEQUENCE, true, [
+    forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.OID, false, forge.asn1.oidToDer(oid).getBytes())
+  ]);
+}
+
+function buildECSubjectPublicKeyInfo(rawPointU8, curveOid){
+  const algId = forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.SEQUENCE, true, [
+    forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.OID, false, forge.asn1.oidToDer('1.2.840.10045.2.1').getBytes()),
+    forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.OID, false, forge.asn1.oidToDer(curveOid).getBytes())
+  ]);
+  const bitStr = forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.BITSTRING, false, String.fromCharCode(0x00) + u8ToBin(rawPointU8));
+  return forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.SEQUENCE, true, [algId, bitStr]);
+}
+
+function buildMLDSASubjectPublicKeyInfo(pubKeyU8, oid){
+  const bitStr = forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.BITSTRING, false, String.fromCharCode(0x00) + u8ToBin(pubKeyU8));
+  return forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.SEQUENCE, true, [algIdNoParams(oid), bitStr]);
+}
+
+function rawEcdsaSigToDer(rawSigAb, byteLen){
+  const bytes = new Uint8Array(rawSigAb);
+  const r = bytes.slice(0, byteLen), s = bytes.slice(byteLen, byteLen * 2);
+  function toInt(b){
+    let i = 0;
+    while (i < b.length - 1 && b[i] === 0) i++;
+    let trimmed = b.slice(i);
+    if (trimmed[0] & 0x80){
+      const withZero = new Uint8Array(trimmed.length + 1);
+      withZero.set(trimmed, 1);
+      trimmed = withZero;
+    }
+    return trimmed;
+  }
+  const rAsn = forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.INTEGER, false, u8ToBin(toInt(r)));
+  const sAsn = forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.INTEGER, false, u8ToBin(toInt(s)));
+  const seq = forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.SEQUENCE, true, [rAsn, sAsn]);
+  return forge.asn1.toDer(seq).getBytes();
+}
+function derEcdsaSigToRaw(sigBitstringNode, byteLen){
+  const seq = bitstringToAsn1(sigBitstringNode);
+  function intToFixed(intAsn1){
+    let bytes = binToU8(intAsn1.value);
+    let i = 0;
+    while (i < bytes.length - 1 && bytes[i] === 0) i++;
+    bytes = bytes.slice(i);
+    const out = new Uint8Array(byteLen);
+    out.set(bytes, byteLen - bytes.length);
+    return out;
+  }
+  const r = intToFixed(seq.value[0]), s = intToFixed(seq.value[1]);
+  const raw = new Uint8Array(byteLen * 2);
+  raw.set(r, 0); raw.set(s, byteLen);
+  return raw.buffer;
+}
+// A BIT STRING's parsed .value is either a flat byte string (leading unused-bits byte + content),
+// or (when forge auto-detects valid nested DER inside it) an array with the nested node already
+// parsed and the unused-bits byte already stripped — this handles both transparently.
+function bitstringToAsn1(node){
+  if (node.composed) return node.value[0];
+  return forge.asn1.fromDer(forge.util.createBuffer(node.value.slice(1)));
+}
+
+function buildPlaceholderCri(cn, o, ou, l, st, c, email, sansRaw){
+  const placeholder = forge.pki.rsa.generateKeyPair({bits: 512});
+  const csr = forge.pki.createCertificationRequest();
+  csr.publicKey = placeholder.publicKey;
+  csr.setSubject(attrsToSubjectArray(cn, o, ou, l, st, c, email));
+  if (sansRaw){
+    const names = sansRaw.split(',').map(s => s.trim()).filter(Boolean).map(v => ({type: 2, value: v}));
+    csr.setAttributes([{name: 'extensionRequest', extensions: [{name: 'subjectAltName', altNames: names}]}]);
+  }
+  return {csr, cri: forge.pki.getCertificationRequestInfo(csr)};
+}
+
+function outputCsrAndKey(csrPem, keyPem){
+  document.getElementById('g_csr_placeholder').style.display = 'none';
+  const csrOut = document.getElementById('g_csr_out');
+  csrOut.style.display = 'block'; csrOut.textContent = csrPem;
+  document.getElementById('g_key_placeholder').style.display = 'none';
+  const keyOut = document.getElementById('g_key_out');
+  keyOut.style.display = 'block'; keyOut.textContent = keyPem;
+}
+
+// ---------------- CSR GENERATOR ----------------
+async function generateCSR(){
+  const cn = document.getElementById('g_cn').value.trim();
+  if (!cn){ showToast('Common Name is required'); return; }
+  const o = document.getElementById('g_o').value.trim();
+  const ou = document.getElementById('g_ou').value.trim();
+  const l = document.getElementById('g_l').value.trim();
+  const st = document.getElementById('g_st').value.trim();
+  const c = document.getElementById('g_c').value.trim();
+  const email = document.getElementById('g_email').value.trim();
+  const keyType = document.getElementById('g_keytype').value;
+  const sansRaw = document.getElementById('g_sans').value.trim();
+
+  const btn = document.getElementById('g_btn');
+  btn.disabled = true;
+  btn.textContent = keyType === 'rsa-4096' ? '⏳ Generating (this can take a while for 4096-bit)…'
+    : keyType.startsWith('pq-') ? '⏳ Fetching PQC library & generating…' : '⏳ Generating…';
+
+  try {
+    if (keyType === 'rsa-2048' || keyType === 'rsa-4096'){
+      await new Promise(resolve => setTimeout(resolve, 30)); // let the label paint first
+      const keySize = keyType === 'rsa-4096' ? 4096 : 2048;
+      const keys = forge.pki.rsa.generateKeyPair({bits: keySize, workers: -1});
+      const csr = forge.pki.createCertificationRequest();
+      csr.publicKey = keys.publicKey;
+      csr.setSubject(attrsToSubjectArray(cn, o, ou, l, st, c, email));
+      if (sansRaw){
+        const names = sansRaw.split(',').map(s => s.trim()).filter(Boolean).map(v => ({type: 2, value: v}));
+        csr.setAttributes([{name: 'extensionRequest', extensions: [{name: 'subjectAltName', altNames: names}]}]);
+      }
+      csr.sign(keys.privateKey, forge.md.sha256.create());
+      outputCsrAndKey(forge.pki.certificationRequestToPem(csr), forge.pki.privateKeyToPem(keys.privateKey));
+
+    } else if (keyType in EC_CURVES){
+      const curve = EC_CURVES[keyType];
+      const keyPair = await crypto.subtle.generateKey({name: 'ECDSA', namedCurve: curve.webName}, true, ['sign', 'verify']);
+      const rawPub = new Uint8Array(await crypto.subtle.exportKey('raw', keyPair.publicKey));
+      const pkcs8Priv = new Uint8Array(await crypto.subtle.exportKey('pkcs8', keyPair.privateKey));
+
+      const {csr, cri} = buildPlaceholderCri(cn, o, ou, l, st, c, email, sansRaw);
+      cri.value[2] = buildECSubjectPublicKeyInfo(rawPub, curve.oid);
+
+      const criDer = forge.asn1.toDer(cri).getBytes();
+      const rawSig = await crypto.subtle.sign({name: 'ECDSA', hash: {name: curve.hash}}, keyPair.privateKey, binToAb(criDer));
+      const derSig = rawEcdsaSigToDer(rawSig, curve.byteLen);
+
+      csr.certificationRequestInfo = cri;
+      csr.signatureOid = curve.sigOid;
+      csr.signature = derSig;
+
+      const csrPem = forge.pki.certificationRequestToPem(csr);
+      const keyPem = forge.pem.encode({type: 'PRIVATE KEY', body: u8ToBin(pkcs8Priv)});
+      outputCsrAndKey(csrPem, keyPem);
+
+    } else if (keyType in MLDSA_LEVELS){
+      const level = MLDSA_LEVELS[keyType];
+      const mod = await loadMLDSAModule();
+      const impl = mod[level.name];
+
+      const seed = new Uint8Array(32);
+      crypto.getRandomValues(seed);
+      const keys = impl.keygen(seed);
+
+      const {csr, cri} = buildPlaceholderCri(cn, o, ou, l, st, c, email, sansRaw);
+      cri.value[2] = buildMLDSASubjectPublicKeyInfo(keys.publicKey, level.oid);
+
+      const criDer = forge.asn1.toDer(cri).getBytes();
+      const sig = impl.sign(binToU8(criDer), keys.secretKey);
+
+      // Build the outer CertificationRequest manually: ML-DSA's AlgorithmIdentifier must have
+      // NO parameters (per RFC 9881), which forge's own certificationRequestToAsn1 doesn't know
+      // how to do for an unrecognized OID (it would insert a NULL), so we assemble it ourselves.
+      const outer = forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.SEQUENCE, true, [
+        cri,
+        algIdNoParams(level.oid),
+        forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.BITSTRING, false, String.fromCharCode(0x00) + u8ToBin(sig))
+      ]);
+      const csrPem = forge.pem.encode({type: 'CERTIFICATE REQUEST', body: forge.asn1.toDer(outer).getBytes()});
+
+      // Private key: PKCS8 wrapping just the 32-byte seed, per RFC 9881's example structure.
+      const seedOctetStr = forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.OCTETSTRING, false, u8ToBin(seed));
+      const pkcs8 = forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.SEQUENCE, true, [
+        forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.INTEGER, false, String.fromCharCode(0x00)),
+        algIdNoParams(level.oid),
+        forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.OCTETSTRING, false, forge.asn1.toDer(seedOctetStr).getBytes())
+      ]);
+      const keyPem = forge.pem.encode({type: 'PRIVATE KEY', body: forge.asn1.toDer(pkcs8).getBytes()});
+      outputCsrAndKey(csrPem, keyPem);
+    }
+
+    showToast('CSR and key pair generated');
+  } catch (err){
+    showToast('Error: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⚡ Generate Key Pair & CSR';
+  }
+}
+
+// ---------------- CSR DECODER ----------------
+const ATTR_LABELS = {
+  commonName: 'CN', organizationName: 'O', organizationalUnitName: 'OU',
+  localityName: 'L', stateOrProvinceName: 'ST', countryName: 'C', emailAddress: 'emailAddress'
+};
+function rdnToString(nameAsn1){
+  const parts = [];
+  nameAsn1.value.forEach(rdnSet => {
+    rdnSet.value.forEach(atv => {
+      const oid = forge.asn1.derToOid(atv.value[0].value);
+      const label = ATTR_LABELS[forge.pki.oids[oid]] || forge.pki.oids[oid] || oid;
+      parts.push(label + '=' + atv.value[1].value);
+    });
+  });
+  return parts.join(', ');
+}
+function extractSansFromCriAttributes(attrsAsn1){
+  if (!attrsAsn1) return [];
+  const sans = [];
+  attrsAsn1.value.forEach(attr => {
+    const oid = forge.asn1.derToOid(attr.value[0].value);
+    if (oid !== '1.2.840.113549.1.9.14') return; // extensionRequest
+    attr.value[1].value.forEach(extensions => {
+      extensions.value.forEach(ext => {
+        const extOid = forge.asn1.derToOid(ext.value[0].value);
+        if (extOid !== '2.5.29.17') return; // subjectAltName
+        const octetStr = ext.value[ext.value.length - 1];
+        const generalNames = octetStr.composed ? octetStr.value[0] : forge.asn1.fromDer(forge.util.createBuffer(octetStr.value));
+        generalNames.value.forEach(gn => { if (gn.type === 2) sans.push(gn.value); });
+      });
+    });
+  });
+  return sans;
+}
+
+async function decodeCSR(){
+  const pem = document.getElementById('d_csr_in').value.trim();
+  if (!pem){ showToast('Paste a CSR first'); return; }
+  try {
+    const der = forge.pem.decode(pem)[0].body;
+    const obj = forge.asn1.fromDer(der);
+    const cri = obj.value[0];
+    const spki = cri.value[2];
+    const algOid = forge.asn1.derToOid(spki.value[0].value[0].value);
+
+    if (algOid === forge.pki.oids.rsaEncryption){
+      const csr = forge.pki.certificationRequestFromPem(pem);
+      const valid = csr.verify();
+      const bits = csr.publicKey.n.bitLength();
+      let sans = [];
+      const extReq = (csr.getAttribute && csr.getAttribute({name:'extensionRequest'})) || null;
+      if (extReq && extReq.extensions){
+        const sanExt = extReq.extensions.find(e => e.name === 'subjectAltName');
+        if (sanExt && sanExt.altNames) sans = sanExt.altNames.map(n => n.value);
+      }
+      let html = '<div class="status-line ' + (valid ? 'status-ok' : 'status-bad') + '">' +
+        (valid ? '✓ Signature valid — this CSR was signed by the key it claims' : '✕ Signature does NOT verify') + '</div>';
+      html += '<div class="kv">';
+      html += kvRow('Subject', subjectToLines(csr.subject.attributes));
+      html += kvRow('Public Key', 'RSA, ' + bits + '-bit');
+      html += kvRow('Signature Algorithm', csr.siginfo && csr.siginfo.algorithmOid ? csr.siginfo.algorithmOid : 'sha256WithRSAEncryption');
+      if (sans.length) html += kvRow('Subject Alt Names', sans.join(', '));
+      html += '</div>';
+      showResult('d_csr_placeholder', 'd_csr_out', html);
+      return;
+    }
+
+    if (algOid === '1.2.840.10045.2.1'){ // id-ecPublicKey
+      const curveOid = forge.asn1.derToOid(spki.value[0].value[1].value);
+      const curve = EC_CURVES_BY_OID[curveOid];
+      if (!curve){ throw new Error('Unrecognized EC curve OID ' + curveOid); }
+      const rawPoint = binToU8(spki.value[1].value.slice(1));
+
+      const sigAlgOid = forge.asn1.derToOid(obj.value[1].value[0].value);
+      const sigHash = EC_SIGOID_TO_HASH[sigAlgOid] || curve.hash;
+
+      const subjectStr = rdnToString(cri.value[1]);
+      const sans = extractSansFromCriAttributes(cri.value[3]);
+
+      const pubKey = await crypto.subtle.importKey('raw', rawPoint, {name: 'ECDSA', namedCurve: curve.webName}, true, ['verify']);
+      const rawSig = derEcdsaSigToRaw(obj.value[2], curve.byteLen);
+      const criDer = forge.asn1.toDer(cri).getBytes();
+      const valid = await crypto.subtle.verify({name: 'ECDSA', hash: {name: sigHash}}, pubKey, rawSig, binToAb(criDer));
+
+      let html = '<div class="status-line ' + (valid ? 'status-ok' : 'status-bad') + '">' +
+        (valid ? '✓ Signature valid — this CSR was signed by the key it claims' : '✕ Signature does NOT verify') + '</div>';
+      html += '<div class="kv">';
+      html += kvRow('Subject', subjectStr);
+      html += kvRow('Public Key', curve.label + ', ' + curve.bits + '-bit');
+      html += kvRow('Signature Algorithm', sigAlgOid + ' (ecdsa-with-' + sigHash + ')');
+      if (sans.length) html += kvRow('Subject Alt Names', sans.join(', '));
+      html += '</div>';
+      showResult('d_csr_placeholder', 'd_csr_out', html);
+      return;
+    }
+
+    if (algOid in MLDSA_OID_TO_LEVEL){
+      const level = MLDSA_OID_TO_LEVEL[algOid];
+      const pubKeyU8 = binToU8(spki.value[1].value.slice(1));
+      const subjectStr = rdnToString(cri.value[1]);
+      const sans = extractSansFromCriAttributes(cri.value[3]);
+
+      const sigAlgOid = forge.asn1.derToOid(obj.value[1].value[0].value);
+      const sigBytes = binToU8(obj.value[2].value.slice(1));
+      const criDer = forge.asn1.toDer(cri).getBytes();
+
+      const mod = await loadMLDSAModule();
+      const impl = mod[level.name];
+      const valid = impl.verify(sigBytes, binToU8(criDer), pubKeyU8);
+
+      let html = '<div class="status-line ' + (valid ? 'status-ok' : 'status-bad') + '">' +
+        (valid ? '✓ Signature valid — this CSR was signed by the key it claims' : '✕ Signature does NOT verify') + '</div>';
+      html += '<div class="kv">';
+      html += kvRow('Subject', subjectStr);
+      html += kvRow('Public Key', level.label + ' (post-quantum, experimental), ' + pubKeyU8.length + ' bytes');
+      html += kvRow('Signature Algorithm', sigAlgOid + ' (' + level.label + ')');
+      if (sans.length) html += kvRow('Subject Alt Names', sans.join(', '));
+      html += '</div>';
+      showResult('d_csr_placeholder', 'd_csr_out', html);
+      return;
+    }
+
+    throw new Error('Unsupported public key algorithm OID: ' + algOid);
+  } catch (err){
+    showError('d_csr_placeholder', 'd_csr_out', 'Could not parse CSR: ' + err.message);
+  }
+}
+
+// ---------------- CERT DECODER ----------------
+function decodeCert(){
+  const pem = document.getElementById('c_cert_in').value.trim();
+  if (!pem){ showToast('Paste a certificate first'); return; }
+  try {
+    const cert = forge.pki.certificateFromPem(pem);
+    const pk = cert.publicKey;
+    const bits = pk.n ? pk.n.bitLength() : '?';
+    const sans = extractSANs(cert);
+    const der = forge.asn1.toDer(forge.pki.certificateToAsn1(cert)).getBytes();
+    const fingerprint = forge.md.sha256.create().update(der).digest().toHex().match(/.{2}/g).join(':').toUpperCase();
+
+    const now = new Date();
+    const expired = now > cert.validity.notAfter;
+    const notYetValid = now < cert.validity.notBefore;
+    const status = expired ? 'status-bad' : (notYetValid ? 'status-bad' : 'status-ok');
+    const statusText = expired ? '✕ Expired' : (notYetValid ? '✕ Not yet valid' : '✓ Currently valid');
+
+    let html = '<div class="status-line ' + status + '">' + statusText + '</div><div class="kv">';
+    html += kvRow('Subject', subjectToLines(cert.subject.attributes));
+    html += kvRow('Issuer', subjectToLines(cert.issuer.attributes));
+    html += kvRow('Serial Number', cert.serialNumber);
+    html += kvRow('Valid From', cert.validity.notBefore.toUTCString());
+    html += kvRow('Valid Until', cert.validity.notAfter.toUTCString());
+    html += kvRow('Public Key', 'RSA, ' + bits + '-bit');
+    html += kvRow('SHA-256 Fingerprint', fingerprint);
+    if (sans.length) html += kvRow('Subject Alt Names', sans.join(', '));
+    html += '</div>';
+    showResult('c_cert_placeholder', 'c_cert_out', html);
+  } catch (err){
+    showError('c_cert_placeholder', 'c_cert_out', 'Could not parse certificate: ' + err.message);
+  }
+}
+
+// ---------------- KEY <-> CERT MATCH ----------------
+function matchKeyCert(){
+  const keyPem = document.getElementById('m_key_in').value.trim();
+  const otherPem = document.getElementById('m_cert_in').value.trim();
+  if (!keyPem || !otherPem){ showToast('Paste both the key and the certificate/CSR'); return; }
+  try {
+    const privKey = forge.pki.privateKeyFromPem(keyPem);
+    let pubKey, sourceType;
+    try {
+      pubKey = forge.pki.certificateFromPem(otherPem).publicKey;
+      sourceType = 'certificate';
+    } catch (e1){
+      pubKey = forge.pki.certificationRequestFromPem(otherPem).publicKey;
+      sourceType = 'CSR';
+    }
+    if (!privKey.n || !pubKey.n){
+      showError('m_placeholder', 'm_out', 'Only RSA keys are supported for matching right now.');
+      return;
+    }
+    const match = privKey.n.equals(pubKey.n) && privKey.e.equals(pubKey.e);
+    let html = '<div class="status-line ' + (match ? 'status-ok' : 'status-bad') + '">' +
+      (match ? '✓ MATCH — this key belongs to the ' + sourceType : '✕ NO MATCH — this key does not belong to the ' + sourceType) + '</div>';
+    html += '<div class="kv">';
+    html += kvRow('Key modulus bits', privKey.n.bitLength());
+    html += kvRow(sourceType + ' modulus bits', pubKey.n.bitLength());
+    html += '</div>';
+    showResult('m_placeholder', 'm_out', html);
+  } catch (err){
+    showError('m_placeholder', 'm_out', 'Could not parse one of the inputs: ' + err.message);
+  }
+}
+
+// ---------------- PFX GENERATOR ----------------
+function generatePFX(){
+  const certPem = document.getElementById('p_cert_in').value.trim();
+  const keyPem = document.getElementById('p_key_in').value.trim();
+  const chainPem = document.getElementById('p_chain_in').value.trim();
+  const password = document.getElementById('p_pass').value;
+  const statusEl = document.getElementById('p_status');
+  statusEl.innerHTML = '';
+
+  if (!certPem || !keyPem || !password){
+    showToast('Certificate, private key, and a password are all required');
+    return;
+  }
+  try {
+    const cert = forge.pki.certificateFromPem(certPem);
+    const key = forge.pki.privateKeyFromPem(keyPem);
+    const certChain = [cert];
+    if (chainPem){
+      const blocks = chainPem.match(/-----BEGIN CERTIFICATE-----[\s\S]+?-----END CERTIFICATE-----/g) || [];
+      blocks.forEach(b => certChain.push(forge.pki.certificateFromPem(b)));
+    }
+    const p12Asn1 = forge.pkcs12.toPkcs12Asn1(key, certChain, password, {algorithm: '3des'});
+    const p12Der = forge.asn1.toDer(p12Asn1).getBytes();
+
+    document.getElementById('p_placeholder').style.display = 'none';
+    document.getElementById('p_out').style.display = 'block';
+    const cn = (cert.subject.getField('CN') || {}).value || 'bundle';
+    document.getElementById('p_download_btn').onclick = () => downloadBinary(cn + '.pfx', p12Der, 'application/x-pkcs12');
+    showToast('PFX bundle ready');
+  } catch (err){
+    showError('p_placeholder', 'p_out', 'Could not build PFX: ' + err.message);
+  }
+}
+// ---------------- JKS GENERATOR ----------------
+// The JKS format was never officially published by Sun/Oracle -- everything here follows
+// the widely-corroborated reverse-engineered spec (same one pyjks, minijks, and Bouncy
+// Castle's readers use): magic 0xFEEDFEED, a home-spun SHA-1 keystream cipher for the
+// private key (OID 1.3.6.1.4.1.42.2.17.1.1), and a whole-file SHA-1 integrity digest
+// salted with the password and the literal string "Mighty Aphrodite".
+function jU16(n){ return String.fromCharCode((n>>8)&0xff, n&0xff); }
+function jU32(n){ return String.fromCharCode((n>>>24)&0xff, (n>>>16)&0xff, (n>>>8)&0xff, n&0xff); }
+function jU64FromMillis(ms){
+  const hi = Math.floor(ms / 0x100000000);
+  const lo = ms >>> 0;
+  return jU32(hi) + jU32(lo);
+}
+function jUtfString(str){
+  // Java's DataOutputStream#writeUTF: 2-byte big-endian length prefix + UTF-8 bytes.
+  // ASCII-range aliases (the overwhelming common case) are identical under UTF-8 and
+  // Java's "modified UTF-8", so this is safe for normal aliases.
+  const bytes = unescape(encodeURIComponent(str));
+  return jU16(bytes.length) + bytes;
+}
+function jSha1(binaryStr){
+  return forge.md.sha1.create().update(binaryStr).digest().getBytes();
+}
+function jUtf16BE(str){
+  let out = '';
+  for (let i = 0; i < str.length; i++){
+    const code = str.charCodeAt(i);
+    out += String.fromCharCode((code >> 8) & 0xff) + String.fromCharCode(code & 0xff);
+  }
+  return out;
+}
+function jProtectPrivateKey(pkcs8Der, passwordUtf16BE){
+  const salt = forge.random.getBytesSync(20);
+  let keystream = '';
+  let prev = salt;
+  while (keystream.length < pkcs8Der.length){
+    prev = jSha1(passwordUtf16BE + prev);
+    keystream += prev;
+  }
+  keystream = keystream.substring(0, pkcs8Der.length);
+  let cipherText = '';
+  for (let i = 0; i < pkcs8Der.length; i++){
+    cipherText += String.fromCharCode(pkcs8Der.charCodeAt(i) ^ keystream.charCodeAt(i));
+  }
+  const authTag = jSha1(passwordUtf16BE + pkcs8Der);
+  return salt + cipherText + authTag;
+}
+function jEncryptedPrivateKeyInfoDer(protectedBlob){
+  const oidDer = forge.asn1.oidToDer('1.3.6.1.4.1.42.2.17.1.1').getBytes();
+  const algId = forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.SEQUENCE, true, [
+    forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.OID, false, oidDer),
+    forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.NULL, false, '')
+  ]);
+  const wrapper = forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.SEQUENCE, true, [
+    algId,
+    forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.OCTETSTRING, false, protectedBlob)
+  ]);
+  return forge.asn1.toDer(wrapper).getBytes();
+}
+
+function generateJKS(){
+  const certPem = document.getElementById('j_cert_in').value.trim();
+  const keyPem = document.getElementById('j_key_in').value.trim();
+  const chainPem = document.getElementById('j_chain_in').value.trim();
+  const alias = document.getElementById('j_alias').value.trim() || 'server';
+  const password = document.getElementById('j_pass').value;
+
+  if (!certPem || !keyPem || !password){
+    showToast('Certificate, private key, and a password are all required');
+    return;
+  }
+  try {
+    const cert = forge.pki.certificateFromPem(certPem);
+    const key = forge.pki.privateKeyFromPem(keyPem);
+    const chain = [cert];
+    if (chainPem){
+      const blocks = chainPem.match(/-----BEGIN CERTIFICATE-----[\s\S]+?-----END CERTIFICATE-----/g) || [];
+      blocks.forEach(b => chain.push(forge.pki.certificateFromPem(b)));
+    }
+
+    const pkcs8Der = forge.asn1.toDer(forge.pki.wrapRsaPrivateKey(forge.pki.privateKeyToAsn1(key))).getBytes();
+    const passUtf16BE = jUtf16BE(password);
+    const protectedBlob = jProtectPrivateKey(pkcs8Der, passUtf16BE);
+    const encKeyDer = jEncryptedPrivateKeyInfoDer(protectedBlob);
+
+    let body = '';
+    body += jU32(1);                 // entry tag: 1 = private key entry
+    body += jUtfString(alias);
+    body += jU64FromMillis(Date.now());
+    body += jU32(encKeyDer.length) + encKeyDer;
+    body += jU32(chain.length);
+    chain.forEach(c => {
+      const der = forge.asn1.toDer(forge.pki.certificateToAsn1(c)).getBytes();
+      body += jUtfString('X.509');
+      body += jU32(der.length) + der;
+    });
+
+    let full = jU32(0xFEEDFEED) + jU32(2) + jU32(1) + body;
+    const trailerDigest = jSha1(passUtf16BE + 'Mighty Aphrodite' + full);
+    full += trailerDigest;
+
+    document.getElementById('j_placeholder').style.display = 'none';
+    document.getElementById('j_out').style.display = 'block';
+    document.getElementById('j_download_btn').onclick = () => downloadBinary(alias + '.jks', full, 'application/octet-stream');
+    showToast('JKS keystore ready');
+  } catch (err){
+    showError('j_placeholder', 'j_out', 'Could not build JKS: ' + err.message);
+  }
+}
+
+// ---------------- KEY PAIR GENERATOR + SELF-SIGNED CERT ----------------
+document.getElementById('k_selfsigned').addEventListener('change', (e) => {
+  document.getElementById('k_cert_fields').style.display = e.target.checked ? 'block' : 'none';
+});
+function isIpAddress(str){
+  return /^(\d{1,3}\.){3}\d{1,3}$/.test(str) || /^[0-9a-fA-F:]+$/.test(str) && str.includes(':');
+}
+function buildAltNames(sansRaw){
+  return sansRaw.split(',').map(s => s.trim()).filter(Boolean).map(v =>
+    isIpAddress(v) ? {type: 7, ip: v} : {type: 2, value: v}
+  );
+}
+function generateKeyKit(){
+  const keySize = parseInt(document.getElementById('k_keysize').value, 10);
+  const wantCert = document.getElementById('k_selfsigned').checked;
+  const cn = document.getElementById('k_cn').value.trim();
+  if (wantCert && !cn){ showToast('Common Name is required for a self-signed certificate'); return; }
+  const o = document.getElementById('k_o').value.trim();
+  const ou = document.getElementById('k_ou').value.trim();
+  const l = document.getElementById('k_l').value.trim();
+  const st = document.getElementById('k_st').value.trim();
+  const c = document.getElementById('k_c').value.trim();
+  const days = parseInt(document.getElementById('k_days').value, 10) || 365;
+  const sansRaw = document.getElementById('k_sans').value.trim();
+
+  const btn = document.getElementById('k_btn');
+  btn.disabled = true;
+  btn.textContent = keySize >= 4096 ? '⏳ Generating (this can take a while for 4096-bit)…' : '⏳ Generating…';
+
+  setTimeout(() => {
+    try {
+      const keys = forge.pki.rsa.generateKeyPair({bits: keySize, workers: -1});
+      const keyPem = forge.pki.privateKeyToPem(keys.privateKey);
+      const pubPem = forge.pki.publicKeyToPem(keys.publicKey);
+
+      document.getElementById('k_key_placeholder').style.display = 'none';
+      const keyOut = document.getElementById('k_key_out');
+      keyOut.style.display = 'block'; keyOut.textContent = keyPem;
+
+      document.getElementById('k_pub_placeholder').style.display = 'none';
+      const pubOut = document.getElementById('k_pub_out');
+      pubOut.style.display = 'block'; pubOut.textContent = pubPem;
+
+      if (wantCert){
+        const cert = forge.pki.createCertificate();
+        cert.publicKey = keys.publicKey;
+        cert.serialNumber = forge.util.bytesToHex(forge.random.getBytesSync(8)).replace(/^0+/, '') || '01';
+        cert.validity.notBefore = new Date();
+        cert.validity.notAfter = new Date();
+        cert.validity.notAfter.setDate(cert.validity.notBefore.getDate() + days);
+        const attrs = attrsToSubjectArray(cn, o, ou, l, st, c, '');
+        cert.setSubject(attrs);
+        cert.setIssuer(attrs);
+        const extensions = [
+          {name: 'basicConstraints', cA: true},
+          {name: 'keyUsage', keyCertSign: true, digitalSignature: true, keyEncipherment: true, nonRepudiation: true},
+          {name: 'extKeyUsage', serverAuth: true, clientAuth: true}
+        ];
+        if (sansRaw) extensions.push({name: 'subjectAltName', altNames: buildAltNames(sansRaw)});
+        cert.setExtensions(extensions);
+        cert.sign(keys.privateKey, forge.md.sha256.create());
+        const certPem = forge.pki.certificateToPem(cert);
+        document.getElementById('k_cert_placeholder').style.display = 'none';
+        const certOut = document.getElementById('k_cert_out');
+        certOut.style.display = 'block'; certOut.textContent = certPem;
+      } else {
+        document.getElementById('k_cert_out').style.display = 'none';
+        document.getElementById('k_cert_placeholder').style.display = 'block';
+        document.getElementById('k_cert_placeholder').textContent = 'Self-signed certificate not requested — key pair only.';
+      }
+      showToast(wantCert ? 'Key pair and self-signed certificate generated' : 'Key pair generated');
+    } catch (err){
+      showToast('Error: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '⚡ Generate';
+    }
+  }, 30);
+}
+
+// ---------------- PEM <-> DER CONVERTER ----------------
+let _pd_der_bytes = null;
+function pemToDer(){
+  const pem = document.getElementById('pd_pem_in').value.trim();
+  const statusEl = document.getElementById('pd_p2d_status');
+  const dlBtn = document.getElementById('pd_p2d_download_btn');
+  dlBtn.style.display = 'none';
+  if (!pem){ showToast('Paste a PEM first'); return; }
+  try {
+    const msg = forge.pem.decode(pem)[0];
+    const der = msg.body;
+    const filename = (msg.type || 'output').toLowerCase().replace(/[^a-z0-9]+/g, '_') + '.der';
+    statusEl.innerHTML = '<div class="status-line status-ok">✓ Decoded ' + esc(msg.type) + ' — ' + der.length + ' bytes</div>';
+    dlBtn.style.display = 'block';
+    dlBtn.textContent = '⬇ Download ' + filename;
+    dlBtn.onclick = () => downloadBinary(filename, der, 'application/octet-stream');
+  } catch (err){
+    statusEl.innerHTML = '<div class="status-line status-bad">✕ Could not decode PEM: ' + esc(err.message) + '</div>';
+  }
+}
+function derToPem(){
+  const fileInput = document.getElementById('pd_der_file');
+  const label = document.getElementById('pd_pem_label').value;
+  if (!fileInput.files || !fileInput.files[0]){ showToast('Choose a DER file first'); return; }
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const bytes = new Uint8Array(reader.result);
+      let binary = '';
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+      const pem = forge.pem.encode({type: label, body: binary});
+      document.getElementById('pd_pem_placeholder').style.display = 'none';
+      const out = document.getElementById('pd_pem_out');
+      out.style.display = 'block'; out.textContent = pem;
+      showToast('Converted to PEM');
+    } catch (err){
+      showToast('Error: ' + err.message);
+    }
+  };
+  reader.onerror = () => showToast('Could not read the file');
+  reader.readAsArrayBuffer(file);
+}
+
+// ---------------- CHAIN SORTER & VALIDATOR ----------------
+function sortAndValidateChain(){
+  const raw = document.getElementById('ch_in').value.trim();
+  if (!raw){ showToast('Paste at least one certificate'); return; }
+  const blocks = raw.match(/-----BEGIN CERTIFICATE-----[\s\S]+?-----END CERTIFICATE-----/g) || [];
+  if (blocks.length === 0){ showError('ch_report_placeholder', 'ch_report_out', 'No PEM certificates found in the input'); return; }
+  try {
+    const certs = blocks.map(b => ({pem: b, cert: forge.pki.certificateFromPem(b)}));
+    certs.forEach(entry => {
+      entry.subjectStr = subjectToLines(entry.cert.subject.attributes);
+      entry.issuerStr = subjectToLines(entry.cert.issuer.attributes);
+      entry.selfSigned = entry.subjectStr === entry.issuerStr;
+    });
+
+    // leaf = a cert that no other cert (other than possibly itself) lists as its issuer
+    const leaves = certs.filter(e => !certs.some(other => other !== e && other.issuerStr === e.subjectStr));
+    let notes = [];
+    let startEntry;
+    if (leaves.length === 1){
+      startEntry = leaves[0];
+    } else if (leaves.length === 0){
+      notes.push('Could not find a clear leaf certificate — the set may contain a loop.');
+      startEntry = certs[0];
+    } else {
+      notes.push(leaves.length + ' certificates look like leaves (nothing in the set was issued by them) — picking the first and treating the rest as unrelated/extra.');
+      startEntry = leaves[0];
+    }
+
+    const ordered = [startEntry];
+    const used = new Set([startEntry]);
+    let current = startEntry;
+    while (!current.selfSigned){
+      const next = certs.find(e => !used.has(e) && e.subjectStr === current.issuerStr);
+      if (!next) break;
+      ordered.push(next);
+      used.add(next);
+      current = next;
+    }
+    const leftover = certs.filter(e => !used.has(e));
+
+    // validate each link
+    let allValid = true;
+    let linkRows = '';
+    for (let i = 0; i < ordered.length; i++){
+      const entry = ordered[i];
+      const issuerEntry = (i + 1 < ordered.length) ? ordered[i + 1] : (entry.selfSigned ? entry : null);
+      let status, label;
+      if (!issuerEntry){
+        status = 'status-bad'; allValid = false;
+        label = 'Issuer "' + esc(entry.issuerStr) + '" not found in pasted set — chain incomplete';
+      } else {
+        try {
+          const ok = issuerEntry.cert.verify(entry.cert);
+          status = ok ? 'status-ok' : 'status-bad';
+          if (!ok) allValid = false;
+          label = ok ? 'Signature verifies against issuer' : 'Signature does NOT verify against issuer';
+        } catch (e){
+          status = 'status-bad'; allValid = false;
+          label = 'Could not verify: ' + e.message;
+        }
+      }
+      const cnField = entry.cert.subject.getField('CN');
+      const roleLabel = i === 0 ? 'LEAF' : (entry.selfSigned ? 'ROOT' : 'INTERMEDIATE ' + i);
+      linkRows += '<div class="row"><b>' + roleLabel + ':</b> ' + esc(cnField ? cnField.value : entry.subjectStr) +
+        '<br><span class="status-line ' + status + '" style="margin:4px 0 0; font-size:11.5px; padding:4px 10px;">' + (status === 'status-ok' ? '✓ ' : '✕ ') + esc(label) + '</span></div>';
+    }
+
+    let html = '<div class="status-line ' + (allValid && leftover.length === 0 ? 'status-ok' : 'status-bad') + '">' +
+      (allValid && leftover.length === 0 ? '✓ Chain is complete and every signature verifies' : '✕ Chain has issues — see details below') + '</div>';
+    if (notes.length) html += '<div class="hint" style="margin-bottom:10px;">' + notes.map(esc).join('<br>') + '</div>';
+    html += '<div class="kv">' + linkRows + '</div>';
+    if (leftover.length){
+      html += '<div class="hint" style="margin-top:10px;">' + leftover.length + ' certificate(s) in the input were not part of this chain: ' +
+        leftover.map(e => esc((e.cert.subject.getField('CN') || {}).value || e.subjectStr)).join(', ') + '</div>';
+    }
+    showResult('ch_report_placeholder', 'ch_report_out', html);
+
+    const sortedPem = ordered.map(e => e.pem.trim()).join('\n');
+    document.getElementById('ch_pem_placeholder').style.display = 'none';
+    const pemOut = document.getElementById('ch_pem_out');
+    pemOut.style.display = 'block'; pemOut.textContent = sortedPem;
+  } catch (err){
+    showError('ch_report_placeholder', 'ch_report_out', 'Could not parse certificates: ' + err.message);
+  }
+}
+
+// ---------------- PRIVATE KEY PASSPHRASE ADD/REMOVE ----------------
+function processPassphrase(){
+  const pem = document.getElementById('pp_key_in').value.trim();
+  const curPass = document.getElementById('pp_pass_cur').value;
+  const newPass = document.getElementById('pp_pass_new').value;
+  if (!pem){ showToast('Paste a private key first'); return; }
+  const isEncrypted = /ENCRYPTED|Proc-Type/.test(pem);
+  try {
+    let privKey;
+    if (isEncrypted){
+      if (!curPass){ showToast('This key is encrypted — enter its current passphrase'); return; }
+      privKey = forge.pki.decryptRsaPrivateKey(pem, curPass);
+      if (!privKey) throw new Error('Wrong passphrase, or an unsupported encryption format');
+    } else {
+      privKey = forge.pki.privateKeyFromPem(pem);
+    }
+    let outPem, statusMsg;
+    if (newPass){
+      outPem = forge.pki.encryptRsaPrivateKey(privKey, newPass, {algorithm: 'aes256'});
+      statusMsg = 'Key encrypted with the new passphrase';
+    } else {
+      outPem = forge.pki.privateKeyToPem(privKey);
+      statusMsg = 'Passphrase removed — key is now plain';
+    }
+    document.getElementById('pp_placeholder').style.display = 'none';
+    const out = document.getElementById('pp_out');
+    out.style.display = 'block'; out.textContent = outPem;
+    showToast(statusMsg);
+  } catch (err){
+    showError('pp_placeholder', 'pp_out', 'Could not process key: ' + err.message);
+  }
+}
+
+// ---------------- HASH CALCULATOR ----------------
+async function calcHashes(){
+  const text = document.getElementById('hc_text_in').value;
+  const fileInput = document.getElementById('hc_file_in');
+  const hasFile = fileInput.files && fileInput.files[0];
+  if (!text && !hasFile){ showToast('Enter text or choose a file'); return; }
+
+  let bytesForForge, bufferForSubtle, sourceLabel;
+  if (hasFile){
+    const file = fileInput.files[0];
+    bufferForSubtle = await file.arrayBuffer();
+    const arr = new Uint8Array(bufferForSubtle);
+    let binary = '';
+    for (let i = 0; i < arr.length; i++) binary += String.fromCharCode(arr[i]);
+    bytesForForge = binary;
+    sourceLabel = file.name + ' (' + arr.length + ' bytes)';
+  } else {
+    bytesForForge = unescape(encodeURIComponent(text));
+    bufferForSubtle = new TextEncoder().encode(text).buffer;
+    sourceLabel = text.length + ' characters of text';
+  }
+
+  try {
+    const md5 = forge.md.md5.create().update(bytesForForge).digest().toHex();
+    const sha1 = forge.md.sha1.create().update(bytesForForge).digest().toHex();
+    const sha256 = forge.md.sha256.create().update(bytesForForge).digest().toHex();
+    let sha512 = '';
+    if (window.crypto && window.crypto.subtle){
+      const digest = await window.crypto.subtle.digest('SHA-512', bufferForSubtle);
+      sha512 = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+    } else {
+      sha512 = forge.md.sha512.create().update(bytesForForge).digest().toHex();
+    }
+    let html = '<div class="kv">';
+    html += kvRow('Source', sourceLabel);
+    html += kvRow('MD5', md5);
+    html += kvRow('SHA-1', sha1);
+    html += kvRow('SHA-256', sha256);
+    html += kvRow('SHA-512', sha512);
+    html += '</div>';
+    showResult('hc_placeholder', 'hc_out', html);
+  } catch (err){
+    showError('hc_placeholder', 'hc_out', 'Could not hash input: ' + err.message);
+  }
+}
+
+// ---------------- OPENSSL COMMAND GENERATOR ----------------
+function renderOpensslCmd(){
+  const task = document.getElementById('oc_task').value;
+  const file = (document.getElementById('oc_file').value.trim() || 'server');
+  const num = (document.getElementById('oc_num').value.trim() || '2048');
+  const cn = document.getElementById('oc_cn').value.trim() || 'www.example.com';
+  let cmd = '';
+  switch(task){
+    case 'genkey':
+      cmd = 'openssl genrsa -out ' + file + '.key ' + num; break;
+    case 'csr':
+      cmd = 'openssl req -new -newkey rsa:' + num + ' -nodes \\\n  -keyout ' + file + '.key -out ' + file + '.csr \\\n  -subj "/CN=' + cn + '"'; break;
+    case 'selfsigned':
+      cmd = 'openssl req -x509 -newkey rsa:' + num + ' -nodes \\\n  -keyout ' + file + '.key -out ' + file + '.crt \\\n  -days ' + (num.length <= 3 ? num : '365') + ' -subj "/CN=' + cn + '"'; break;
+    case 'viewcert':
+      cmd = 'openssl x509 -in ' + file + '.crt -text -noout'; break;
+    case 'viewcsr':
+      cmd = 'openssl req -in ' + file + '.csr -text -noout'; break;
+    case 'checkexpiry':
+      cmd = 'openssl x509 -in ' + file + '.crt -noout -enddate'; break;
+    case 'pem2der':
+      cmd = 'openssl x509 -in ' + file + '.pem -outform der -out ' + file + '.der'; break;
+    case 'der2pem':
+      cmd = 'openssl x509 -in ' + file + '.der -inform der -out ' + file + '.pem -outform pem'; break;
+    case 'pfx2pem':
+      cmd = 'openssl pkcs12 -in ' + file + '.pfx -out ' + file + '.pem -nodes'; break;
+    case 'pem2pfx':
+      cmd = 'openssl pkcs12 -export -out ' + file + '.pfx \\\n  -inkey ' + file + '.key -in ' + file + '.crt \\\n  -certfile chain.pem'; break;
+    case 'removepass':
+      cmd = 'openssl rsa -in ' + file + '.key -out ' + file + '_nopass.key'; break;
+    case 'modmatch':
+      cmd = 'openssl x509 -noout -modulus -in ' + file + '.crt | openssl md5\nopenssl rsa -noout -modulus -in ' + file + '.key | openssl md5\n# compare the two output hashes — a match means the key belongs to the cert'; break;
+  }
+  document.getElementById('oc_out').textContent = cmd;
+}
+document.getElementById('oc_file').addEventListener('input', renderOpensslCmd);
+document.getElementById('oc_num').addEventListener('input', renderOpensslCmd);
+renderOpensslCmd();
+
+// ---------------- DNS CAA / TXT CHECKER ----------------
+async function dohLookup(name, type){
+  const url = 'https://dns.google/resolve?name=' + encodeURIComponent(name) + '&type=' + type;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('DNS lookup failed (' + res.status + ')');
+  return res.json();
+}
+function formatCaaValue(data){
+  // CAA record data comes back as "<flags> <tag> \"<value>\"" from dns.google
+  return data;
+}
+async function checkDns(){
+  const domain = document.getElementById('dn_domain').value.trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  if (!domain){ showToast('Enter a domain first'); return; }
+  document.getElementById('dn_placeholder').style.display = 'block';
+  document.getElementById('dn_placeholder').innerHTML = 'Looking up records…<span class="cursor"></span>';
+  document.getElementById('dn_out').style.display = 'none';
+  try {
+    const [caaRes, txtRes, acmeRes] = await Promise.all([
+      dohLookup(domain, 'CAA').catch(() => null),
+      dohLookup(domain, 'TXT').catch(() => null),
+      dohLookup('_acme-challenge.' + domain, 'TXT').catch(() => null)
+    ]);
+
+    let html = '';
+    // CAA
+    html += '<div class="tool-head" style="margin-bottom:10px;"><h2 style="font-size:15px; margin:0;">CAA Records — ' + esc(domain) + '</h2></div>';
+    if (caaRes && caaRes.Answer && caaRes.Answer.length){
+      html += '<div class="kv">' + caaRes.Answer.map(a => kvRow('CAA', formatCaaValue(a.data))).join('') + '</div>';
+      html += '<div class="hint" style="margin-bottom:16px;">A CAA record restricts which CAs may issue certificates for this domain. No CAA record at all means any CA is allowed.</div>';
+    } else {
+      html += '<div class="status-line status-line" style="background:rgba(245,166,35,0.08); color:var(--warn); border:1px solid rgba(245,166,35,0.3); margin-bottom:16px;">No CAA record found — any CA is currently allowed to issue for this domain</div>';
+    }
+    // TXT on apex
+    html += '<div class="tool-head" style="margin-bottom:10px;"><h2 style="font-size:15px; margin:0;">TXT Records — ' + esc(domain) + '</h2></div>';
+    if (txtRes && txtRes.Answer && txtRes.Answer.length){
+      html += '<div class="kv">' + txtRes.Answer.map(a => kvRow('TXT', a.data)).join('') + '</div>';
+    } else {
+      html += '<div class="hint" style="margin-bottom:16px;">No TXT records found on the apex.</div>';
+    }
+    // ACME challenge
+    html += '<div class="tool-head" style="margin-bottom:10px;"><h2 style="font-size:15px; margin:0;">TXT Records — _acme-challenge.' + esc(domain) + '</h2></div>';
+    if (acmeRes && acmeRes.Answer && acmeRes.Answer.length){
+      html += '<div class="status-line status-ok" style="margin-bottom:8px;">✓ _acme-challenge TXT record(s) found</div>';
+      html += '<div class="kv">' + acmeRes.Answer.map(a => kvRow('TXT', a.data)).join('') + '</div>';
+    } else {
+      html += '<div class="hint">No _acme-challenge TXT record found (expected unless you\'re mid-way through a DNS-01 validation).</div>';
+    }
+
+    document.getElementById('dn_placeholder').style.display = 'none';
+    const out = document.getElementById('dn_out');
+    out.style.display = 'block'; out.innerHTML = html;
+  } catch (err){
+    document.getElementById('dn_placeholder').style.display = 'block';
+    document.getElementById('dn_placeholder').innerHTML = '<div class="status-line status-bad">✕ ' + esc(err.message) + '</div>';
+  }
+}
+
+// ---------------- CERTIFICATE HEALTH CHECKER ----------------
+const WEAK_SIG_OIDS = {
+  '1.2.840.113549.1.1.4': 'md5WithRSAEncryption',
+  '1.2.840.113549.1.1.5': 'sha1WithRSAEncryption',
+  '1.2.840.10040.4.3': 'dsaWithSha1'
+};
+function checkCertHealth(){
+  const pem = document.getElementById('hh_cert_in').value.trim();
+  if (!pem){ showToast('Paste a certificate first'); return; }
+  try {
+    const cert = forge.pki.certificateFromPem(pem);
+    const pk = cert.publicKey;
+    const bits = pk.n ? pk.n.bitLength() : null;
+    const now = new Date();
+    const msPerDay = 86400000;
+    const daysLeft = Math.round((cert.validity.notAfter - now) / msPerDay);
+    const sans = extractSANs(cert);
+    const cnField = cert.subject.getField('CN');
+    const cn = cnField ? cnField.value : '';
+    const selfSigned = subjectToLines(cert.subject.attributes) === subjectToLines(cert.issuer.attributes);
+    const isWildcard = cn.startsWith('*.') || sans.some(s => s.startsWith('*.'));
+    const weakSig = WEAK_SIG_OIDS[cert.signatureOid];
+
+    const checks = [];
+    // Expiry
+    if (daysLeft < 0){
+      checks.push({level:'bad', text:'Expired ' + Math.abs(daysLeft) + ' day(s) ago (' + cert.validity.notAfter.toUTCString() + ')'});
+    } else if (daysLeft <= 14){
+      checks.push({level:'bad', text:'Expires very soon — ' + daysLeft + ' day(s) left (' + cert.validity.notAfter.toUTCString() + ')'});
+    } else if (daysLeft <= 30){
+      checks.push({level:'warn', text:'Expiring soon — ' + daysLeft + ' day(s) left (' + cert.validity.notAfter.toUTCString() + ')'});
+    } else {
+      checks.push({level:'ok', text:'Valid for ' + daysLeft + ' more day(s), until ' + cert.validity.notAfter.toUTCString()});
+    }
+    if (now < cert.validity.notBefore){
+      checks.push({level:'bad', text:'Not yet valid — starts ' + cert.validity.notBefore.toUTCString()});
+    }
+    // Key size
+    if (bits === null){
+      checks.push({level:'warn', text:'Non-RSA key — key size not checked by this tool'});
+    } else if (bits < 2048){
+      checks.push({level:'bad', text:'Weak key size — RSA ' + bits + '-bit (2048-bit minimum is recommended)'});
+    } else {
+      checks.push({level:'ok', text:'Key size OK — RSA ' + bits + '-bit'});
+    }
+    // Signature algorithm
+    if (weakSig){
+      checks.push({level:'bad', text:'Weak signature algorithm — ' + weakSig + ' (MD5/SHA-1 based signatures are considered broken)'});
+    } else {
+      checks.push({level:'ok', text:'Signature algorithm OK — ' + (cert.siginfo.algorithmOid || cert.signatureOid)});
+    }
+    // Self-signed
+    checks.push({level: selfSigned ? 'warn' : 'ok', text: selfSigned ? 'Self-signed certificate — not trusted by browsers/clients unless explicitly installed' : 'Issued by a separate CA (not self-signed)'});
+    // Wildcard
+    if (isWildcard) checks.push({level:'warn', text:'Wildcard certificate — covers all direct subdomains of its base domain, review scope carefully'});
+    // SAN presence
+    if (sans.length === 0){
+      checks.push({level:'warn', text:'No Subject Alternative Names — modern browsers require SAN entries, CN alone may be rejected'});
+    } else {
+      checks.push({level:'ok', text: sans.length + ' Subject Alternative Name(s) present'});
+    }
+    // Basic constraints / CA
+    const bc = cert.getExtension('basicConstraints');
+    if (bc && bc.cA && !isWildcard){
+      checks.push({level:'warn', text:'This certificate is marked as a CA certificate (cA: true)'});
+    }
+
+    const badCount = checks.filter(c => c.level === 'bad').length;
+    const warnCount = checks.filter(c => c.level === 'warn').length;
+    const overall = badCount > 0 ? 'status-bad' : (warnCount > 0 ? '' : 'status-ok');
+    const overallText = badCount > 0 ? ('✕ ' + badCount + ' issue(s) found') : (warnCount > 0 ? ('⚠ ' + warnCount + ' warning(s) — review before relying on this cert') : '✓ No issues found');
+    const overallStyle = badCount > 0 ? 'status-bad' : (warnCount > 0 ? 'background:rgba(245,166,35,0.1); color:var(--warn); border:1px solid rgba(245,166,35,0.3);' : 'status-ok');
+
+    let html = '<div class="status-line ' + (badCount > 0 ? 'status-bad' : (warnCount === 0 ? 'status-ok' : '')) + '"' +
+      (badCount === 0 && warnCount > 0 ? ' style="background:rgba(245,166,35,0.1); color:var(--warn); border:1px solid rgba(245,166,35,0.3);"' : '') +
+      '>' + overallText + '</div>';
+    html += '<div class="hint" style="margin-bottom:12px;">' + esc(cn || subjectToLines(cert.subject.attributes)) + '</div>';
+    html += '<div class="kv">';
+    checks.forEach(c => {
+      const icon = c.level === 'ok' ? '✓' : (c.level === 'warn' ? '⚠' : '✕');
+      const color = c.level === 'ok' ? 'var(--success)' : (c.level === 'warn' ? 'var(--warn)' : 'var(--error)');
+      html += '<div class="row"><span style="color:' + color + '; font-weight:700;">' + icon + '</span> ' + esc(c.text) + '</div>';
+    });
+    html += '</div>';
+    showResult('hh_placeholder', 'hh_out', html);
+  } catch (err){
+    showError('hh_placeholder', 'hh_out', 'Could not parse certificate: ' + err.message);
+  }
+}
+
+// ---------------- BULK CERTIFICATE DECODER ----------------
+function bulkDecode(){
+  const raw = document.getElementById('bk_in').value.trim();
+  if (!raw){ showToast('Paste at least one certificate'); return; }
+  const blocks = raw.match(/-----BEGIN CERTIFICATE-----[\s\S]+?-----END CERTIFICATE-----/g) || [];
+  if (blocks.length === 0){ showError('bk_placeholder', 'bk_out', 'No PEM certificates found in the input'); return; }
+
+  const now = new Date();
+  const rowsHtml = blocks.map((block, i) => {
+    try {
+      const cert = forge.pki.certificateFromPem(block);
+      const pk = cert.publicKey;
+      const bits = pk.n ? pk.n.bitLength() : '?';
+      const cnField = cert.subject.getField('CN');
+      const icnField = cert.issuer.getField('CN');
+      const daysLeft = Math.round((cert.validity.notAfter - now) / 86400000);
+      const daysColor = daysLeft < 0 ? 'var(--error)' : (daysLeft <= 30 ? 'var(--warn)' : 'var(--success)');
+      return '<tr>' +
+        '<td>' + esc(cnField ? cnField.value : '—') + '</td>' +
+        '<td>' + esc(icnField ? icnField.value : '—') + '</td>' +
+        '<td>' + esc(cert.validity.notAfter.toISOString().slice(0,10)) + '</td>' +
+        '<td style="color:' + daysColor + '; font-weight:600;">' + (daysLeft < 0 ? 'expired ' + Math.abs(daysLeft) + 'd ago' : daysLeft + 'd') + '</td>' +
+        '<td>RSA ' + bits + '</td>' +
+        '</tr>';
+    } catch (e){
+      return '<tr><td colspan="5" style="color:var(--error);">Cert #' + (i+1) + ': could not parse — ' + esc(e.message) + '</td></tr>';
+    }
+  }).join('');
+
+  const html = '<table style="width:100%; border-collapse:collapse; font-family:var(--mono); font-size:12.5px;">' +
+    '<thead><tr style="text-align:left; color:var(--muted); border-bottom:1px solid var(--border-soft);">' +
+    '<th style="padding:6px 8px;">Common Name</th><th style="padding:6px 8px;">Issuer CN</th><th style="padding:6px 8px;">Expires</th><th style="padding:6px 8px;">Days Left</th><th style="padding:6px 8px;">Key</th>' +
+    '</tr></thead><tbody>' + rowsHtml + '</tbody></table>' +
+    '<div class="hint" style="margin-top:10px;">' + blocks.length + ' certificate(s) parsed.</div>';
+  showResult('bk_placeholder', 'bk_out', html);
+}
+
+// ---------------- SAN / MULTI-DOMAIN COVERAGE CHECKER ----------------
+function wildcardMatch(pattern, host){
+  pattern = pattern.toLowerCase(); host = host.toLowerCase();
+  if (pattern === host) return true;
+  if (pattern.startsWith('*.')){
+    const suffix = pattern.slice(1);
+    if (host.endsWith(suffix)){
+      const remainder = host.slice(0, host.length - suffix.length);
+      return remainder.length > 0 && !remainder.includes('.');
+    }
+  }
+  return false;
+}
+function checkSanCoverage(){
+  const pem = document.getElementById('sc_cert_in').value.trim();
+  const domainsRaw = document.getElementById('sc_domains_in').value.trim();
+  if (!pem || !domainsRaw){ showToast('Paste both the certificate and the domain list'); return; }
+  try {
+    const cert = forge.pki.certificateFromPem(pem);
+    const cnField = cert.subject.getField('CN');
+    const cn = cnField ? cnField.value : null;
+    const sans = extractSANs(cert);
+    const coveringNames = cn ? [cn, ...sans.filter(s => s !== cn)] : sans;
+
+    const domains = domainsRaw.split(/[\n,]/).map(d => d.trim()).filter(Boolean);
+    let html = '<div class="kv" style="margin-bottom:12px;">' + kvRow('Cert covers', coveringNames.join(', ') || '(none found)') + '</div>';
+    html += '<div class="kv">';
+    let allCovered = true;
+    domains.forEach(d => {
+      const matched = coveringNames.find(name => wildcardMatch(name, d));
+      if (!matched) allCovered = false;
+      html += '<div class="row">' +
+        '<span style="color:' + (matched ? 'var(--success)' : 'var(--error)') + '; font-weight:700;">' + (matched ? '✓' : '✕') + '</span> ' +
+        esc(d) + (matched ? ' — covered by <b>' + esc(matched) + '</b>' : ' — NOT covered') +
+        '</div>';
+    });
+    html += '</div>';
+    const summary = '<div class="status-line ' + (allCovered ? 'status-ok' : 'status-bad') + '">' +
+      (allCovered ? '✓ All ' + domains.length + ' domain(s) are covered' : '✕ Some domains are not covered by this certificate') + '</div>';
+    showResult('sc_placeholder', 'sc_out', summary + html);
+  } catch (err){
+    showError('sc_placeholder', 'sc_out', 'Could not parse certificate: ' + err.message);
+  }
+}
+
+// ---------------- SSL LABS TEST (external redirect) ----------------
+function openSslLabs(){
+  let domain = document.getElementById('sl_domain').value.trim();
+  if (!domain){ showToast('Enter a domain first'); return; }
+  domain = domain.replace(/^https?:\/\//i, '').replace(/\/.*$/, '');
+  const url = 'https://www.ssllabs.com/ssltest/analyze.html?d=' + encodeURIComponent(domain);
+  window.open(url, '_blank', 'noopener');
+  const html = '<div class="kv">' + kvRow('Domain', domain) + kvRow('Opened', url) + '</div>' +
+    '<div class="hint" style="margin-top:10px;">If a new tab didn\'t open, your browser may have blocked the popup — <a href="' + esc(url) + '" target="_blank" rel="noopener">click here to open it manually</a>.</div>';
+  showResult('sl_placeholder', 'sl_out', html);
+}
+
+// ---------------- CRL / OCSP URL EXTRACTOR ----------------
+function extractUrisFromAsn1(node, out){
+  if (typeof node.value === 'string'){
+    if (/^(https?|ldap|ftp):\/\//i.test(node.value)) out.push(node.value);
+  } else if (Array.isArray(node.value)){
+    node.value.forEach(c => extractUrisFromAsn1(c, out));
+  }
+}
+function extractCrlOcsp(){
+  const pem = document.getElementById('cx_cert_in').value.trim();
+  if (!pem){ showToast('Paste a certificate first'); return; }
+  try {
+    const cert = forge.pki.certificateFromPem(pem);
+    let html = '';
+    let foundAny = false;
+
+    const crlExt = cert.getExtension('cRLDistributionPoints');
+    const crlUrls = [];
+    if (crlExt){
+      try { extractUrisFromAsn1(forge.asn1.fromDer(crlExt.value), crlUrls); } catch(e){}
+    }
+    html += '<div class="tool-head" style="margin-bottom:8px;"><h2 style="font-size:15px; margin:0;">CRL Distribution Points</h2></div>';
+    if (crlUrls.length){
+      foundAny = true;
+      html += '<div class="kv" style="margin-bottom:16px;">' + crlUrls.map(u => kvRow('CRL', u)).join('') + '</div>';
+    } else {
+      html += '<div class="hint" style="margin-bottom:16px;">No CRL distribution points found in this certificate.</div>';
+    }
+
+    const aiaExt = cert.getExtension('authorityInfoAccess');
+    const aiaEntries = [];
+    if (aiaExt){
+      try {
+        const seq = forge.asn1.fromDer(aiaExt.value);
+        seq.value.forEach(accessDesc => {
+          let method = null, url = null;
+          accessDesc.value.forEach(child => {
+            if (child.tagClass === forge.asn1.Class.UNIVERSAL && child.type === forge.asn1.Type.OID){
+              method = forge.asn1.derToOid(child.value);
+            } else if (typeof child.value === 'string' && /^(https?|ldap|ftp):\/\//i.test(child.value)){
+              url = child.value;
+            }
+          });
+          if (url) aiaEntries.push({
+            label: method === '1.3.6.1.5.5.7.48.1' ? 'OCSP Responder' : (method === '1.3.6.1.5.5.7.48.2' ? 'CA Issuers (AIA)' : ('AIA (' + method + ')')),
+            url
+          });
+        });
+      } catch (e){}
+    }
+    html += '<div class="tool-head" style="margin-bottom:8px;"><h2 style="font-size:15px; margin:0;">Authority Information Access (OCSP / CA Issuers)</h2></div>';
+    if (aiaEntries.length){
+      foundAny = true;
+      html += '<div class="kv">' + aiaEntries.map(e => kvRow(e.label, e.url)).join('') + '</div>';
+    } else {
+      html += '<div class="hint">No OCSP or CA Issuers URLs found in this certificate.</div>';
+    }
+
+    if (!foundAny){
+      html = '<div class="status-line" style="background:rgba(245,166,35,0.08); color:var(--warn); border:1px solid rgba(245,166,35,0.3); margin-bottom:14px;">No CRL or OCSP/AIA extensions found — this certificate carries no revocation-checking hints (common for self-signed or minimal certs)</div>' + html;
+    }
+    showResult('cx_placeholder', 'cx_out', html);
+  } catch (err){
+    showError('cx_placeholder', 'cx_out', 'Could not parse certificate: ' + err.message);
+  }
+}
+</script>
+</body>
+</html>
