@@ -4,7 +4,21 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>The Journal — PKI Pro</title>
-<meta name="description" content="Notes on PKI, digital signatures, and building SecureSign Pro." />
+<meta name="description" content="Notes on PKI, digital signatures, certificate lifecycle management, and what we're building at PKI Pro." />
+<link rel="canonical" href="https://pkipro.in/blog.html" />
+
+<!-- Open Graph / social sharing -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="PKI Pro" />
+<meta property="og:title" content="The Journal — PKI Pro" />
+<meta property="og:description" content="Notes on PKI, digital signatures, certificate lifecycle management, and what we're building at PKI Pro." />
+<meta property="og:url" content="https://pkipro.in/blog.html" />
+<meta property="og:image" content="https://pkipro.in/assets/img/logo-mark.png" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="The Journal — PKI Pro" />
+<meta name="twitter:description" content="Notes on PKI, digital signatures, certificate lifecycle management, and what we're building at PKI Pro." />
+<meta name="twitter:image" content="https://pkipro.in/assets/img/logo-mark.png" />
+
 <link rel="icon" type="image/png" href="assets/img/favicon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +38,22 @@
     background: #fff;
   }
   .empty-state h3 { color: var(--ink-navy); margin-bottom: 10px; font-size: 20px; }
+  .brand-word b { color: #D4AF37; }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "The PKI Pro Journal",
+  "url": "https://pkipro.in/blog.html",
+  "publisher": { "@type": "Organization", "name": "PKI Pro", "url": "https://pkipro.in/", "logo": "https://pkipro.in/assets/img/logo-mark.png" },
+  "blogPost": [
+    { "@type": "BlogPosting", "headline": "Inside SecureSign Pro's signing engine", "url": "https://pkipro.in/posts/inside-securesign-pro-signing-engine.html", "datePublished": "2026-07-06", "author": { "@type": "Organization", "name": "PKI Pro" } },
+    { "@type": "BlogPosting", "headline": "HSM vs. USB token: choosing the right signing device", "url": "https://pkipro.in/posts/hsm-vs-usb-token.html", "datePublished": "2026-07-06", "author": { "@type": "Organization", "name": "PKI Pro" } },
+    { "@type": "BlogPosting", "headline": "What makes a PDF signature \"Adobe trusted\"", "url": "https://pkipro.in/posts/pdf-signature-adobe-trusted.html", "datePublished": "2026-07-06", "author": { "@type": "Organization", "name": "PKI Pro" } }
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -35,8 +64,10 @@
       <span class="brand-word">pki<b>pro</b>.in</span>
     </a>
     <nav class="main-nav">
-      <a href="index.html#product">SecureSign Pro</a>
-      <a href="index.html#how">How it works</a>
+      <a href="securesign-pro.html">SecureSign Pro</a>
+      <a href="secureclm-pro.html">SecureCLM Pro</a>
+      <a href="/tools/">PKI Tools</a>
+      <a href="index.html#why">Why Us</a>
       <a href="index.html#usecases">Use cases</a>
       <a href="index.html#faq">FAQ</a>
       <a href="blog.html">Blog</a>
@@ -115,9 +146,11 @@
       <div class="footer-cols">
         <div class="footer-col">
           <h4>Product</h4>
-          <a href="index.html#product">SecureSign Pro</a>
-          <a href="index.html#how">How it works</a>
-          <a href="index.html#usecases">Use cases</a>
+          <a href="securesign-pro.html">SecureSign Pro</a>
+          <a href="secureclm-pro.html">SecureCLM Pro</a>
+          <a href="index.html#why">Why PKI Pro</a>
+          <a href="index.html#integrations">Integrations</a>
+          <a href="index.html#security">Security</a>
         </div>
         <div class="footer-col">
           <h4>Company</h4>
