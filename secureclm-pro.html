@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SecureCLM Pro — Multi-CA Certificate Lifecycle Management | PKI Pro</title>
+<meta name="description" content="SecureCLM Pro discovers, issues, renews, and deploys certificates across your servers automatically — multi-CA, HSM-backed, and audit-ready. Now in early access." />
+<link rel="canonical" href="https://pkipro.in/secureclm-pro.html" />
+
+<!-- Open Graph / social sharing -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="PKI Pro" />
+<meta property="og:title" content="SecureCLM Pro — Multi-CA Certificate Lifecycle Management" />
+<meta property="og:description" content="Discover, issue, renew, and deploy certificates across your servers automatically — multi-CA, HSM-backed, and audit-ready." />
+<meta property="og:url" content="https://pkipro.in/secureclm-pro.html" />
+<meta property="og:image" content="https://pkipro.in/assets/img/logo-mark.png" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="SecureCLM Pro — Multi-CA Certificate Lifecycle Management" />
+<meta name="twitter:description" content="Discover, issue, renew, and deploy certificates across your servers automatically — multi-CA, HSM-backed, and audit-ready." />
+<meta name="twitter:image" content="https://pkipro.in/assets/img/logo-mark.png" />
+
+<link rel="icon" type="image/png" href="assets/img/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+<style>
+  .brand-word b { color: #D4AF37; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "SecureCLM Pro",
+  "url": "https://pkipro.in/secureclm-pro.html",
+  "description": "Multi-CA certificate lifecycle management platform that discovers, issues, renews, and deploys certificates across servers automatically, HSM-backed and audit-ready.",
+  "applicationCategory": "SecurityApplication",
+  "operatingSystem": "Windows, Linux",
+  "brand": { "@type": "Organization", "name": "PKI Pro", "url": "https://pkipro.in/" },
+  "offers": { "@type": "Offer", "availability": "https://schema.org/PreOrder", "url": "https://pkipro.in/secureclm-pro.html#contact" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What does SecureCLM Pro actually do?", "acceptedAnswer": { "@type": "Answer", "text": "It discovers every live certificate across your servers, tracks when each one expires, and renews and redeploys it automatically through your CA and HSM." } },
+    { "@type": "Question", "name": "Which CAs does it support?", "acceptedAnswer": { "@type": "Answer", "text": "DigiCert, Sectigo, and GlobalSign for public certificates, plus Microsoft ADCS and your own internal CA for private ones." } },
+    { "@type": "Question", "name": "How does certificate discovery work?", "acceptedAnswer": { "@type": "Answer", "text": "Point SecureCLM Pro at a subnet and it scans for live TLS certificates on every reachable host, building an inventory automatically." } },
+    { "@type": "Question", "name": "Does it require an agent on every server?", "acceptedAnswer": { "@type": "Answer", "text": "No — deployment runs agentless over WinRM or SSH for most targets. A lightweight mTLS agent is available for environments that prefer it." } },
+    { "@type": "Question", "name": "What happens if a renewal fails?", "acceptedAnswer": { "@type": "Answer", "text": "The failure is logged with the reason, and the affected certificate stays flagged as expiring until it's resolved." } },
+    { "@type": "Question", "name": "Do our private keys ever leave the HSM?", "acceptedAnswer": { "@type": "Answer", "text": "No. Keys are generated and held on your HSM — Thales, Entrust, or Utimaco — and never exposed in transit." } },
+    { "@type": "Question", "name": "Can we keep using our internal CA alongside public ones?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — SecureCLM Pro manages public CAs and Microsoft ADCS or another internal CA side by side, from the same inventory and renewal rules." } },
+    { "@type": "Question", "name": "How do we get access, and when is general availability?", "acceptedAnswer": { "@type": "Answer", "text": "SecureCLM Pro is in early access now. Submitting the contact form starts a pilot on your certificate estate." } }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <img src="assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+      <span class="brand-word">pki<b>pro</b>.in</span>
+    </a>
+    <nav class="main-nav">
+      <a href="securesign-pro.html">SecureSign Pro</a>
+      <a href="secureclm-pro.html">SecureCLM Pro</a>
+      <a href="/tools/">PKI Tools</a>
+      <a href="index.html#why">Why Us</a>
+      <a href="#usecases">Use cases</a>
+      <a href="#faq">FAQ</a>
+      <a href="blog.html">Blog</a>
+      <a href="#contact" class="nav-cta">Talk to us</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Next from PKI Pro &middot; Early access</span>
+      <h1>Stop finding out about expiry<br /><em>from an outage.</em></h1>
+      <p class="lede">SecureCLM Pro is a multi-CA certificate lifecycle platform that discovers, issues, renews, and deploys certificates across your servers automatically — HSM-backed, audit-ready, and built to stop the 2am expiry outage before it happens.</p>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn btn-primary">Get early access</a>
+        <a href="#how" class="btn btn-ghost">See how it works</a>
+      </div>
+    </div>
+
+    <div class="log-card">
+      <div class="log-titlebar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="label">secureclm-pro — certificate estate</span>
+      </div>
+      <div class="log-body">
+        <div class="log-line" style="animation-delay:0s;"><span class="tag">[09:00:01]</span> <span class="ok">SCAN:</span> Discovered 214 live certificates across 3 subnets</div>
+        <div class="log-line" style="animation-delay:.15s;"><span class="tag">[09:00:04]</span> <span class="ok">ALERT:</span> billing-api.internal.corp expires in 6 days</div>
+        <div class="log-line" style="animation-delay:.3s;"><span class="tag">[09:00:06]</span> <span class="ok">RENEW:</span> Issued replacement via DigiCert — CN billing-api.internal.corp</div>
+        <div class="log-line" style="animation-delay:.45s;"><span class="tag">[09:00:07]</span> <span class="ok">DEPLOY:</span> Pushed to nginx-prod-02 &amp; nginx-prod-03 over SSH</div>
+        <div class="log-line" style="animation-delay:.6s;"><span class="tag">[09:00:08]</span> <span class="ok">SUCCESS:</span> 0 certificates expiring in the next 30 days</div>
+      </div>
+      <div class="stamp-row" style="padding-left:18px;padding-right:18px;">
+        <svg viewBox="0 0 40 40"><polyline class="stamp-check" style="stroke-dashoffset:0;" points="8,21 17,29 32,10" /></svg>
+        <span class="stamp-text">Renewed and redeployed automatically.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMPAT STRIP ================= -->
+<div class="compat">
+  <div class="wrap">
+    <span class="compat-label">Works with</span>
+    <div class="compat-items">
+      <span>DigiCert</span>
+      <span>GlobalSign</span>
+      <span>Sectigo</span>
+      <span>Microsoft ADCS</span>
+      <span>Thales Luna Network HSM</span>
+      <span>Thales ProtectServer HSM</span>
+      <span>Entrust nShield HSM</span>
+      <span>Utimaco HSM</span>
+      <span>AWS / Azure</span>
+      <span>IIS / Apache / NGINX / F5</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= FEATURES ================= -->
+<section class="block" id="features">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">What's inside</span>
+      <h2>The same trust infrastructure, pointed at your certificate estate</h2>
+      <p>Everything SecureSign Pro already holds itself to — HSM-backed, on-premise, audit-ready — now applied to discovery, issuance, and renewal.</p>
+    </div>
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <span class="num">01</span>
+        <h3>Multi-CA orchestration</h3>
+        <p>DigiCert, Sectigo, GlobalSign, Microsoft ADCS, and your own internal CA — issue and manage from one console instead of five vendor portals.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">02</span>
+        <h3>HSM-backed keys</h3>
+        <p>Thales Luna, Thales ProtectServer, Entrust nShield, and Utimaco — keys are generated and held on the HSM, never exposed in transit.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">03</span>
+        <h3>Zero-touch deployment</h3>
+        <p>Auto-deploy renewed certificates straight to IIS, Linux (nginx/Apache), F5, and FortiGate — agentless over WinRM/SSH, or via a lightweight mTLS agent.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">04</span>
+        <h3>Network discovery</h3>
+        <p>Point it at a subnet and it finds every live certificate on your estate — no more spreadsheet of "which server has which cert."</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">05</span>
+        <h3>Expiry alerts &amp; auto-renewal</h3>
+        <p>See what's expiring before it becomes an outage, and let SecureCLM Pro renew and redeploy it automatically — no calendar reminders required.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">06</span>
+        <h3>Full audit trail</h3>
+        <p>Every issuance, renewal, and deployment is logged — the same audit-ready standard SecureSign Pro already holds for signatures.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section class="block on-dark" id="how">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">How it works</span>
+      <h2>From unknown estate to zero surprise expiries</h2>
+      <p>SecureCLM Pro is built to replace the spreadsheet, not add another dashboard to check manually.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step">
+        <h3>Connect your CAs &amp; HSM</h3>
+        <p>Add your public CA accounts, internal ADCS, and HSM once. SecureCLM Pro authenticates and starts reading live certificate data immediately.</p>
+      </div>
+      <div class="step">
+        <h3>Discover the estate</h3>
+        <p>Point a scan at your subnets and every live certificate — known or forgotten — shows up in one inventory, with its real expiry date.</p>
+      </div>
+      <div class="step">
+        <h3>Automate renewal &amp; deployment</h3>
+        <p>Set renewal thresholds once, and let SecureCLM Pro reissue and push the new certificate to the right server before the old one expires.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= USE CASES ================= -->
+<section class="block" id="usecases">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">Where it fits</span>
+      <h2>Built for teams managing more certificates than they can track</h2>
+      <p>If "which server has which cert" lives in a spreadsheet today, this is for you.</p>
+    </div>
+    <div class="usecase-grid reveal">
+      <div class="usecase-card">
+        <div class="icon-badge">
+          <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+        </div>
+        <h3>Preventing the 2am outage</h3>
+        <p>A single expired certificate can take down a customer-facing service. Renewal thresholds catch it weeks in advance instead.</p>
+      </div>
+      <div class="usecase-card">
+        <div class="icon-badge">
+          <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h5"/></svg>
+        </div>
+        <h3>Regulated &amp; compliance-heavy teams</h3>
+        <p>Banking, insurance, and healthcare estates need a provable audit trail for every certificate issued and deployed — not tribal knowledge.</p>
+      </div>
+      <div class="usecase-card">
+        <div class="icon-badge">
+          <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>
+        </div>
+        <h3>Multi-cloud &amp; hybrid estates</h3>
+        <p>Certificates spread across AWS, Azure, and on-premise servers get discovered and managed from the same console.</p>
+      </div>
+      <div class="usecase-card">
+        <div class="icon-badge">
+          <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M9 17V7h6l4 4v6H9z"/><path d="M9 17H5V9"/></svg>
+        </div>
+        <h3>Retiring the tracking spreadsheet</h3>
+        <p>Replace the manually-updated "who owns which cert" sheet with a discovery scan that's always current.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SCREENSHOTS ================= -->
+<section class="block" id="screenshots" style="background:var(--paper-dim);">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">See it in action</span>
+      <h2>Inside the SecureCLM Pro console</h2>
+      <p>A look at the certificate inventory, expiry timeline, and deployment log teams check every week.</p>
+    </div>
+    <div class="blog-grid reveal">
+      <a class="blog-card" href="#contact">
+        <div class="thumb"></div>
+        <div class="body">
+          <span class="tag">Inventory</span>
+          <h3>Full certificate estate, discovered</h3>
+          <p>Every live certificate across your subnets, in one searchable list.</p>
+        </div>
+      </a>
+      <a class="blog-card" href="#contact">
+        <div class="thumb"></div>
+        <div class="body">
+          <span class="tag">Timeline</span>
+          <h3>Expiry timeline</h3>
+          <p>See what's renewing this week and what needs attention first.</p>
+        </div>
+      </a>
+      <a class="blog-card" href="#contact">
+        <div class="thumb"></div>
+        <div class="body">
+          <span class="tag">Deployment log</span>
+          <h3>Issuance &amp; deploy history</h3>
+          <p>A running record of every renewal and where it was pushed.</p>
+        </div>
+      </a>
+    </div>
+    <!-- TODO: replace the empty .thumb divs above with real product screenshots (assets/img/secureclm-screenshot-*.png) once available -->
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="block" id="faq">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">Questions</span>
+      <h2>What early access teams ask us first</h2>
+      <p>SecureCLM Pro is in early access — here's where it stands today.</p>
+    </div>
+    <div class="faq-list reveal">
+      <details class="faq-item" open>
+        <summary>What does SecureCLM Pro actually do?</summary>
+        <p>It discovers every live certificate across your servers, tracks when each one expires, and renews and redeploys it automatically through your CA and HSM — so certificate expiry stops being a manual chore.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Which CAs does it support?</summary>
+        <p>DigiCert, Sectigo, and GlobalSign for public certificates, plus Microsoft ADCS and your own internal CA for private ones — all managed from the same console.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How does certificate discovery work?</summary>
+        <p>Point SecureCLM Pro at a subnet and it scans for live TLS certificates on every reachable host, building an inventory without you having to know in advance what's out there.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Does it require an agent on every server?</summary>
+        <p>No — deployment runs agentless over WinRM or SSH for most targets. A lightweight mTLS agent is available for environments that prefer it.</p>
+      </details>
+      <details class="faq-item">
+        <summary>What happens if a renewal fails?</summary>
+        <p>The failure is logged with the reason, and the affected certificate stays flagged as expiring until it's resolved — nothing fails silently.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Do our private keys ever leave the HSM?</summary>
+        <p>No. Keys are generated and held on your HSM — Thales, Entrust, or Utimaco — and never exposed in transit, the same standard SecureSign Pro holds for signing.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Can we keep using our internal CA alongside public ones?</summary>
+        <p>Yes — SecureCLM Pro manages public CAs and Microsoft ADCS or another internal CA side by side, from the same inventory and renewal rules.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How do we get access, and when is general availability?</summary>
+        <p>SecureCLM Pro is in early access now. Fill in the form below and our team will reach out to scope a pilot on your certificate estate.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EARLY ACCESS / CONTACT ================= -->
+<section class="block on-dark" id="contact">
+  <div class="wrap">
+    <div class="demo-grid reveal">
+      <div>
+        <span class="eyebrow">Get in touch</span>
+        <h2 style="color:#fff;margin:16px 0 16px;font-size:clamp(26px,3vw,36px);">Get early access to SecureCLM Pro.</h2>
+        <p style="color:rgba(255,255,255,0.65);margin-bottom:28px;max-width:42ch;">Tell us a bit about your certificate estate and CA setup, and we'll walk you through a pilot on your own infrastructure.</p>
+
+        <div class="contact-info">
+          <a href="mailto:info@pkipro.in">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 6l8 7 8-7"/></svg>
+            info@pkipro.in
+          </a>
+          <a href="tel:+918860498904">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.7a2 2 0 01-.4 2.1L8 9.9a16 16 0 006 6l1.4-1.3a2 2 0 012.1-.4c.9.3 1.8.5 2.7.6a2 2 0 011.8 2.1z"/></svg>
+            +91 88604 98904
+          </a>
+        </div>
+      </div>
+
+      <form class="demo-form" id="demoForm">
+        <input type="hidden" name="access_key" value="c0dbbcef-e951-4188-9121-bf8bd8f77942" />
+        <input type="hidden" name="subject" value="New early access request — SecureCLM Pro" />
+        <input type="hidden" name="from_name" value="pkipro.in — SecureCLM Pro page" />
+        <label>Name<input type="text" name="name" required /></label>
+        <label>Company<input type="text" name="company" required /></label>
+        <label>Work email<input type="email" name="email" required /></label>
+        <label>Phone<input type="tel" name="phone" /></label>
+        <label>Tell us about your certificate estate<textarea name="message" rows="3" placeholder="e.g. ~200 certs across DigiCert + internal ADCS, on-prem HSM"></textarea></label>
+        <button type="submit" class="btn btn-primary">Get early access</button>
+        <p class="form-note" id="formNote">We'll get back to you at the email or phone you share — or just call/WhatsApp +91 88604 98904 directly.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="brand">
+          <img src="assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+          <span class="brand-word">pki<b>pro</b>.in</span>
+        </a>
+        <p>Digital trust infrastructure for enterprises — signing, sealing, and audit, built to standards.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="securesign-pro.html">SecureSign Pro</a>
+          <a href="secureclm-pro.html">SecureCLM Pro</a>
+          <a href="index.html#why">Why PKI Pro</a>
+          <a href="index.html#integrations">Integrations</a>
+          <a href="index.html#security">Security</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="blog.html">Blog</a>
+          <a href="#faq">FAQ</a>
+          <a href="#contact">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <a href="mailto:info@pkipro.in">info@pkipro.in</a>
+          <a href="tel:+918860498904">+91 88604 98904</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> PKI Pro. All rights reserved.</span>
+      <span>pkipro.in</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/script.js"></script>
+</body>
+</html>

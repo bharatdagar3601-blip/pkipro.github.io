@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SecureSign Pro — Bulk PDF Signing with HSM & USB Tokens | PKI Pro</title>
+<meta name="description" content="SecureSign Pro automates HSM and USB-token based bulk PDF signing for enterprises — folder watchers, a REST API, Adobe AATL-trusted signatures, and an audit-ready dashboard. Request a demo." />
+<link rel="canonical" href="https://pkipro.in/securesign-pro.html" />
+
+<!-- Open Graph / social sharing -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="PKI Pro" />
+<meta property="og:title" content="SecureSign Pro — Bulk PDF Signing with HSM & USB Tokens" />
+<meta property="og:description" content="Automate HSM and USB-token based bulk PDF signing — folder watchers, a REST API, Adobe AATL-trusted signatures, and an audit-ready dashboard." />
+<meta property="og:url" content="https://pkipro.in/securesign-pro.html" />
+<meta property="og:image" content="https://pkipro.in/assets/img/logo-mark.png" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="SecureSign Pro — Bulk PDF Signing with HSM & USB Tokens" />
+<meta name="twitter:description" content="Automate HSM and USB-token based bulk PDF signing — folder watchers, a REST API, Adobe AATL-trusted signatures, and an audit-ready dashboard." />
+<meta name="twitter:image" content="https://pkipro.in/assets/img/logo-mark.png" />
+
+<link rel="icon" type="image/png" href="assets/img/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+<style>
+  .brand-word b { color: #D4AF37; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "SecureSign Pro",
+  "url": "https://pkipro.in/securesign-pro.html",
+  "description": "Enterprise bulk PDF signing engine connecting to HSMs and USB DSC tokens, with folder-watcher automation, a REST API, and Adobe AATL-trusted signatures.",
+  "applicationCategory": "SecurityApplication",
+  "operatingSystem": "Windows",
+  "brand": { "@type": "Organization", "name": "PKI Pro", "url": "https://pkipro.in/" },
+  "offers": { "@type": "Offer", "availability": "https://schema.org/InStock", "url": "https://pkipro.in/securesign-pro.html#contact" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What exactly does SecureSign Pro do?", "acceptedAnswer": { "@type": "Answer", "text": "It's a Windows-based bulk signing engine. Point it at a folder of PDFs — or call it through its API — and every file in that batch gets signed against your certificate in one pass, with the same trusted stamp appearance every time and a per-file result you can check." } },
+    { "@type": "Question", "name": "Which signing devices does it work with?", "acceptedAnswer": { "@type": "Answer", "text": "Any PKCS#11-compliant device: USB DSC tokens (SafeNet / eToken-class) and enterprise HSMs such as Thales ProtectServer. You point SecureSign Pro at the vendor's PKCS#11 library file and it takes over from there — no vendor lock-in." } },
+    { "@type": "Question", "name": "Will the signature show the green trusted tick in Adobe?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Signatures are built on the Adobe AATL chain of trust, so Acrobat shows a verified checkmark the moment the file is opened — the recipient doesn't need to change any trust settings." } },
+    { "@type": "Question", "name": "Does our private key ever leave the HSM or token?", "acceptedAnswer": { "@type": "Answer", "text": "No. Signing happens inside the PKCS#11 session on the device itself — the private key material never leaves the hardware." } },
+    { "@type": "Question", "name": "Can it run unattended, without anyone at the machine?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Set a folder watcher to real-time, a fixed interval, or a specific daily schedule, and SecureSign Pro signs files automatically as they land." } },
+    { "@type": "Question", "name": "Can we see what's been signed, for audit purposes?", "acceptedAnswer": { "@type": "Answer", "text": "The dashboard keeps a live execution log alongside signed/failed counters, so every batch and file result is visible for audit." } },
+    { "@type": "Question", "name": "Can it plug into our own ERP or DMS instead of a folder?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — the REST API engine lets your own systems trigger signing directly, so it can sit behind an invoicing pipeline, DMS, or ERP." } },
+    { "@type": "Question", "name": "Is this cloud-hosted, or does it stay on our infrastructure?", "acceptedAnswer": { "@type": "Answer", "text": "SecureSign Pro runs on your own Windows machine or server, right next to your HSM or token. Documents and keys never go to an external cloud service." } }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <img src="assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+      <span class="brand-word">pki<b>pro</b>.in</span>
+    </a>
+    <nav class="main-nav">
+      <a href="securesign-pro.html">SecureSign Pro</a>
+      <a href="secureclm-pro.html">SecureCLM Pro</a>
+      <a href="/tools/">PKI Tools</a>
+      <a href="index.html#why">Why Us</a>
+      <a href="#usecases">Use cases</a>
+      <a href="#faq">FAQ</a>
+      <a href="blog.html">Blog</a>
+      <a href="#contact" class="nav-cta">Talk to us</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Flagship product</span>
+      <h1>Sign hundreds of PDFs,<br /><em>without opening Adobe once.</em></h1>
+      <p class="lede">SecureSign Pro connects straight to your HSM or USB DSC token and turns document signing into a batch job. Point it at a folder — or call its API — and every file comes back signed, stamped, and Adobe-trusted.</p>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn btn-primary">Request a demo</a>
+        <a href="#how" class="btn btn-ghost">See how it works</a>
+      </div>
+    </div>
+
+    <div class="log-card">
+      <div class="log-titlebar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="label">securesign-pro — live execution log</span>
+      </div>
+      <div class="log-body" id="heroLog"></div>
+      <div class="stamp-row" style="padding-left:18px;padding-right:18px;">
+        <svg viewBox="0 0 40 40" id="heroStamp">
+          <polyline class="stamp-check" points="8,21 17,29 32,10" />
+        </svg>
+        <span class="stamp-text">Signed and all signatures are valid.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMPAT STRIP ================= -->
+<div class="compat">
+  <div class="wrap">
+    <span class="compat-label">Works with</span>
+    <div class="compat-items">
+      <span>PKCS#11</span>
+      <span>Thales Luna Network HSM</span>
+      <span>Thales ProtectServer HSM</span>
+      <span>Entrust nShield HSM</span>
+      <span>Utimaco HSM</span>
+      <span>SafeNet / eToken</span>
+      <span>Safenet iKey / USB Token</span>
+      <span>ProxKey WD DSC Token</span>
+      <span>ePass2003 Auto DSC Token</span>
+      <span>Adobe AATL trust chain</span>
+      <span>PAdES / long-term validation</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= FEATURES ================= -->
+<section class="block" id="features">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">What's inside</span>
+      <h2>Everything a signing operation needs, in one engine</h2>
+      <p>Built for teams who process documents by the hundred, not the handful.</p>
+    </div>
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <span class="num">01</span>
+        <h3>Bulk signing engine</h3>
+        <p>Point it at a folder, walk away. Every PDF inside is signed against your certificate in one pass, with a per-file result you can audit.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">02</span>
+        <h3>HSM &amp; token support</h3>
+        <p>Works with PKCS#11 devices out of the box — Thales ProtectServer, SafeNet, and standard USB DSC tokens — without vendor lock-in.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">03</span>
+        <h3>Adobe-trusted appearance</h3>
+        <p>Signatures render with a verified green check the moment Acrobat opens the file, backed by the Adobe AATL chain of trust.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">04</span>
+        <h3>Scheduled automation</h3>
+        <p>Real-time, interval, or a fixed daily schedule — set a watcher on your input folder and let SecureSign Pro sign as files land.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">05</span>
+        <h3>Enterprise dashboard</h3>
+        <p>Signed-today counters, device health, DSC expiry countdown, and a live execution log — the whole signing operation, at a glance.</p>
+      </div>
+      <div class="feature-card">
+        <span class="num">06</span>
+        <h3>REST API engine</h3>
+        <p>Wire signing directly into your ERP, DMS, or invoicing pipeline with a straightforward API — no UI required in production.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section class="block on-dark" id="how">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">How it works</span>
+      <h2>From token to trusted PDF, in three steps</h2>
+      <p>SecureSign Pro is built to disappear into your existing workflow, not add a new one.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step">
+        <h3>Connect your device</h3>
+        <p>Plug in a USB token or point SecureSign Pro at your HSM's PKCS#11 library. It reads live slot and certificate status immediately.</p>
+      </div>
+      <div class="step">
+        <h3>Configure the signature</h3>
+        <p>Set the stamp position, header text, and reason once — every document afterwards inherits the same trusted appearance.</p>
+      </div>
+      <div class="step">
+        <h3>Automate and monitor</h3>
+        <p>Run it on demand, on a schedule, or as a folder watcher, and keep an eye on signed/failed counts from the dashboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= USE CASES ================= -->
+<section class="block" id="usecases">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">Where it fits</span>
+      <h2>Built for teams who sign at scale</h2>
+      <p>Any workflow that ends in "print, sign, scan, email" is a candidate.</p>
+    </div>
+    <div class="usecase-grid reveal">
+      <div class="usecase-card">
+        <div class="icon-badge">
+          <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h3>Contracts &amp; agreements</h3>
+        <p>Vendor, employment, and NDA paperwork signed the moment it's generated, not days later.</p>
+      </div>
+      <div class="usecase-card">
+        <div class="icon-badge">
+          <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M9 17V7h6l4 4v6H9z"/><path d="M9 17H5V9"/></svg>
+        </div>
+        <h3>Invoices &amp; purchase orders</h3>
+        <p>Finance teams batch-sign hundreds of invoices at month-end without touching Acrobat once.</p>
+      </div>
+      <div class="usecase-card">
+        <div class="icon-badge">
+          <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h5"/></svg>
+        </div>
+        <h3>Compliance &amp; filings</h3>
+        <p>Board resolutions, statutory letters, and regulator filings signed with a full audit trail.</p>
+      </div>
+      <div class="usecase-card">
+        <div class="icon-badge">
+          <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg>
+        </div>
+        <h3>Vendor &amp; dealer onboarding</h3>
+        <p>Manufacturing and dealer networks push signed agreements out at the volume onboarding actually needs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SCREENSHOTS ================= -->
+<section class="block" id="screenshots" style="background:var(--paper-dim);">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">See it in action</span>
+      <h2>Inside the SecureSign Pro dashboard</h2>
+      <p>A look at the live execution log, device status, and expiry tracking teams check every day.</p>
+    </div>
+    <div class="blog-grid reveal">
+      <a class="blog-card" href="#contact">
+        <div class="thumb"></div>
+        <div class="body">
+          <span class="tag">Dashboard</span>
+          <h3>Signed-today counters &amp; device health</h3>
+          <p>Live status for every connected HSM and token, at a glance.</p>
+        </div>
+      </a>
+      <a class="blog-card" href="#contact">
+        <div class="thumb"></div>
+        <div class="body">
+          <span class="tag">Execution log</span>
+          <h3>Live signing log</h3>
+          <p>A running, per-file record of every batch as it signs.</p>
+        </div>
+      </a>
+      <a class="blog-card" href="#contact">
+        <div class="thumb"></div>
+        <div class="body">
+          <span class="tag">Certificates</span>
+          <h3>DSC &amp; expiry countdown</h3>
+          <p>See what's expiring before it becomes an outage.</p>
+        </div>
+      </a>
+    </div>
+    <!-- TODO: replace the empty .thumb divs above with real product screenshots (assets/img/securesign-screenshot-*.png) once available -->
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="block" id="faq">
+  <div class="wrap">
+    <div class="block-head reveal">
+      <span class="eyebrow">Questions</span>
+      <h2>Before you ask, we probably already answered it</h2>
+      <p>The things every security or IT lead asks before rolling out a signing tool.</p>
+    </div>
+    <div class="faq-list reveal">
+      <details class="faq-item" open>
+        <summary>What exactly does SecureSign Pro do?</summary>
+        <p>It's a Windows-based bulk signing engine. Point it at a folder of PDFs — or call it through its API — and every file in that batch gets signed against your certificate in one pass, with the same trusted stamp appearance every time and a per-file result you can check.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Which signing devices does it work with?</summary>
+        <p>Any PKCS#11-compliant device: USB DSC tokens (SafeNet / eToken-class) and enterprise HSMs such as Thales ProtectServer. You point SecureSign Pro at the vendor's PKCS#11 library file and it takes over from there — no vendor lock-in.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Will the signature show the green "trusted" tick in Adobe?</summary>
+        <p>Yes. Signatures are built on the Adobe AATL chain of trust, so Acrobat shows "Signed and all signatures are valid" with a verified checkmark the moment the file is opened — the recipient doesn't need to change any trust settings.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Does our private key ever leave the HSM or token?</summary>
+        <p>No. Signing happens inside the PKCS#11 session on the device itself — SecureSign Pro sends the document hash to be signed and gets the signature back. The private key material never leaves the hardware.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Can it run unattended, without anyone at the machine?</summary>
+        <p>Yes. Set a folder watcher to real-time, a fixed interval, or a specific daily schedule, and SecureSign Pro signs files automatically as they land — no one has to click through Adobe.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Can we see what's been signed, for audit purposes?</summary>
+        <p>The dashboard keeps a live execution log alongside signed/failed counters, so every batch and file result is visible — a running record of what was signed, when, and against which certificate.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Can it plug into our own ERP or DMS instead of a folder?</summary>
+        <p>Yes — the REST API engine lets your own systems trigger signing directly, so it can sit behind an invoicing pipeline, DMS, or ERP without anyone touching a UI in production.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Is this cloud-hosted, or does it stay on our infrastructure?</summary>
+        <p>SecureSign Pro runs on your own Windows machine or server, right next to your HSM or token. Documents and keys never go to an external cloud service.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DEMO / CONTACT ================= -->
+<section class="block on-dark" id="contact">
+  <div class="wrap">
+    <div class="demo-grid reveal">
+      <div>
+        <span class="eyebrow">Get in touch</span>
+        <h2 style="color:#fff;margin:16px 0 16px;font-size:clamp(26px,3vw,36px);">See SecureSign Pro on your own documents.</h2>
+        <p style="color:rgba(255,255,255,0.65);margin-bottom:28px;max-width:42ch;">Tell us a bit about your team and we'll walk you through a live demo — signing your own sample PDFs against a test certificate.</p>
+
+        <div class="contact-info">
+          <a href="mailto:info@pkipro.in">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 6l8 7 8-7"/></svg>
+            info@pkipro.in
+          </a>
+          <a href="tel:+918860498904">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.7a2 2 0 01-.4 2.1L8 9.9a16 16 0 006 6l1.4-1.3a2 2 0 012.1-.4c.9.3 1.8.5 2.7.6a2 2 0 011.8 2.1z"/></svg>
+            +91 88604 98904
+          </a>
+        </div>
+      </div>
+
+      <form class="demo-form" id="demoForm">
+        <input type="hidden" name="access_key" value="c0dbbcef-e951-4188-9121-bf8bd8f77942" />
+        <input type="hidden" name="subject" value="New demo request — SecureSign Pro" />
+        <input type="hidden" name="from_name" value="pkipro.in — SecureSign Pro page" />
+        <label>Name<input type="text" name="name" required /></label>
+        <label>Company<input type="text" name="company" required /></label>
+        <label>Work email<input type="email" name="email" required /></label>
+        <label>Phone<input type="tel" name="phone" /></label>
+        <label>What would you like to see?<textarea name="message" rows="3" placeholder="e.g. bulk-signing invoices with our Thales HSM"></textarea></label>
+        <button type="submit" class="btn btn-primary">Request a demo</button>
+        <p class="form-note" id="formNote">We'll get back to you at the email or phone you share — or just call/WhatsApp +91 88604 98904 directly.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="brand">
+          <img src="assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+          <span class="brand-word">pki<b>pro</b>.in</span>
+        </a>
+        <p>Digital trust infrastructure for enterprises — signing, sealing, and audit, built to standards.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="securesign-pro.html">SecureSign Pro</a>
+          <a href="secureclm-pro.html">SecureCLM Pro</a>
+          <a href="index.html#why">Why PKI Pro</a>
+          <a href="index.html#integrations">Integrations</a>
+          <a href="index.html#security">Security</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="blog.html">Blog</a>
+          <a href="#faq">FAQ</a>
+          <a href="#contact">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <a href="mailto:info@pkipro.in">info@pkipro.in</a>
+          <a href="tel:+918860498904">+91 88604 98904</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> PKI Pro. All rights reserved.</span>
+      <span>pkipro.in</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/script.js"></script>
+</body>
+</html>
