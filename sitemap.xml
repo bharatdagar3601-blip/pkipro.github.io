@@ -22,6 +22,48 @@
     <loc>https://pkipro.in/tools/</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pkipro.in/tools/csr-generator.html</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pkipro.in/tools/csr-decoder.html</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pkipro.in/tools/certificate-decoder.html</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pkipro.in/tools/key-certificate-match.html</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pkipro.in/tools/pfx-generator.html</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pkipro.in/tools/jks-generator.html</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pkipro.in/tools/keypair-generator.html</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
