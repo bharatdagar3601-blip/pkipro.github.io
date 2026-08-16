@@ -3,11 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PKI Tools — pkipro.in</title>
-<meta name="description" content="Free client-side certificate tools: generate a CSR, decode a CSR or certificate, match a key to a certificate, and build a PFX/PKCS12 bundle — entirely in your browser.">
+<title>Free PKI Tools — CSR, JKS, PFX Generator & Certificate Decoder | PKI Pro</title>
+<meta name="description" content="Free browser-based PKI toolkit: RSA/ECC CSR generator, CSR &amp; certificate decoder, JKS keystore generator, PFX/PKCS12 bundler, key-certificate matcher, self-signed certificate generator, PEM/DER converter, and more. Nothing is uploaded — everything runs client-side.">
+<link rel="canonical" href="https://pkipro.in/tools/" />
+
+<!-- Open Graph / social sharing -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="PKI Pro" />
+<meta property="og:title" content="Free PKI Tools — CSR, JKS, PFX Generator & Certificate Decoder" />
+<meta property="og:description" content="RSA/ECC CSR generator, JKS keystore generator, PFX/PKCS12 bundler, certificate decoder, and more — free, client-side, nothing uploaded." />
+<meta property="og:url" content="https://pkipro.in/tools/" />
+<meta property="og:image" content="https://pkipro.in/assets/img/logo-mark.png" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Free PKI Tools — CSR, JKS, PFX Generator & Certificate Decoder" />
+<meta name="twitter:description" content="RSA/ECC CSR generator, JKS keystore generator, PFX/PKCS12 bundler, certificate decoder, and more — free, client-side, nothing uploaded." />
+<meta name="twitter:image" content="https://pkipro.in/assets/img/logo-mark.png" />
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PKI Tools by PKI Pro",
+  "url": "https://pkipro.in/tools/",
+  "description": "Free browser-based PKI toolkit: RSA/ECC CSR generator, certificate decoder, JKS keystore generator, PFX/PKCS12 bundler, key-certificate matcher, and more. Runs entirely client-side.",
+  "applicationCategory": "SecurityApplication",
+  "operatingSystem": "Any (runs in browser)",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "brand": { "@type": "Organization", "name": "PKI Pro", "url": "https://pkipro.in/" },
+  "featureList": "CSR Generator, CSR Decoder, Certificate Decoder, Key-Certificate Match, PFX/PKCS12 Generator, JKS Generator, Key Pair & Self-Signed Certificate Generator, PEM/DER Converter, Certificate Chain Sorter, Key Passphrase Tool, Hash/OpenSSL Command Generator, DNS CAA/TXT Checker, Certificate Health Check, Bulk Decoder, SAN Coverage Checker, CRL/OCSP Extractor, SSL Labs Test"
+}
+</script>
 <style>
   :root{
     --bg:#0a0e14;
@@ -27,6 +55,8 @@
     --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
     --sans: 'Inter', system-ui, -apple-system, sans-serif;
   }
+  .tool-intro{ font-family:var(--sans); color:var(--muted); font-size:14px; line-height:1.6; margin:-6px 0 22px; max-width:62ch; }
+  .brand-link{ color:inherit; text-decoration:none; }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
@@ -205,9 +235,9 @@
 <div class="wrap">
 
   <header>
-    <div class="brand"><span class="dot"></span> pkipro.in</div>
+    <div class="brand"><a href="https://pkipro.in/" class="brand-link"><span class="dot"></span> pkipro.in</a></div>
     <h1>PKI <span>Tools</span></h1>
-    <p class="sub">Generate CSRs, decode certificates, match keys, and build PFX bundles — free, fast, no signup.</p>
+    <p class="sub">Generate CSRs (RSA or ECC), decode certificates, match keys, build PFX or JKS keystores — free, fast, no signup.</p>
     <div class="trust-badge">🔒 Everything runs in your browser — nothing is ever uploaded</div>
   </header>
 
@@ -235,9 +265,10 @@
   <section class="panel active" id="csrgen">
     <div class="tool-head">
       <h2>CSR Generator</h2>
-      <p>Creates an RSA, ECDSA, or (experimental) post-quantum ML-DSA key pair and a PKCS#10 Certificate Signing Request. The private key is generated locally and never leaves this page — copy or download it immediately, it isn't stored anywhere.</p>
+      <p class="tool-intro">Generate an RSA or ECC (P-256/P-384) certificate signing request and private key entirely in your browser — nothing is uploaded to any server.</p>      <p>Creates an RSA, ECDSA, or (experimental) post-quantum ML-DSA key pair and a PKCS#10 Certificate Signing Request. The private key is generated locally and never leaves this page — copy or download it immediately, it isn't stored anywhere.</p>
     </div>
-    <div class="grid-2">
+    <p class="tool-intro" style="margin-top:-6px;"><a href="/tools/csr-generator.html" style="color:var(--accent);">About this CSR Generator &rarr;</a></p>
+      <div class="grid-2">
       <div class="card">
         <div class="field-row">
           <div class="field"><label>Common Name (CN) *</label><input type="text" id="g_cn" placeholder="www.example.com"></div>
@@ -313,9 +344,11 @@
   <section class="panel" id="csrdec">
     <div class="tool-head">
       <h2>CSR Decoder</h2>
+      <p class="tool-intro">Paste a PEM-encoded CSR to instantly decode its subject, SANs, key type, and signature algorithm.</p>
       <p>Paste a PEM-encoded Certificate Signing Request to inspect its subject fields, public key, and requested SANs.</p>
     </div>
-    <div class="grid-2">
+    <p class="tool-intro" style="margin-top:-6px;"><a href="/tools/csr-decoder.html" style="color:var(--accent);">About this CSR Decoder &rarr;</a></p>
+      <div class="grid-2">
       <div class="card">
         <div class="field">
           <label>CSR (PEM)</label>
@@ -337,9 +370,10 @@
   <section class="panel" id="certdec">
     <div class="tool-head">
       <h2>Certificate Decoder</h2>
-      <p>Paste a PEM-encoded X.509 certificate to inspect its subject, issuer, validity window, SANs, and fingerprint.</p>
+      <p class="tool-intro">Paste a PEM certificate to see its issuer, validity dates, SANs, key usage, and fingerprint.</p>      <p>Paste a PEM-encoded X.509 certificate to inspect its subject, issuer, validity window, SANs, and fingerprint.</p>
     </div>
-    <div class="grid-2">
+    <p class="tool-intro" style="margin-top:-6px;"><a href="/tools/certificate-decoder.html" style="color:var(--accent);">About this Certificate Decoder &rarr;</a></p>
+      <div class="grid-2">
       <div class="card">
         <div class="field">
           <label>Certificate (PEM)</label>
@@ -361,9 +395,10 @@
   <section class="panel" id="match">
     <div class="tool-head">
       <h2>Key ↔ Certificate Match</h2>
-      <p>Confirms whether a private key belongs to a given certificate (or CSR) by comparing their public key components. RSA keys are fully supported; EC key support is best-effort.</p>
+      <p class="tool-intro">Check whether a private key matches a certificate before you deploy it — catches the classic "wrong key uploaded" mistake before it causes an outage.</p>      <p>Confirms whether a private key belongs to a given certificate (or CSR) by comparing their public key components. RSA keys are fully supported; EC key support is best-effort.</p>
     </div>
-    <div class="grid-2">
+    <p class="tool-intro" style="margin-top:-6px;"><a href="/tools/key-certificate-match.html" style="color:var(--accent);">About this Key/Certificate Match tool &rarr;</a></p>
+      <div class="grid-2">
       <div class="card">
         <div class="field">
           <label>Private Key (PEM)</label>
@@ -389,9 +424,10 @@
   <section class="panel" id="pfx">
     <div class="tool-head">
       <h2>PFX / PKCS#12 Generator</h2>
-      <p>Bundles a certificate, its private key, and an optional chain into a password-protected .pfx file for import into IIS, browsers, or app servers.</p>
+      <p class="tool-intro">Bundle a certificate, private key, and chain into a password-protected .pfx / .p12 file for IIS, Windows, or Java deployments.</p>      <p>Bundles a certificate, its private key, and an optional chain into a password-protected .pfx file for import into IIS, browsers, or app servers.</p>
     </div>
-    <div class="grid-2">
+    <p class="tool-intro" style="margin-top:-6px;"><a href="/tools/pfx-generator.html" style="color:var(--accent);">About this PFX Generator &rarr;</a></p>
+      <div class="grid-2">
       <div class="card">
         <div class="field">
           <label>Certificate (PEM)</label>
@@ -433,12 +469,13 @@
   <section class="panel" id="jks">
     <div class="tool-head">
       <h2>JKS (Java KeyStore) Generator</h2>
-      <p>Bundles a certificate, its private key, and an optional chain into a password-protected .jks file for Tomcat, generic Java apps, and similar Java-based servers.</p>
+      <p class="tool-intro">Build a Java KeyStore (.jks) from a certificate, private key, and chain — for Tomcat, WildFly, and other Java application servers.</p>      <p>Bundles a certificate, its private key, and an optional chain into a password-protected .jks file for Tomcat, generic Java apps, and similar Java-based servers.</p>
     </div>
     <div class="warn-box">
       <b>Verify before relying on it in production:</b> the JKS format is Java's own proprietary (reverse-engineered, not officially published) format. This is built to match that reverse-engineered spec as closely as possible, but always confirm with <code>keytool -list -v -keystore yourfile.jks</code> (comes with any JDK) before deploying it anywhere that matters.
     </div>
-    <div class="grid-2">
+    <p class="tool-intro" style="margin-top:-6px;"><a href="/tools/jks-generator.html" style="color:var(--accent);">About this JKS Generator &rarr;</a></p>
+      <div class="grid-2">
       <div class="card">
         <div class="field">
           <label>Certificate (PEM)</label>
@@ -480,9 +517,10 @@
   <section class="panel" id="keygen">
     <div class="tool-head">
       <h2>Key Pair Generator &amp; Self-Signed Certificate</h2>
-      <p>Generates a fresh RSA key pair locally. Optionally signs it into a self-signed X.509 certificate — handy for internal dev/test environments where you don't need a CA-issued cert.</p>
+      <p class="tool-intro">Generate an RSA or ECC key pair and an optional self-signed certificate for local development and testing.</p>      <p>Generates a fresh RSA key pair locally. Optionally signs it into a self-signed X.509 certificate — handy for internal dev/test environments where you don't need a CA-issued cert.</p>
     </div>
-    <div class="grid-2">
+    <p class="tool-intro" style="margin-top:-6px;"><a href="/tools/keypair-generator.html" style="color:var(--accent);">About this Key Pair Generator &rarr;</a></p>
+      <div class="grid-2">
       <div class="card">
         <div class="field-row">
           <div class="field"><label>Key Size</label>
@@ -561,6 +599,7 @@
   <section class="panel" id="pemder">
     <div class="tool-head">
       <h2>PEM ⇄ DER Converter</h2>
+      <p class="tool-intro">Convert certificates and private keys between PEM (Base64) and DER (binary) encoding.</p>
       <p>Converts between Base64 PEM (text) and binary DER encoding for certificates, CSRs, and keys — works both directions, entirely offline.</p>
     </div>
     <div class="grid-2">
@@ -610,6 +649,7 @@
   <section class="panel" id="chain">
     <div class="tool-head">
       <h2>Certificate Chain Sorter &amp; Validator</h2>
+      <p class="tool-intro">Paste an unordered set of certificates and get back a correctly ordered chain, leaf to root.</p>
       <p>Paste any number of certificates in any order. This sorts them leaf → intermediate(s) → root, verifies each signature link, and flags a broken or incomplete chain.</p>
     </div>
     <div class="grid-2">
@@ -647,6 +687,7 @@
   <section class="panel" id="passphrase">
     <div class="tool-head">
       <h2>Private Key Passphrase Add / Remove</h2>
+      <p class="tool-intro">Add or remove a passphrase on an existing private key.</p>
       <p>Decrypt a passphrase-protected private key, or encrypt a plain one. Leave "New Passphrase" empty to strip encryption; fill it in to add or change it.</p>
     </div>
     <div class="grid-2">
@@ -679,6 +720,7 @@
   <section class="panel" id="hashtools">
     <div class="tool-head">
       <h2>Hash Calculator &amp; OpenSSL Command Generator</h2>
+      <p class="tool-intro">Compute SHA-256 / SHA-1 hashes and get the equivalent OpenSSL command line.</p>
       <p>Compute common hashes of text or a file, or build the exact <code>openssl</code> command for a task without memorising the flags.</p>
     </div>
     <div class="grid-2">
@@ -744,6 +786,7 @@
   <section class="panel" id="dnscheck">
     <div class="tool-head">
       <h2>DNS CAA &amp; TXT Record Checker</h2>
+      <p class="tool-intro">Check a domain's CAA and TXT records to confirm which certificate authorities are authorized to issue for it.</p>
       <p>Looks up CAA and TXT records (including <code>_acme-challenge</code>) for a domain via Google's public DNS-over-HTTPS resolver — useful before requesting a certificate or verifying ACME DNS-01 validation.</p>
     </div>
     <div class="warn-box">
@@ -768,6 +811,7 @@
   <section class="panel" id="health">
     <div class="tool-head">
       <h2>Certificate Health Checker</h2>
+      <p class="tool-intro">Check a live domain's certificate for expiry, chain issues, and common misconfigurations.</p>
       <p>Paste a certificate to get a quick pass/warn/fail checklist — expiry, key strength, signature algorithm, wildcard usage, self-signed status, and SAN presence.</p>
     </div>
     <div class="grid-2">
@@ -792,6 +836,7 @@
   <section class="panel" id="bulk">
     <div class="tool-head">
       <h2>Bulk Certificate Decoder</h2>
+      <p class="tool-intro">Decode multiple certificates at once — paste a batch and get a summary for each.</p>
       <p>Paste any number of certificates at once to get a summary table — Common Name, Issuer, expiry date, days remaining, and key size — for auditing many certs quickly.</p>
     </div>
     <div class="card" style="margin-bottom:22px;">
@@ -814,6 +859,7 @@
   <section class="panel" id="sancheck">
     <div class="tool-head">
       <h2>SAN / Multi-Domain Coverage Checker</h2>
+      <p class="tool-intro">Confirm exactly which hostnames a certificate covers before you rely on it in production.</p>
       <p>Paste a certificate and the list of hostnames it needs to cover — this checks each one against the Common Name and Subject Alternative Names (including wildcard matches).</p>
     </div>
     <div class="grid-2">
@@ -843,6 +889,7 @@
   <section class="panel" id="crlext">
     <div class="tool-head">
       <h2>CRL / OCSP URL Extractor</h2>
+      <p class="tool-intro">Pull the CRL distribution points and OCSP responder URLs out of a certificate.</p>
       <p>Pulls the CRL distribution points and OCSP responder URLs out of a certificate's extensions — useful for tracing how revocation would be checked. This only extracts the URLs; it doesn't perform a live revocation check.</p>
     </div>
     <div class="grid-2">
@@ -867,6 +914,7 @@
   <section class="panel" id="ssllabs">
     <div class="tool-head">
       <h2>SSL Labs Test</h2>
+      <p class="tool-intro">Kick off a Qualys SSL Labs test against a live hostname, right from this page.</p>
       <p>Runs a full, live TLS configuration scan of a public domain using Qualys SSL Labs — protocol support, cipher suites, certificate chain, key exchange, and an overall grade. This is an external server-side test, so it opens on ssllabs.com in a new tab rather than running in this page.</p>
     </div>
     <div class="grid-2">
@@ -899,14 +947,26 @@
 
 <script>
 // ---------------- Tab switching ----------------
-document.getElementById('tabs').addEventListener('click', (e) => {
-  const btn = e.target.closest('.tab-btn');
-  if (!btn) return;
+function activateTab(tabId){
+  const btn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+  const panel = document.getElementById(tabId);
+  if (!btn || !panel) return false;
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
-  document.getElementById(btn.dataset.tab).classList.add('active');
+  panel.classList.add('active');
+  return true;
+}
+document.getElementById('tabs').addEventListener('click', (e) => {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn) return;
+  activateTab(btn.dataset.tab);
+  history.replaceState(null, '', '#' + btn.dataset.tab);
 });
+// Deep-link support: /tools/#jks, /tools/index.html#pfx, etc.
+if (location.hash) {
+  activateTab(location.hash.slice(1));
+}
 
 // ---------------- Shared helpers ----------------
 function showToast(msg){
