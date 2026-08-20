@@ -45,9 +45,9 @@
   }
 
   .support-card {
-    background: var(--panel, #101a2c);
-    border: 1px solid var(--border, #1e2c42);
-    border-radius: 16px;
+    background: #fff;
+    border: 1px solid var(--silver-line-strong, rgba(184,196,209,0.6));
+    border-radius: var(--radius, 14px);
     padding: 32px;
     display: flex;
     flex-direction: column;
@@ -58,18 +58,18 @@
     font-size: 12px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: var(--accent, #2dd4a7);
+    color: var(--signal-mint, #2fbf8f);
     font-weight: 700;
   }
   .support-card h3 {
     margin: 0;
     font-size: 22px;
     font-family: 'Space Grotesk', sans-serif;
-    color: #f2f6fa;
+    color: var(--ink-navy, #0b1f3a);
   }
   .support-card p {
     margin: 0;
-    color: var(--muted, #9fb0c3);
+    color: var(--ink-soft, #4a5a70);
     line-height: 1.6;
     font-size: 15px;
     flex-grow: 1;
@@ -77,7 +77,7 @@
   .support-card ul {
     margin: 0;
     padding-left: 18px;
-    color: var(--muted, #9fb0c3);
+    color: var(--ink-soft, #4a5a70);
     font-size: 14px;
     line-height: 1.9;
   }
@@ -86,7 +86,14 @@
     margin-top: 8px;
   }
 
-  /* ================= DAY / NIGHT TOGGLE ================= */
+  /* ================= DAY / NIGHT TOGGLE (site-wide) =================
+     The site's real default theme (from style.css) is LIGHT content
+     (paper background, dark ink text) with fixed dark-navy accent bands
+     (header, hero, footer, .on-dark blocks) — that part never changes.
+     "Light" = the site exactly as designed, zero overrides needed.
+     "Dark"  = the plain light content sections (FAQ, feature cards,
+     use-case cards, blog cards) switch to a dark panel treatment too.
+  ========================================================================= */
   #theme-toggle {
     position: fixed;
     top: 18px;
@@ -95,9 +102,9 @@
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    border: 1px solid #1e2c42;
-    background: #101a2c;
-    color: #e6edf3;
+    border: 1px solid var(--silver-line-strong, rgba(184,196,209,0.6));
+    background: #fff;
+    color: #0f1a2b;
     font-size: 18px;
     cursor: pointer;
     display: flex;
@@ -105,60 +112,56 @@
     justify-content: center;
     transition: background .25s ease, border-color .25s ease, color .25s ease;
   }
+  body[data-theme="dark"] #theme-toggle {
+    background: #101a2c;
+    border-color: #1e2c42;
+    color: #e6edf3;
+  }
 
-  body[data-theme="light"] {
-    background: #f4f7fb !important;
-    color: #0b1220 !important;
+  body[data-theme="dark"] {
+    background: #0b1220 !important;
+    color: #e6edf3 !important;
   }
-  body[data-theme="light"] .site-header {
-    background: #ffffff !important;
-    border-bottom: 1px solid #dde5ee !important;
+  section.block:not(.on-dark) .block-head h2 {
+    color: inherit;
   }
-  body[data-theme="light"] .main-nav a {
-    color: #0b1220 !important;
+  body[data-theme="dark"] section.block:not(.on-dark) .block-head h2 {
+    color: #f2f6fa !important;
   }
-  body[data-theme="light"] .brand-word {
-    color: #0b1220 !important;
+  body[data-theme="dark"] section.block:not(.on-dark) .block-head p {
+    color: #9fb0c3 !important;
   }
-  body[data-theme="light"] .hero,
-  body[data-theme="light"] .block,
-  body[data-theme="light"] .block.on-dark {
-    background: #f4f7fb !important;
-    color: #0b1220 !important;
+  body[data-theme="dark"] .feature-card,
+  body[data-theme="dark"] .usecase-card,
+  body[data-theme="dark"] .blog-card,
+  body[data-theme="dark"] .support-card,
+  body[data-theme="dark"] .empty-state {
+    background: #101a2c !important;
+    border-color: #1e2c42 !important;
   }
-  body[data-theme="light"] .lede,
-  body[data-theme="light"] p {
-    color: #33465f !important;
+  body[data-theme="dark"] .feature-card h3,
+  body[data-theme="dark"] .usecase-card h3,
+  body[data-theme="dark"] .blog-card h3,
+  body[data-theme="dark"] .support-card h3,
+  body[data-theme="dark"] .empty-state h3 {
+    color: #f2f6fa !important;
   }
-  body[data-theme="light"] h1,
-  body[data-theme="light"] h2,
-  body[data-theme="light"] h3 {
-    color: #0b1220 !important;
+  body[data-theme="dark"] .feature-card p,
+  body[data-theme="dark"] .usecase-card p,
+  body[data-theme="dark"] .blog-card p,
+  body[data-theme="dark"] .support-card p,
+  body[data-theme="dark"] .support-card ul,
+  body[data-theme="dark"] .empty-state {
+    color: #9fb0c3 !important;
   }
-  body[data-theme="light"] .support-card {
-    background: #ffffff !important;
-    border-color: #dde5ee !important;
+  body[data-theme="dark"] .faq-item {
+    border-color: #1e2c42 !important;
   }
-  body[data-theme="light"] .support-card h3 {
-    color: #0b1220 !important;
+  body[data-theme="dark"] .faq-item summary {
+    color: #f2f6fa !important;
   }
-  body[data-theme="light"] .support-card p,
-  body[data-theme="light"] .support-card ul {
-    color: #51607a !important;
-  }
-  body[data-theme="light"] .site-footer {
-    background: #ffffff !important;
-    border-top: 1px solid #dde5ee !important;
-    color: #0b1220 !important;
-  }
-  body[data-theme="light"] .footer-col a,
-  body[data-theme="light"] .footer-brand p {
-    color: #51607a !important;
-  }
-  body[data-theme="light"] #theme-toggle {
-    background: #ffffff !important;
-    border-color: #dde5ee !important;
-    color: #0b1220 !important;
+  body[data-theme="dark"] .faq-item p {
+    color: #9fb0c3 !important;
   }
 </style>
 <script>
@@ -166,11 +169,11 @@
     function applyTheme(theme) {
       document.body.setAttribute('data-theme', theme);
       var btn = document.getElementById('theme-toggle');
-      if (btn) btn.textContent = theme === 'dark' ? '🌙' : '☀️';
+      if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
       localStorage.setItem('pkipro-theme', theme);
     }
     document.addEventListener('DOMContentLoaded', function () {
-      var saved = localStorage.getItem('pkipro-theme') || 'dark';
+      var saved = localStorage.getItem('pkipro-theme') || 'light';
       applyTheme(saved);
       var btn = document.getElementById('theme-toggle');
       btn.addEventListener('click', function () {

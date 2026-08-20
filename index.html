@@ -28,7 +28,104 @@
 <style>
   /* "pro" in the wordmark → gold, overriding the stylesheet's green */
   .brand-word b { color: #D4AF37; }
+  /* ================= DAY / NIGHT TOGGLE (site-wide) =================
+     The site's real default theme (from style.css) is LIGHT content
+     (paper background, dark ink text) with fixed dark-navy accent bands
+     (header, hero, footer, .on-dark blocks) — that part never changes.
+     "Light" = the site exactly as designed, zero overrides needed.
+     "Dark"  = the plain light content sections (FAQ, feature cards,
+     use-case cards, blog cards) switch to a dark panel treatment too.
+  ========================================================================= */
+  #theme-toggle {
+    position: fixed;
+    top: 18px;
+    right: 24px;
+    z-index: 999;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--silver-line-strong, rgba(184,196,209,0.6));
+    background: #fff;
+    color: #0f1a2b;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .25s ease, border-color .25s ease, color .25s ease;
+  }
+  body[data-theme="dark"] #theme-toggle {
+    background: #101a2c;
+    border-color: #1e2c42;
+    color: #e6edf3;
+  }
+
+  body[data-theme="dark"] {
+    background: #0b1220 !important;
+    color: #e6edf3 !important;
+  }
+  section.block:not(.on-dark) .block-head h2 {
+    color: inherit;
+  }
+  body[data-theme="dark"] section.block:not(.on-dark) .block-head h2 {
+    color: #f2f6fa !important;
+  }
+  body[data-theme="dark"] section.block:not(.on-dark) .block-head p {
+    color: #9fb0c3 !important;
+  }
+  body[data-theme="dark"] .feature-card,
+  body[data-theme="dark"] .usecase-card,
+  body[data-theme="dark"] .blog-card,
+  body[data-theme="dark"] .support-card,
+  body[data-theme="dark"] .empty-state {
+    background: #101a2c !important;
+    border-color: #1e2c42 !important;
+  }
+  body[data-theme="dark"] .feature-card h3,
+  body[data-theme="dark"] .usecase-card h3,
+  body[data-theme="dark"] .blog-card h3,
+  body[data-theme="dark"] .support-card h3,
+  body[data-theme="dark"] .empty-state h3 {
+    color: #f2f6fa !important;
+  }
+  body[data-theme="dark"] .feature-card p,
+  body[data-theme="dark"] .usecase-card p,
+  body[data-theme="dark"] .blog-card p,
+  body[data-theme="dark"] .support-card p,
+  body[data-theme="dark"] .support-card ul,
+  body[data-theme="dark"] .empty-state {
+    color: #9fb0c3 !important;
+  }
+  body[data-theme="dark"] .faq-item {
+    border-color: #1e2c42 !important;
+  }
+  body[data-theme="dark"] .faq-item summary {
+    color: #f2f6fa !important;
+  }
+  body[data-theme="dark"] .faq-item p {
+    color: #9fb0c3 !important;
+  }
 </style>
+<script>
+  (function () {
+    function applyTheme(theme) {
+      document.body.setAttribute('data-theme', theme);
+      var btn = document.getElementById('theme-toggle');
+      if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('pkipro-theme', theme);
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      var saved = localStorage.getItem('pkipro-theme') || 'light';
+      applyTheme(saved);
+      var btn = document.getElementById('theme-toggle');
+      btn.addEventListener('click', function () {
+        var current = document.body.getAttribute('data-theme');
+        applyTheme(current === 'dark' ? 'light' : 'dark');
+      });
+    });
+  })();
+</script>
+
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -66,6 +163,8 @@
 </script>
 </head>
 <body>
+
+<button id="theme-toggle" aria-label="Toggle light/dark mode">🌙</button>
 
 <header class="site-header">
   <div class="wrap">
