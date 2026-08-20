@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Support Services — HSM, PKI, SSL/TLS, DSC, Code Signing & CLM | PKI Pro</title>
+<meta name="description" content="PKI Pro's professional services: HSM deployment and support, PKI consulting, SSL/TLS certificate management, DSC (Digital Signature Certificate) issuance, code signing solutions, Certificate Lifecycle Management, and DigiCert TLM implementation." />
+<link rel="canonical" href="https://pkipro.in/support.html" />
+
+<!-- Open Graph / social sharing -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="PKI Pro" />
+<meta property="og:title" content="Support Services — HSM, PKI, SSL/TLS, DSC, Code Signing & CLM" />
+<meta property="og:description" content="Professional services across the full PKI stack — HSMs, SSL/TLS, DSC, code signing, CLM, and DigiCert TLM — delivered by PKI Pro." />
+<meta property="og:url" content="https://pkipro.in/support.html" />
+<meta property="og:image" content="https://pkipro.in/assets/img/logo-mark.png" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Support Services — HSM, PKI, SSL/TLS, DSC, Code Signing & CLM" />
+<meta name="twitter:description" content="Professional services across the full PKI stack — HSMs, SSL/TLS, DSC, code signing, CLM, and DigiCert TLM — delivered by PKI Pro." />
+<meta name="twitter:image" content="https://pkipro.in/assets/img/logo-mark.png" />
+
+<link rel="icon" type="image/png" href="assets/img/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+<style>
+  .brand-word b { color: #D4AF37; }
+
+  .support-hero {
+    padding: 96px 0 48px;
+  }
+  .support-hero .eyebrow { display:block; margin-bottom:14px; }
+  .support-hero h1 { max-width: 820px; }
+  .support-hero .lede { max-width: 680px; }
+
+  .support-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 48px;
+  }
+  @media (max-width: 860px) {
+    .support-grid { grid-template-columns: 1fr; }
+  }
+
+  .support-card {
+    background: var(--panel, #101a2c);
+    border: 1px solid var(--border, #1e2c42);
+    border-radius: 16px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .support-card .tag {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent, #2dd4a7);
+    font-weight: 700;
+  }
+  .support-card h3 {
+    margin: 0;
+    font-size: 22px;
+    font-family: 'Space Grotesk', sans-serif;
+    color: #f2f6fa;
+  }
+  .support-card p {
+    margin: 0;
+    color: var(--muted, #9fb0c3);
+    line-height: 1.6;
+    font-size: 15px;
+    flex-grow: 1;
+  }
+  .support-card ul {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--muted, #9fb0c3);
+    font-size: 14px;
+    line-height: 1.9;
+  }
+  .support-card .btn {
+    align-self: flex-start;
+    margin-top: 8px;
+  }
+
+  /* ================= DAY / NIGHT TOGGLE ================= */
+  #theme-toggle {
+    position: fixed;
+    top: 18px;
+    right: 24px;
+    z-index: 999;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid #1e2c42;
+    background: #101a2c;
+    color: #e6edf3;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .25s ease, border-color .25s ease, color .25s ease;
+  }
+
+  body[data-theme="light"] {
+    background: #f4f7fb !important;
+    color: #0b1220 !important;
+  }
+  body[data-theme="light"] .site-header {
+    background: #ffffff !important;
+    border-bottom: 1px solid #dde5ee !important;
+  }
+  body[data-theme="light"] .main-nav a {
+    color: #0b1220 !important;
+  }
+  body[data-theme="light"] .brand-word {
+    color: #0b1220 !important;
+  }
+  body[data-theme="light"] .hero,
+  body[data-theme="light"] .block,
+  body[data-theme="light"] .block.on-dark {
+    background: #f4f7fb !important;
+    color: #0b1220 !important;
+  }
+  body[data-theme="light"] .lede,
+  body[data-theme="light"] p {
+    color: #33465f !important;
+  }
+  body[data-theme="light"] h1,
+  body[data-theme="light"] h2,
+  body[data-theme="light"] h3 {
+    color: #0b1220 !important;
+  }
+  body[data-theme="light"] .support-card {
+    background: #ffffff !important;
+    border-color: #dde5ee !important;
+  }
+  body[data-theme="light"] .support-card h3 {
+    color: #0b1220 !important;
+  }
+  body[data-theme="light"] .support-card p,
+  body[data-theme="light"] .support-card ul {
+    color: #51607a !important;
+  }
+  body[data-theme="light"] .site-footer {
+    background: #ffffff !important;
+    border-top: 1px solid #dde5ee !important;
+    color: #0b1220 !important;
+  }
+  body[data-theme="light"] .footer-col a,
+  body[data-theme="light"] .footer-brand p {
+    color: #51607a !important;
+  }
+  body[data-theme="light"] #theme-toggle {
+    background: #ffffff !important;
+    border-color: #dde5ee !important;
+    color: #0b1220 !important;
+  }
+</style>
+<script>
+  (function () {
+    function applyTheme(theme) {
+      document.body.setAttribute('data-theme', theme);
+      var btn = document.getElementById('theme-toggle');
+      if (btn) btn.textContent = theme === 'dark' ? '🌙' : '☀️';
+      localStorage.setItem('pkipro-theme', theme);
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      var saved = localStorage.getItem('pkipro-theme') || 'dark';
+      applyTheme(saved);
+      var btn = document.getElementById('theme-toggle');
+      btn.addEventListener('click', function () {
+        var current = document.body.getAttribute('data-theme');
+        applyTheme(current === 'dark' ? 'light' : 'dark');
+      });
+    });
+  })();
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "PKI Pro Support Services",
+  "url": "https://pkipro.in/support.html",
+  "provider": { "@type": "Organization", "name": "PKI Pro", "url": "https://pkipro.in/" },
+  "serviceType": ["HSM Support", "PKI Consulting", "SSL/TLS Certificate Management", "DSC Issuance", "Code Signing", "Certificate Lifecycle Management", "DigiCert TLM Implementation"]
+}
+</script>
+</head>
+<body>
+
+<button id="theme-toggle" aria-label="Toggle light/dark mode">🌙</button>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <img src="assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+      <span class="brand-word">pki<b>pro</b>.in</span>
+    </a>
+    <nav class="main-nav">
+      <a href="securesign-pro.html">SecureSign Pro</a>
+      <a href="secureclm-pro.html">SecureCLM Pro</a>
+      <a href="/tools/">PKI Tools</a>
+      <a href="support.html">Support</a>
+      <a href="index.html#why">Why Us</a>
+      <a href="#usecases">Use cases</a>
+      <a href="#faq">FAQ</a>
+      <a href="blog.html">Blog</a>
+      <a href="#contact" class="nav-cta">Talk to us</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero support-hero">
+  <div class="wrap">
+    <span class="eyebrow">Professional services</span>
+    <h1>Support across the <em>entire PKI stack</em>, not just our own products.</h1>
+    <p class="lede">From HSM deployment to SSL/TLS renewals to full Certificate Lifecycle Management rollouts — our team helps you plan, implement, and run the infrastructure that keeps every signature and connection trusted.</p>
+  </div>
+</section>
+
+<!-- ================= SERVICES GRID ================= -->
+<section class="block" id="services">
+  <div class="wrap">
+    <div class="support-grid">
+
+      <div class="support-card">
+        <span class="tag">Hardware</span>
+        <h3>HSM Deployment &amp; Support</h3>
+        <p>Sizing, procurement guidance, installation, and ongoing support for Hardware Security Modules — network-attached and PCIe, across major vendors.</p>
+        <ul>
+          <li>Thales ProtectServer, Utimaco, nCipher/Entrust, SafeNet Luna</li>
+          <li>Key ceremony planning &amp; ceremony execution</li>
+          <li>High-availability and DR cluster setup</li>
+          <li>PKCS#11 / KMIP integration with your applications</li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">Talk to us</a>
+      </div>
+
+      <div class="support-card">
+        <span class="tag">Consulting</span>
+        <h3>PKI Design &amp; Consulting</h3>
+        <p>Architecture reviews and greenfield PKI design — root/intermediate CA hierarchy, policies, and compliance mapping for your industry.</p>
+        <ul>
+          <li>CA hierarchy design (root, issuing, policy CAs)</li>
+          <li>Certificate policy &amp; CPS drafting support</li>
+          <li>Compliance alignment (eIDAS, IT Act 2000, WebTrust)</li>
+          <li>Migration planning from legacy PKI</li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">Talk to us</a>
+      </div>
+
+      <div class="support-card">
+        <span class="tag">Web security</span>
+        <h3>SSL/TLS Certificate Management</h3>
+        <p>Procurement, installation, and renewal management for SSL/TLS certificates across your domains, subdomains, and internal services.</p>
+        <ul>
+          <li>DV, OV, EV &amp; wildcard certificate issuance</li>
+          <li>Multi-domain (SAN) and internal PKI certificates</li>
+          <li>Automated renewal to prevent expiry outages</li>
+          <li>Server/load-balancer installation across environments</li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">Talk to us</a>
+      </div>
+
+      <div class="support-card">
+        <span class="tag">Signing</span>
+        <h3>DSC (Digital Signature Certificate)</h3>
+        <p>End-to-end support for Class 3 DSC issuance and USB token setup for individuals and organizations — GST, MCA, e-tendering, and Income Tax filings.</p>
+        <ul>
+          <li>Class 3 individual &amp; organization DSCs</li>
+          <li>USB token procurement and driver setup</li>
+          <li>Renewal reminders before expiry</li>
+          <li>Bulk issuance for teams and departments</li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">Talk to us</a>
+      </div>
+
+      <div class="support-card">
+        <span class="tag">Software trust</span>
+        <h3>Code Signing Solutions</h3>
+        <p>Certificate issuance and signing-pipeline setup so every executable, driver, or installer you ship carries a verified publisher identity.</p>
+        <ul>
+          <li>Standard &amp; EV Code Signing certificates</li>
+          <li>HSM-backed key storage (CA/Browser Forum compliant)</li>
+          <li>CI/CD pipeline integration for automated signing</li>
+          <li>Timestamping setup for long-term validity</li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">Talk to us</a>
+      </div>
+
+      <div class="support-card">
+        <span class="tag">Automation</span>
+        <h3>Certificate Lifecycle Management (CLM)</h3>
+        <p>Discovery, issuance, renewal, and deployment automation across your entire certificate estate — so nothing expires unnoticed.</p>
+        <ul>
+          <li>Network-wide certificate discovery &amp; inventory</li>
+          <li>Multi-CA support in a single console</li>
+          <li>Automated renewal and redeployment workflows</li>
+          <li>Expiry alerts and audit-ready reporting</li>
+        </ul>
+        <a href="secureclm-pro.html" class="btn btn-primary">See SecureCLM Pro</a>
+      </div>
+
+      <div class="support-card">
+        <span class="tag">Platform</span>
+        <h3>DigiCert TLM Implementation</h3>
+        <p>Onboarding and configuration support for DigiCert Trust Lifecycle Manager — connectors, policies, and workflow setup tailored to your environment.</p>
+        <ul>
+          <li>Initial onboarding &amp; tenant configuration</li>
+          <li>Connector setup (ACME, network discovery agents)</li>
+          <li>Approval workflow &amp; role-based access setup</li>
+          <li>Migration from existing CLM tools</li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">Talk to us</a>
+      </div>
+
+      <div class="support-card">
+        <span class="tag">Ongoing</span>
+        <h3>Managed Support &amp; SLAs</h3>
+        <p>Ongoing support plans for teams that want a single point of contact across their HSM, PKI, and certificate infrastructure.</p>
+        <ul>
+          <li>Priority email &amp; phone support</li>
+          <li>Scheduled health checks and renewal audits</li>
+          <li>Incident response for expiry or outage events</li>
+          <li>Custom SLA options for enterprise accounts</li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">Talk to us</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= DEMO / CONTACT ================= -->
+<section class="block on-dark" id="contact">
+  <div class="wrap">
+    <h2>Not sure where to start?</h2>
+    <p class="lede">Tell us what you're working with — HSM vendor, current CA, number of certificates — and we'll point you to the right service.</p>
+    <div class="hero-ctas">
+      <a href="mailto:info@pkipro.in?subject=Support%20Services%20Enquiry" class="btn btn-primary">Email info@pkipro.in</a>
+      <a href="tel:+918860498904" class="btn btn-secondary">Call +91 88604 98904</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="brand">
+          <img src="assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+          <span class="brand-word">pki<b>pro</b>.in</span>
+        </a>
+        <p>Digital trust infrastructure for enterprises — signing, sealing, and audit, built to standards.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="securesign-pro.html">SecureSign Pro</a>
+          <a href="secureclm-pro.html">SecureCLM Pro</a>
+          <a href="support.html">Support Services</a>
+          <a href="index.html#why">Why PKI Pro</a>
+          <a href="index.html#security">Security</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="blog.html">Blog</a>
+          <a href="#faq">FAQ</a>
+          <a href="#contact">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <a href="mailto:info@pkipro.in">info@pkipro.in</a>
+          <a href="tel:+918860498904">+91 88604 98904</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> PKI Pro. All rights reserved.</span>
+      <span>pkipro.in</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/script.js"></script>
+</body>
+</html>
