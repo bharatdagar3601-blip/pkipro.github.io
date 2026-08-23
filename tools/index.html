@@ -55,6 +55,30 @@
     --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
     --sans: 'Inter', system-ui, -apple-system, sans-serif;
   }
+  /* ================= DAY / NIGHT TOGGLE =================
+     This page is already built entirely on CSS custom properties, so a full
+     light theme only needs to redefine the root variables — every component
+     (panels, borders, text, kv-grid, cards, terminal windows) follows automatically. */
+  [data-theme="light"]{
+    --bg:#f5f7fa;
+    --bg-grid: rgba(15,26,43,0.035);
+    --panel:#ffffff;
+    --panel-2:#f0f3f7;
+    --border:#d7dee6;
+    --border-soft:#e3e8ee;
+    --text:#0f1a2b;
+    --muted:#5a6b80;
+    --muted-2:#8695a8;
+    --accent:#0d9488;
+    --accent-dim:#0b7267;
+  }
+  #theme-toggle{
+    position:fixed; top:18px; right:24px; z-index:999;
+    width:44px; height:44px; border-radius:50%;
+    border:1px solid var(--border); background:var(--panel); color:var(--text);
+    font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:background .25s ease, border-color .25s ease, color .25s ease;
+  }
   .tool-intro{ font-family:var(--sans); color:var(--muted); font-size:14px; line-height:1.6; margin:-6px 0 22px; max-width:62ch; }
   .brand-link{ color:inherit; text-decoration:none; }
   *{box-sizing:border-box;}
@@ -95,7 +119,7 @@
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
   h1{
     font-family:var(--sans); font-weight:800; font-size:clamp(30px,5vw,46px);
-    letter-spacing:-0.02em; margin:0 0 12px; color:#fff;
+    letter-spacing:-0.02em; margin:0 0 12px; color:var(--text);
   }
   h1 span{color:var(--accent);}
   .sub{color:var(--muted); font-size:16px; max-width:560px; margin:0 auto 22px;}
@@ -126,7 +150,7 @@
   @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
 
   .tool-head{margin-bottom:22px;}
-  .tool-head h2{font-size:22px; margin:0 0 6px; font-weight:700; color:#fff;}
+  .tool-head h2{font-size:22px; margin:0 0 6px; font-weight:700; color:var(--text);}
   .tool-head p{color:var(--muted); margin:0; font-size:14.5px; max-width:640px;}
 
   .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:22px;}
@@ -170,9 +194,18 @@
 
   /* ---------- Terminal output ---------- */
   .terminal{
-    background:#080b10; border:1px solid var(--border-soft);
+    background:#080b10; border:1px solid #161f2a;
     border-radius:14px; overflow:hidden;
     box-shadow: 0 0 0 1px rgba(45,212,191,0.04), 0 20px 40px -20px rgba(0,0,0,0.6);
+    /* This box always keeps its dark "code editor" look, in both page themes —
+       so pin these variables to their original dark values for everything inside it. */
+    --text:#e7ecf3;
+    --muted:#7d8a9c;
+    --muted-2:#57657a;
+    --accent:#2dd4bf;
+    --accent-dim:#1b7f74;
+    --border:#1c2733;
+    --border-soft:#161f2a;
   }
   .term-bar{
     display:flex; align-items:center; justify-content:space-between;
@@ -204,6 +237,15 @@
   .kv .row{padding:4px 0; border-bottom:1px dashed var(--border-soft);}
   .kv .row:last-child{border-bottom:none;}
 
+  .kv-grid{display:grid; grid-template-columns:1fr 1fr; gap:0 32px; font-family:var(--mono);}
+  .kv-col{display:flex; flex-direction:column;}
+  .kv-field{padding:10px 0; border-bottom:1px dashed var(--border-soft);}
+  .kv-field:last-child{border-bottom:none;}
+  .kv-label{display:block; color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px;}
+  .kv-value{display:block; color:var(--text); font-size:13.5px; word-break:break-all;}
+  .kv-empty{color:var(--muted-2);}
+  @media (max-width:640px){ .kv-grid{grid-template-columns:1fr;} }
+
   .status-line{
     display:inline-flex; align-items:center; gap:8px; font-family:var(--mono);
     font-size:13px; font-weight:600; padding:8px 14px; border-radius:8px; margin-bottom:14px;
@@ -232,6 +274,7 @@
 </style>
 </head>
 <body>
+<button id="theme-toggle" aria-label="Toggle light/dark mode">☀️</button>
 <div class="wrap">
 
   <header>
@@ -299,6 +342,8 @@
                 <option value="pq-mldsa44">ML-DSA-44 (NIST L2)</option>
                 <option value="pq-mldsa65">ML-DSA-65 (NIST L3)</option>
                 <option value="pq-mldsa87">ML-DSA-87 (NIST L5)</option>
+                <option value="pq-falcon512">Falcon-512 (NIST Round 3)</option>
+                <option value="pq-falcon1024">Falcon-1024 (NIST Round 3)</option>
               </optgroup>
             </select>
           </div>
@@ -1006,6 +1051,57 @@ function esc(s){
 function kvRow(label, value){
   return '<div class="row"><b>' + esc(label) + ':</b> ' + esc(value) + '</div>';
 }
+// Two-column labeled field layout: left = subject fields, right = key/signature/SAN details.
+function kvGrid(leftFields, rightFields){
+  const col = (fields) => fields.map(f =>
+    '<div class="kv-field"><span class="kv-label">' + esc(f.label) + '</span><span class="kv-value">' +
+    (f.value ? esc(f.value) : '<span class="kv-empty">—</span>') + '</span></div>'
+  ).join('');
+  return '<div class="kv-grid"><div class="kv-col">' + col(leftFields) + '</div><div class="kv-col">' + col(rightFields) + '</div></div>';
+}
+function subjectLeftFields(s){
+  return [
+    {label: 'Common name', value: s.cn},
+    {label: 'Organization', value: s.o},
+    {label: 'Organizational unit', value: s.ou},
+    {label: 'City/locality', value: s.l},
+    {label: 'State/province', value: s.st},
+    {label: 'Country', value: s.c}
+  ];
+}
+// Extracts subject fields from forge's own parsed attribute array (RSA path).
+function forgeSubjectToFields(attrs){
+  const out = {};
+  attrs.forEach(a => {
+    if (a.name === 'commonName') out.cn = a.value;
+    else if (a.name === 'organizationName') out.o = a.value;
+    else if (a.name === 'organizationalUnitName') out.ou = a.value;
+    else if (a.name === 'localityName') out.l = a.value;
+    else if (a.name === 'stateOrProvinceName') out.st = a.value;
+    else if (a.name === 'countryName') out.c = a.value;
+    else if (a.name === 'emailAddress') out.email = a.value;
+  });
+  return out;
+}
+// Extracts subject fields directly from the raw ASN.1 Name (EC / ML-DSA / Falcon paths).
+function rdnToFields(nameAsn1){
+  const out = {};
+  nameAsn1.value.forEach(rdnSet => {
+    rdnSet.value.forEach(atv => {
+      const oid = forge.asn1.derToOid(atv.value[0].value);
+      const name = forge.pki.oids[oid];
+      const val = atv.value[1].value;
+      if (name === 'commonName') out.cn = val;
+      else if (name === 'organizationName') out.o = val;
+      else if (name === 'organizationalUnitName') out.ou = val;
+      else if (name === 'localityName') out.l = val;
+      else if (name === 'stateOrProvinceName') out.st = val;
+      else if (name === 'countryName') out.c = val;
+      else if (name === 'emailAddress') out.email = val;
+    });
+  });
+  return out;
+}
 function showResult(placeholderId, outId, html){
   document.getElementById(placeholderId).style.display = 'none';
   const out = document.getElementById(outId);
@@ -1064,6 +1160,14 @@ const MLDSA_LEVELS = {
 };
 const MLDSA_OID_TO_LEVEL = Object.fromEntries(Object.values(MLDSA_LEVELS).map(l => [l.oid, l]));
 
+// Falcon (Round 3) — NIST has not finalized Falcon's FIPS-206 (FN-DSA) OIDs yet, so these use
+// the widely-adopted Open Quantum Safe (OQS) test-arc OIDs (also used by BouncyCastle, liboqs, etc).
+const FALCON_LEVELS = {
+  'pq-falcon512':  {name: 'falcon512',  oid: '1.3.9999.3.11', label: 'Falcon-512'},
+  'pq-falcon1024': {name: 'falcon1024', oid: '1.3.9999.3.14', label: 'Falcon-1024'}
+};
+const FALCON_OID_TO_LEVEL = Object.fromEntries(Object.values(FALCON_LEVELS).map(l => [l.oid, l]));
+
 let _mldsaModulePromise = null;
 function loadMLDSAModule(){
   // Loaded lazily, only when a Post-Quantum option is actually used — keeps the page
@@ -1072,6 +1176,14 @@ function loadMLDSAModule(){
     _mldsaModulePromise = import('https://cdn.jsdelivr.net/npm/@noble/post-quantum@0.7.0/ml-dsa.js/+esm');
   }
   return _mldsaModulePromise;
+}
+let _falconModulePromise = null;
+function loadFalconModule(){
+  // Same package/version as ML-DSA above, loaded lazily and only when needed.
+  if (!_falconModulePromise){
+    _falconModulePromise = import('https://cdn.jsdelivr.net/npm/@noble/post-quantum@0.7.0/falcon.js/+esm');
+  }
+  return _falconModulePromise;
 }
 
 // AlgorithmIdentifier with NO parameters field (required for ML-DSA per RFC 9881;
@@ -1248,6 +1360,40 @@ async function generateCSR(){
       ]);
       const keyPem = forge.pem.encode({type: 'PRIVATE KEY', body: forge.asn1.toDer(pkcs8).getBytes()});
       outputCsrAndKey(csrPem, keyPem);
+
+    } else if (keyType in FALCON_LEVELS){
+      const level = FALCON_LEVELS[keyType];
+      const mod = await loadFalconModule();
+      const impl = mod[level.name];
+
+      const seed = new Uint8Array(48);
+      crypto.getRandomValues(seed);
+      const keys = impl.keygen(seed);
+
+      const {csr, cri} = buildPlaceholderCri(cn, o, ou, l, st, c, email, sansRaw);
+      cri.value[2] = buildMLDSASubjectPublicKeyInfo(keys.publicKey, level.oid);
+
+      const criDer = forge.asn1.toDer(cri).getBytes();
+      const sig = impl.sign(binToU8(criDer), keys.secretKey);
+
+      // Same manual outer-CertificationRequest assembly as ML-DSA above — Falcon's
+      // AlgorithmIdentifier also has NO parameters.
+      const outer = forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.SEQUENCE, true, [
+        cri,
+        algIdNoParams(level.oid),
+        forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.BITSTRING, false, String.fromCharCode(0x00) + u8ToBin(sig))
+      ]);
+      const csrPem = forge.pem.encode({type: 'CERTIFICATE REQUEST', body: forge.asn1.toDer(outer).getBytes()});
+
+      // Private key: PKCS8 wrapping the raw secret key bytes directly (Falcon has no
+      // standardized seed-only private key format like ML-DSA's RFC 9881 does).
+      const pkcs8 = forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.SEQUENCE, true, [
+        forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.INTEGER, false, String.fromCharCode(0x00)),
+        algIdNoParams(level.oid),
+        forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.OCTETSTRING, false, u8ToBin(keys.secretKey))
+      ]);
+      const keyPem = forge.pem.encode({type: 'PRIVATE KEY', body: forge.asn1.toDer(pkcs8).getBytes()});
+      outputCsrAndKey(csrPem, keyPem);
     }
 
     showToast('CSR and key pair generated');
@@ -1314,14 +1460,15 @@ async function decodeCSR(){
         const sanExt = extReq.extensions.find(e => e.name === 'subjectAltName');
         if (sanExt && sanExt.altNames) sans = sanExt.altNames.map(n => n.value);
       }
+      const s = forgeSubjectToFields(csr.subject.attributes);
       let html = '<div class="status-line ' + (valid ? 'status-ok' : 'status-bad') + '">' +
         (valid ? '✓ Signature valid — this CSR was signed by the key it claims' : '✕ Signature does NOT verify') + '</div>';
-      html += '<div class="kv">';
-      html += kvRow('Subject', subjectToLines(csr.subject.attributes));
-      html += kvRow('Public Key', 'RSA, ' + bits + '-bit');
-      html += kvRow('Signature Algorithm', csr.siginfo && csr.siginfo.algorithmOid ? csr.siginfo.algorithmOid : 'sha256WithRSAEncryption');
-      if (sans.length) html += kvRow('Subject Alt Names', sans.join(', '));
-      html += '</div>';
+      html += kvGrid(subjectLeftFields(s), [
+        {label: 'Key algorithm', value: 'rsa'},
+        {label: 'Key size', value: String(bits)},
+        {label: 'Email', value: s.email},
+        {label: 'SANs', value: sans.length ? sans.join(', ') : ''}
+      ]);
       showResult('d_csr_placeholder', 'd_csr_out', html);
       return;
     }
@@ -1335,7 +1482,7 @@ async function decodeCSR(){
       const sigAlgOid = forge.asn1.derToOid(obj.value[1].value[0].value);
       const sigHash = EC_SIGOID_TO_HASH[sigAlgOid] || curve.hash;
 
-      const subjectStr = rdnToString(cri.value[1]);
+      const s = rdnToFields(cri.value[1]);
       const sans = extractSansFromCriAttributes(cri.value[3]);
 
       const pubKey = await crypto.subtle.importKey('raw', rawPoint, {name: 'ECDSA', namedCurve: curve.webName}, true, ['verify']);
@@ -1345,12 +1492,12 @@ async function decodeCSR(){
 
       let html = '<div class="status-line ' + (valid ? 'status-ok' : 'status-bad') + '">' +
         (valid ? '✓ Signature valid — this CSR was signed by the key it claims' : '✕ Signature does NOT verify') + '</div>';
-      html += '<div class="kv">';
-      html += kvRow('Subject', subjectStr);
-      html += kvRow('Public Key', curve.label + ', ' + curve.bits + '-bit');
-      html += kvRow('Signature Algorithm', sigAlgOid + ' (ecdsa-with-' + sigHash + ')');
-      if (sans.length) html += kvRow('Subject Alt Names', sans.join(', '));
-      html += '</div>';
+      html += kvGrid(subjectLeftFields(s), [
+        {label: 'Key algorithm', value: curve.label},
+        {label: 'Key size', value: curve.bits + '-bit'},
+        {label: 'Email', value: s.email},
+        {label: 'SANs', value: sans.length ? sans.join(', ') : ''}
+      ]);
       showResult('d_csr_placeholder', 'd_csr_out', html);
       return;
     }
@@ -1358,7 +1505,7 @@ async function decodeCSR(){
     if (algOid in MLDSA_OID_TO_LEVEL){
       const level = MLDSA_OID_TO_LEVEL[algOid];
       const pubKeyU8 = binToU8(spki.value[1].value.slice(1));
-      const subjectStr = rdnToString(cri.value[1]);
+      const s = rdnToFields(cri.value[1]);
       const sans = extractSansFromCriAttributes(cri.value[3]);
 
       const sigAlgOid = forge.asn1.derToOid(obj.value[1].value[0].value);
@@ -1371,12 +1518,38 @@ async function decodeCSR(){
 
       let html = '<div class="status-line ' + (valid ? 'status-ok' : 'status-bad') + '">' +
         (valid ? '✓ Signature valid — this CSR was signed by the key it claims' : '✕ Signature does NOT verify') + '</div>';
-      html += '<div class="kv">';
-      html += kvRow('Subject', subjectStr);
-      html += kvRow('Public Key', level.label + ' (post-quantum, experimental), ' + pubKeyU8.length + ' bytes');
-      html += kvRow('Signature Algorithm', sigAlgOid + ' (' + level.label + ')');
-      if (sans.length) html += kvRow('Subject Alt Names', sans.join(', '));
-      html += '</div>';
+      html += kvGrid(subjectLeftFields(s), [
+        {label: 'Key algorithm', value: level.label + ' (post-quantum, experimental)'},
+        {label: 'Key size', value: pubKeyU8.length + ' bytes'},
+        {label: 'Email', value: s.email},
+        {label: 'SANs', value: sans.length ? sans.join(', ') : ''}
+      ]);
+      showResult('d_csr_placeholder', 'd_csr_out', html);
+      return;
+    }
+
+    if (algOid in FALCON_OID_TO_LEVEL){
+      const level = FALCON_OID_TO_LEVEL[algOid];
+      const pubKeyU8 = binToU8(spki.value[1].value.slice(1));
+      const s = rdnToFields(cri.value[1]);
+      const sans = extractSansFromCriAttributes(cri.value[3]);
+
+      const sigAlgOid = forge.asn1.derToOid(obj.value[1].value[0].value);
+      const sigBytes = binToU8(obj.value[2].value.slice(1));
+      const criDer = forge.asn1.toDer(cri).getBytes();
+
+      const mod = await loadFalconModule();
+      const impl = mod[level.name];
+      const valid = impl.verify(sigBytes, binToU8(criDer), pubKeyU8);
+
+      let html = '<div class="status-line ' + (valid ? 'status-ok' : 'status-bad') + '">' +
+        (valid ? '✓ Signature valid — this CSR was signed by the key it claims' : '✕ Signature does NOT verify') + '</div>';
+      html += kvGrid(subjectLeftFields(s), [
+        {label: 'Key algorithm', value: level.label + ' (post-quantum, Round 3, experimental)'},
+        {label: 'Key size', value: pubKeyU8.length + ' bytes'},
+        {label: 'Email', value: s.email},
+        {label: 'SANs', value: sans.length ? sans.join(', ') : ''}
+      ]);
       showResult('d_csr_placeholder', 'd_csr_out', html);
       return;
     }
@@ -2232,6 +2405,23 @@ function extractCrlOcsp(){
     showError('cx_placeholder', 'cx_out', 'Could not parse certificate: ' + err.message);
   }
 }
+
+// ---------------- DAY / NIGHT TOGGLE ----------------
+(function(){
+  function applyTheme(theme){
+    document.documentElement.setAttribute('data-theme', theme);
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.textContent = theme === 'light' ? '🌙' : '☀️';
+    localStorage.setItem('pkipro-tools-theme', theme);
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    applyTheme(localStorage.getItem('pkipro-tools-theme') || 'dark');
+    document.getElementById('theme-toggle').addEventListener('click', function(){
+      const current = document.documentElement.getAttribute('data-theme');
+      applyTheme(current === 'light' ? 'dark' : 'light');
+    });
+  });
+})();
 </script>
 </body>
 </html>
