@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HSM Command Reference — Thales Luna, ProtectServer &amp; Entrust | PKI Pro</title>
+<meta name="description" content="Free HSM command reference: Thales Luna Network HSM setup, client registration, and HA groups; Thales ProtectServer slot/token management and PL2-to-PL3 FIPS migration; Entrust nShield Security World creation, ACS/OCS card sets, and firmware updates. Every command with copy-to-clipboard." />
+<link rel="canonical" href="https://pkipro.in/hsm-commands.html" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="PKI Pro" />
+<meta property="og:title" content="HSM Command Reference — Thales Luna, ProtectServer & Entrust" />
+<meta property="og:description" content="Thales Luna Network HSM setup, client registration, HA groups, cloning, and policies — every command with copy-to-clipboard." />
+<meta property="og:url" content="https://pkipro.in/hsm-commands.html" />
+<meta property="og:image" content="https://pkipro.in/assets/img/logo-mark.png" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="HSM Command Reference — Thales Luna, ProtectServer & Entrust" />
+<meta name="twitter:description" content="Thales Luna Network HSM setup, client registration, HA groups, cloning, and policies — every command with copy-to-clipboard." />
+<meta name="twitter:image" content="https://pkipro.in/assets/img/logo-mark.png" />
+
+<link rel="icon" type="image/png" href="/assets/img/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "HSM Command Reference — Thales Luna, ProtectServer & Entrust",
+  "url": "https://pkipro.in/hsm-commands.html",
+  "description": "A categorized, copy-paste command reference for Thales Luna Network HSM administration — initial setup, client registration, partitions, roles, HA groups, cloning, policies, and firmware updates.",
+  "author": { "@type": "Organization", "name": "PKI Pro", "url": "https://pkipro.in/" },
+  "publisher": { "@type": "Organization", "name": "PKI Pro", "url": "https://pkipro.in/", "logo": "https://pkipro.in/assets/img/logo-mark.png" }
+}
+</script>
+<style>
+  .brand-word b { color: #D4AF37; }
+
+  /* ---- Dark command-console theme, scoped to this page's content ---- */
+  .hsm-wrap{
+    --hbg:#0a0e14; --hpanel:#10161f; --hpanel2:#0d131b; --hborder:#1c2733; --hborder-soft:#161f2a;
+    --htext:#e7ecf3; --hmuted:#7d8a9c; --hmuted2:#57657a; --haccent:#2dd4bf; --haccent-dim:#1b7f74;
+    --hmono:'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    background:var(--hbg); padding:56px 0 80px;
+  }
+  .hsm-wrap .wrap{max-width:1180px;}
+  .hsm-head{margin-bottom:30px;}
+  .hsm-head .eyebrow{color:var(--haccent);}
+  .hsm-head h1{color:#fff; font-size:clamp(28px,3.6vw,42px); font-weight:700; line-height:1.15; margin:14px 0 16px;}
+  .hsm-head p{color:var(--hmuted); max-width:70ch; line-height:1.6;}
+
+  .vendor-tabs{display:flex; gap:10px; flex-wrap:wrap; border:1px solid var(--hborder); background:var(--hpanel2); border-radius:14px; padding:8px; margin-bottom:34px;}
+  .vendor-tab{
+    flex:1; min-width:180px; text-align:center; padding:14px 18px; border-radius:10px; cursor:pointer;
+    font-family:var(--hmono); font-size:13.5px; font-weight:600; color:var(--hmuted); background:transparent; border:none;
+    transition:all .15s ease;
+  }
+  .vendor-tab.active{background:var(--haccent); color:#04211d;}
+  .vendor-tab:not(.active):hover{color:var(--htext); background:rgba(255,255,255,0.04);}
+  .vendor-tab .badge{display:block; font-size:10.5px; font-weight:500; opacity:0.75; margin-top:3px; text-transform:uppercase; letter-spacing:.04em;}
+
+  .vendor-panel{display:none;}
+  .vendor-panel.active{display:block;}
+
+  .hsm-empty-state{
+    border:1px dashed var(--hborder); border-radius:14px; padding:60px 30px; text-align:center;
+    color:var(--hmuted); background:var(--hpanel2);
+  }
+  .hsm-empty-state h3{color:#fff; margin-bottom:10px; font-size:20px;}
+  .hsm-empty-state a{color:var(--haccent);}
+
+  .hsm-filter{max-width:480px; margin-bottom:26px;}
+  .hsm-filter label{display:block; font-size:12.5px; font-weight:600; color:var(--hmuted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:7px;}
+  .hsm-filter input{
+    width:100%; background:var(--hpanel2); border:1px solid var(--hborder); color:var(--htext);
+    font-family:'IBM Plex Sans', sans-serif; font-size:14px; padding:11px 13px; border-radius:8px; outline:none;
+  }
+  .hsm-filter input:focus{border-color:var(--haccent); box-shadow:0 0 0 3px rgba(45,212,191,0.12);}
+
+  .hsm-cat{margin-bottom:34px;}
+  .hsm-cat-title{
+    font-family:var(--hmono); font-size:13px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--haccent); margin-bottom:6px; padding-bottom:8px; border-bottom:1px solid var(--hborder);
+  }
+  .hsm-cat-note{color:var(--hmuted); font-size:13px; margin:10px 0 16px; max-width:80ch; line-height:1.6;}
+  .hsm-item{background:var(--hpanel); border:1px solid var(--hborder); border-radius:12px; padding:16px 18px; margin-bottom:12px;}
+  .hsm-item h4{font-family:'IBM Plex Sans', sans-serif; font-size:14.5px; font-weight:600; color:var(--htext); margin:0 0 3px;}
+  .hsm-item .hsm-note{font-size:12.5px; color:var(--hmuted); margin:0 0 10px; line-height:1.55;}
+  .hsm-item-body{display:flex; align-items:flex-start; gap:10px; background:#080b10; border:1px solid var(--hborder-soft); border-radius:8px; padding:11px 12px;}
+  .hsm-item-body pre{flex:1; margin:0; font-family:var(--hmono); font-size:12.5px; line-height:1.6; color:#c9f7ee; white-space:pre-wrap; word-break:break-all;}
+  .hsm-copy-btn{
+    flex-shrink:0; background:transparent; border:1px solid var(--hborder); color:var(--hmuted);
+    font-family:var(--hmono); font-size:11px; padding:5px 10px; border-radius:6px; cursor:pointer;
+  }
+  .hsm-copy-btn:hover{color:var(--haccent); border-color:var(--haccent-dim);}
+  .hsm-empty-filter{color:var(--hmuted2); font-family:var(--hmono); font-size:13px; padding:20px 0;}
+  .hsm-warn{
+    background:rgba(245,166,35,0.08); color:#f5a623; border:1px solid rgba(245,166,35,0.3);
+    border-radius:10px; padding:12px 16px; font-size:13px; margin-bottom:24px; line-height:1.6;
+  }
+  .hsm-toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--haccent); color:#04211d; font-family:var(--hmono); font-weight:600;
+    font-size:13px; padding:11px 20px; border-radius:9px; opacity:0; pointer-events:none;
+    transition:all .25s ease; z-index:50;
+  }
+  .hsm-toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="/index.html" class="brand">
+      <img src="/assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+      <span class="brand-word">pki<b>pro</b>.in</span>
+    </a>
+    <nav class="main-nav">
+      <a href="/securesign-pro.html">SecureSign Pro</a>
+      <a href="/secureclm-pro.html">SecureCLM Pro</a>
+      <a href="/tools/">PKI Tools</a>
+      <a href="/index.html#why">Why Us</a>
+      <a href="/index.html#usecases">Use cases</a>
+      <a href="/index.html#faq">FAQ</a>
+      <a href="/blog.html">Blog</a>
+      <a href="/index.html#contact" class="nav-cta">Talk to us</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+  </div>
+</header>
+
+<section class="hsm-wrap">
+  <div class="wrap">
+    <div class="hsm-head">
+      <span class="eyebrow">Free HSM reference</span>
+      <h1>HSM Command Reference</h1>
+      <p>Thales Luna Network HSM, Thales ProtectServer, and Entrust nShield — setup, client registration, HA groups, cloning, and policy commands, all in one searchable place with one-click copy. Reference only: replace every placeholder (labels, IPs, passwords) with your own before running anything, and always test in a non-production environment first.</p>
+    </div>
+
+    <div class="vendor-tabs" id="vendorTabs">
+      <button class="vendor-tab active" data-vendor="luna">Thales Luna<span class="badge">Network HSM</span></button>
+      <button class="vendor-tab" data-vendor="protectserver">Thales ProtectServer<span class="badge">ProtectToolkit</span></button>
+      <button class="vendor-tab" data-vendor="entrust">Entrust nShield<span class="badge">Security World</span></button>
+    </div>
+
+    <!-- ================= THALES LUNA ================= -->
+    <div class="vendor-panel active" id="panel-luna">
+      <div class="hsm-filter">
+        <label>Filter commands</label>
+        <input type="text" id="hsm_filter_luna" placeholder="e.g. ha group, clone, client register, policy...">
+      </div>
+      <div id="hsm_root_luna"></div>
+    </div>
+
+    <!-- ================= PROTECTSERVER ================= -->
+    <div class="vendor-panel" id="panel-protectserver">
+      <div class="hsm-filter">
+        <label>Filter commands</label>
+        <input type="text" id="hsm_filter_ps" placeholder="e.g. ctconf, pfx, migration, fips...">
+      </div>
+      <div id="hsm_root_ps"></div>
+    </div>
+
+    <!-- ================= ENTRUST NSHIELD ================= -->
+    <div class="vendor-panel" id="panel-entrust">
+      <div class="hsm-filter">
+        <label>Filter commands</label>
+        <input type="text" id="hsm_filter_entrust" placeholder="e.g. acs, ocs, rfs, security world, firmware...">
+      </div>
+      <div id="hsm_root_entrust"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="/index.html" class="brand">
+          <img src="/assets/img/logo-mark.png" alt="PKI Pro shield mark" />
+          <span class="brand-word">pki<b>pro</b>.in</span>
+        </a>
+        <p>Digital trust infrastructure for enterprises — signing, sealing, and audit, built to standards.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/securesign-pro.html">SecureSign Pro</a>
+          <a href="/secureclm-pro.html">SecureCLM Pro</a>
+          <a href="/index.html#why">Why PKI Pro</a>
+          <a href="/index.html#integrations">Integrations</a>
+          <a href="/index.html#security">Security</a>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <a href="/tools/">PKI Tools</a>
+          <a href="/hsm-commands.html">HSM Commands</a>
+          <a href="/blog.html">Blog</a>
+          <a href="/index.html#faq">FAQ</a>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <a href="mailto:info@pkipro.in">info@pkipro.in</a>
+          <a href="tel:+918860498904">+91 88604 98904</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> PKI Pro. All rights reserved.</span>
+      <span>pkipro.in</span>
+    </div>
+  </div>
+</footer>
+
+<div class="hsm-toast" id="hsmToast">Copied</div>
+
+<script src="/assets/js/script.js"></script>
+<script>
+document.getElementById('year') && (document.getElementById('year').textContent = new Date().getFullYear());
+
+// ---------------- Vendor tab switching ----------------
+document.getElementById('vendorTabs').addEventListener('click', function(e){
+  const btn = e.target.closest('.vendor-tab');
+  if (!btn) return;
+  document.querySelectorAll('.vendor-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.vendor-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + btn.dataset.vendor).classList.add('active');
+  history.replaceState(null, '', '#' + btn.dataset.vendor);
+});
+if (location.hash){
+  const target = document.querySelector('.vendor-tab[data-vendor="' + location.hash.slice(1) + '"]');
+  if (target) target.click();
+}
+
+function hsmToast(msg){
+  const t = document.getElementById('hsmToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1600);
+}
+function hsmCopy(text){
+  navigator.clipboard.writeText(text).then(() => hsmToast('Copied to clipboard'));
+}
+
+// ---------------- THALES LUNA command data ----------------
+const LUNA_REF = [
+  { cat: "Initial Setup & Networking", note: "First boot: configure the network, clock, and NTLS/STC certificates before initializing the HSM itself.", items: [
+    { title: "Set the appliance's static IP", note: "Run over the serial console on first boot, before the network is reachable any other way.", cmd: "network interface static -device eth0 -ip <HSM_IP> -netmask <NETMASK> -gateway <GATEWAY>" },
+    { title: "Confirm network configuration", note: "Shows the interface config you just set.", cmd: "network show" },
+    { title: "Set the timezone", note: "Do this before setting the time.", cmd: "sysconf timezone set <TIMEZONE>" },
+    { title: "Set the time manually", note: "Only needed if no NTP server is configured.", cmd: "sysconf time HH:MM YYYYMMDD" },
+    { title: "Regenerate the HSM's NTLS certificate", note: "Needed after a hostname/IP change, or if the cert has expired.", cmd: "sysconf regencert" },
+    { title: "Restart NTLS and STC services", note: "Required after regenerating the certificate, or after most network-related config changes.", cmd: "service restart ntls\nservice restart stc" },
+    { title: "Bond two network interfaces (redundant failover)", note: "Combines eth0/eth1 into one virtual interface for network-level HA.", cmd: "network interface bonding config -ip <BOND_IP> -netmask <NETMASK> -gateway <GATEWAY> -name bond0\nnetwork interface bonding enable -name bond0\nnetwork interface bonding show" },
+  ]},
+  { cat: "HSM Initialization", note: "Takes ownership of a fresh or factory-reset HSM. This is destructive — only run on a new deployment or when you intend to wipe it.", items: [
+    { title: "Factory-reset the HSM", note: "Wipes everything. Only use for a genuine fresh start.", cmd: "hsm factoryReset" },
+    { title: "Initialize the HSM (first-time)", note: "Sets the HSM label and the SO (Security Officer/Admin) password. You'll also be asked for a cloning domain string.", cmd: "hsm init -label <HSM_LABEL>" },
+    { title: "Re-initialize an existing HSM (soft init)", note: "Clears all partitions and objects but keeps the SO credentials and cloning domain. Back up anything you need first.", cmd: "hsm init -label <HSM_LABEL>" },
+    { title: "Login as the HSM Security Officer", note: "Needed before most administrative commands, including creating partitions.", cmd: "hsm login" },
+  ]},
+  { cat: "Partition Management", note: "A partition is the logical container your applications actually connect to.", items: [
+    { title: "Create a partition", note: "Run as the HSM SO.", cmd: "partition create -partition <PARTITION_NAME>" },
+    { title: "View a partition's details", note: "Shows label, PSO status, and object count.", cmd: "partition show -partition <PARTITION_NAME>" },
+    { title: "List all partitions on the HSM", note: "Shows every partition with storage usage.", cmd: "partition list" },
+    { title: "Initialize the Partition SO (in lunacm)", note: "Sets the partition-level admin password and cloning domain — separate from the HSM-level SO.", cmd: "partition init -label <PARTITION_LABEL>" },
+    { title: "View what's stored in the current partition", note: "Run inside lunacm after logging in.", cmd: "partition contents" },
+  ]},
+  { cat: "Role Management (Crypto Officer / User)", note: "Run inside lunacm, after selecting the right slot with slot set -s <SLOT_ID>.", items: [
+    { title: "Login as the Partition SO", note: "\"po\" = partition security officer.", cmd: "role login -n po" },
+    { title: "Initialize the Crypto Officer role", note: "Run as the PSO — sets the CO's initial password.", cmd: "role init -n co" },
+    { title: "Login as the Crypto Officer", note: "The CO is the role your applications typically authenticate as.", cmd: "role login -n co" },
+    { title: "Change a role's password", note: "Works for co, po, or other roles — run while logged in as that role.", cmd: "role changepw -n co" },
+    { title: "Logout of the current role", note: "Always logout before switching roles.", cmd: "role logout" },
+  ]},
+  { cat: "Client Registration — Manual (vtl)", note: "The classic multi-step way to register a client. See the one-step method below for a shortcut.", items: [
+    { title: "Create the client's certificate", note: "Run on the client machine, inside the Luna Client install directory.", cmd: "vtl createcert -n <CLIENT_IP>" },
+    { title: "Fetch the HSM's certificate onto the client", note: "Uses pscp/scp to copy server.pem from the HSM appliance.", cmd: "pscp admin@<HSM_IP>:server.pem ." },
+    { title: "Register the HSM in the client's local server list", note: "Run on the client, after fetching server.pem.", cmd: "vtl addserver -n <HSM_IP> -c server.pem" },
+    { title: "Send the client's certificate to the HSM", note: "Uploads the .pem created by vtl createcert.", cmd: "pscp cert\\client\\<CLIENT_IP>.pem admin@<HSM_IP>:" },
+    { title: "Register the client on the HSM", note: "Run on the HSM appliance (lunash), after the certificate exchange above.", cmd: "client register -client <CLIENT_NAME> -ip <CLIENT_IP>" },
+    { title: "Assign the client to a partition", note: "Grants that client access to the named partition.", cmd: "client assignPartition -client <CLIENT_NAME> -partition <PARTITION_NAME>" },
+    { title: "Verify the client can see the partition", note: "Run on the client — should list a registered slot if everything worked.", cmd: "vtl verify" },
+  ]},
+  { cat: "Client Registration — One-Step (clientconfig deploy)", note: "A single command that does the certificate exchange, server registration, client registration, and (if the partition already exists and is unassigned) partition assignment in one pass. Run from the client machine's lunacm.", items: [
+    { title: "One-step client registration", note: "Replaces the entire vtl/pscp/client register sequence above with one command. Prompts for the appliance admin password interactively.", cmd: "clientconfig deploy -server <HSM_IP> -client <CLIENT_IP> -partition <PARTITION_NAME> -verbose" },
+    { title: "List clients registered on the HSM", note: "Run on the HSM appliance (lunash) to confirm registration.", cmd: "client list" },
+  ]},
+  { cat: "HA Group Management", note: "High Availability groups present multiple physical partitions to an application as one virtual device.", items: [
+    { title: "Create a new HA group", note: "-slot is the slot number of the first member partition.", cmd: "hagroup creategroup -slot <SLOT_ID> -l <HA_GROUP_LABEL> -p <PASSWORD>" },
+    { title: "Add a member to an HA group", note: "Repeat for each additional partition/slot to join the group.", cmd: "hagroup addmember -group <HA_GROUP_LABEL> -slot <SLOT_ID>" },
+    { title: "Remove a member from an HA group", note: "Takes a member out of the group without deleting the underlying partition.", cmd: "hagroup removemember -group <HA_GROUP_LABEL> -slot <SLOT_ID>" },
+    { title: "Synchronize an HA group", note: "Replicates objects across every member — run after adding a new member.", cmd: "hagroup synchronize -group <HA_GROUP_LABEL>" },
+    { title: "Set the auto-recovery retry count", note: "How many times the client retries a failed member before giving up.", cmd: "hagroup retry -count 60" },
+    { title: "Set the HA recovery mode", note: "activeEnhanced recovers a failed member back into rotation automatically once it's reachable again.", cmd: "hagroup recoverymode -mode activeEnhanced" },
+    { title: "Enable HA-only mode", note: "Restricts operations to only go through the HA virtual group, not individual members directly.", cmd: "hagroup haonly -enable" },
+    { title: "Enable HA logging", note: "Turns on logging of HA group events (member failures, recoveries, sync activity).", cmd: "hagroup halog -enable" },
+    { title: "Check HA log status", note: "Shows whether logging is on and the configured log path.", cmd: "hagroup halog -show" },
+    { title: "Set the HA log file path", note: "The target directory must already exist on the client.", cmd: "hagroup halog -path /usr/safenet/lunaclient/halog" },
+  ]},
+  { cat: "Cloning Objects Between Partitions", note: "Both partitions must share the same cloning domain for cloning to succeed.", items: [
+    { title: "List tokens/partitions in the Certificate Management Utility", note: "Run cmu l to see the slot numbers you'll reference below.", cmd: "cmu l" },
+    { title: "Clone objects from one slot to another", note: "-s is the source slot, -o is the destination slot. You'll be prompted for the destination's password.", cmd: "par clone -s <SOURCE_SLOT> -o <DEST_SLOT>" },
+    { title: "Clone into a DPoD/cloud HSM slot", note: "Same command — the destination can be identified by its serial number instead of a slot number when cloning across a DPoD boundary.", cmd: "par clone -s <SOURCE_SLOT> -o <DEST_SERIAL_OR_SLOT>" },
+  ]},
+  { cat: "HSM Policies", note: "Many policy changes are destructive and will erase partitions — always check the \"Destructive\" column with hsm showpolicies first.", items: [
+    { title: "Show current HSM policies", note: "Lists every policy, its current value, code number, and whether changing it is destructive.", cmd: "hsm showpolicies" },
+    { title: "Change a policy", note: "Use the policy's code number from hsm showpolicies. -value 1 = on, -value 0 = off.", cmd: "hsm changepolicy -policy <POLICY_NUMBER> -value <0_or_1>" },
+    { title: "Example: enable Secure Trusted Channel (STC)", note: "Policy 39. This will terminate existing NTLS connections when applied.", cmd: "hsm changepolicy -policy 39 -value 1" },
+  ]},
+  { cat: "Firmware & Package Updates", note: "Always confirm the authorization code with Thales support before applying an update.", items: [
+    { title: "Transfer the update package to the appliance", note: "Run from your workstation, not the HSM.", cmd: "pscp <filepath>/<packagename>.spkg admin@<HSM_IP>:" },
+    { title: "Login as HSM SO before updating", note: "Required before installing any package.", cmd: "hsm login" },
+    { title: "Verify the package file is present", note: "Optional sanity check after transferring it.", cmd: "package listfile" },
+    { title: "Verify the package's authorization code", note: "Confirms the package matches the auth code from Thales support.", cmd: "package verify <filename>.spkg -authcode <CODE>" },
+    { title: "Install the firmware update package", note: "Stages the firmware on the appliance — it isn't applied to the HSM yet.", cmd: "package update <filename>.spkg -authcode <CODE>" },
+    { title: "Check the staged firmware version", note: "Confirms what's ready to apply before you commit to the upgrade.", cmd: "hsm firmware show" },
+    { title: "Disable STC before a firmware upgrade", note: "Only needed if STC is enabled on the HSM Admin channel.", cmd: "hsm stc disable" },
+    { title: "Apply the staged firmware to the HSM", note: "This is the actual upgrade step — plan for downtime.", cmd: "hsm firmware upgrade" },
+  ]},
+  { cat: "lunacm Quick Reference", note: "Everyday commands for navigating slots inside lunacm.", items: [
+    { title: "List available HSMs/slots", note: "Run with no arguments right after opening lunacm.", cmd: "lunacm" },
+    { title: "Switch to a specific slot", note: "Most partition/role commands act on whichever slot is currently selected.", cmd: "slot set -s <SLOT_ID>" },
+  ]},
+];
+
+// ---------------- THALES PROTECTSERVER command data ----------------
+const PROTECTSERVER_REF = [
+  { cat: "Initial Setup & Networking", note: "Configure the appliance over the console port before it's reachable on the network. All PSESH commands run from the appliance shell after logging in as admin.", items: [
+    { title: "Verify network settings", note: "Confirm the IP configuration took effect.", cmd: "psesh:> network show" },
+    { title: "Verify HSM status", note: "Confirms the HSM shows Active with no faults after network setup.", cmd: "psesh:> hsm show" },
+  ]},
+  { cat: "Slot & Token Management", note: "A slot is a logical container that holds a token. Create the slot first, then initialize a token inside it. All commands run from the ProtectToolkit C SDK bin directory (ctconf, ctkmu).", items: [
+    { title: "Create a slot", note: "Prompts for the Administrator PIN of Device 0.", cmd: "ctconf --create-slots <count>" },
+    { title: "Delete a slot", note: "Export or delete all objects in the slot first — this cannot be undone.", cmd: "ctconf --delete-slot <slot_number>" },
+    { title: "List all slots and tokens", note: "Shows every slot with its label and status — new slots appear as <uninitialised token>.", cmd: "ctkmu l" },
+    { title: "List objects inside one slot", note: "Useful before/after a delete to confirm what changed.", cmd: "ctkmu l -s <slot_number>" },
+    { title: "Delete a specific key or certificate", note: "Removes one named object without deleting the whole slot.", cmd: "ctkmu d -n <object_name> -s <slot_number>" },
+    { title: "Initialize a token", note: "Assigns a label and sets the Security Officer (SO) PIN for the slot. On PL3 (FIPS 140-2 Level 3), the SO PIN needs at least 8 alphanumeric characters.", cmd: "ctconf -n<slot_number>" },
+    { title: "Initialize the User PIN", note: "Must be run by the Security Officer, after the token itself is initialized.", cmd: "ctkmu p -s<slot_number>" },
+    { title: "Re-initialize / factory-reset the HSM", note: "Destroys every slot, token, and key on the device. Only use on a target HSM you intend to wipe clean.", cmd: "ctconf -r <device_number>" },
+  ]},
+  { cat: "Certificate Operations", note: "Generate, import, export, or self-sign certificates directly on the HSM.", items: [
+    { title: "Generate a CSR", note: "Creates a new RSA key pair on the HSM and a CSR to submit to a CA. Prefer -S SHA256 or SHA384 over SHA1 for FIPS Level 3 — SHA-1 is deprecated on PL3.", cmd: "ctcert r -l <label> -k <key_name> -s <slot> -S <hash_algo> -t <key_type> -c <common_name> -z <key_size>" },
+    { title: "Import a CA-signed certificate", note: "Associates the certificate with an existing key label on that slot.", cmd: "ctcert i -f <cert_file> -s <slot> -l <label>" },
+    { title: "Export a certificate", note: "Pulls a stored certificate out to a local file for distribution or archiving.", cmd: "ctcert x -f <output_file> -s <slot> -l <label>" },
+    { title: "Create a self-signed certificate", note: "Generates a key pair and self-signs it directly on the HSM — handy for internal testing or a root CA.", cmd: "ctcert c -l <label> -k -s <slot>" },
+  ]},
+  { cat: "PKCS#12 (PFX) Operations", note: "Attribute flags for -a: E=Encrypt/Decrypt, D=Derive, S=Sign, V=Verify, X=Sensitive, W=Wrap, T=Token(persistent), U=Unwrap, P=Private, M=Modifiable.", items: [
+    { title: "Import a PFX file", note: "Loads a private key and certificate chain from a .pfx into an HSM slot.", cmd: "ctkmu j -s<slot> -n <key_label> -a <attribute_flags> <input.pfx>" },
+    { title: "Export a PFX file", note: "Pulls a key and its certificate chain back out into a password-protected .pfx.", cmd: "ctkmu x -s<slot> -j --pkLabel <private_key_label> --keyCertLabel <cert_label> <output.pfx>" },
+  ]},
+  { cat: "Key Management — Components & Ceremonies", note: "Component-based key generation supports dual-control / split-knowledge ceremonies — no single custodian holds the whole key. Record every Key Check Value (KCV).", items: [
+    { title: "Generate a DES3 key from components", note: "Splits the key across multiple custodians during generation.", cmd: "ctkmu c -t des3 -n<key_name> -a <attribute_flags> -k <num_components> -g -s <slot> mechanism-list" },
+    { title: "Generate an AES key from components", note: "For FIPS 140-2 Level 3 on PL3, use AES-256 (-z 256); AES-192 isn't recommended.", cmd: "ctkmu c -t AES -n<key_name> -a <attribute_flags> -k <num_components> -g -z <bit_size> -s <slot> mechanism-list" },
+    { title: "Reconstruct an AES key from components", note: "Re-enters previously generated components rather than creating new ones.", cmd: "ctkmu c -t AES -n<key_name> -a <attribute_flags> -u<admin_pin> -k <num_components> -z<bit_size> -s<slot>" },
+    { title: "Reconstruct a DES3 key from components", note: "Same idea as above, for a 3DES key.", cmd: "ctkmu c -t des3 -n<key_name> -a <attribute_flags> -u<admin_pin> -k <num_components> -s<slot>" },
+  ]},
+  { cat: "Key Export / Import for Migration", note: "The wrap key used to encrypt keys in transit must already exist on both the source and target HSM before exporting anything.", items: [
+    { title: "Export keys using a wrap key", note: "Produces an encrypted .bin file that can be safely transported to another HSM.", cmd: "ctkmu x -s <slot> -w<wrap_key> -3 <output_file.bin>" },
+    { title: "Export a specific certificate object", note: "When several objects share a label, this lets you pick the exact one by ID.", cmd: "ctkmu x -w <wrap_key> -s <slot> c -n <cert_label>" },
+    { title: "Import keys into the target HSM", note: "Uses the same wrap key that was used to export, on the destination slot.", cmd: "ctkmu i -s <slot> -w<wrap_key> <backup_file.bin>" },
+  ]},
+  { cat: "PL2 → PL3 Migration — Token Replication (ptk7tokmigration)", note: "Requires ProtectToolkit 7.x on the PS3 client and ProtectToolkit 5.8.0 on the PS2 client, plus the ptk7tokmigration binary copied onto the PTK5 client machine. User PINs must match on source and destination slots before replicating.", items: [
+    { title: "1. Generate an HSM ID key pair for PS3", note: "Run on the PTK7 client machine.", cmd: "./ptk7tokmigration gen sn:<PS3_SERIAL>" },
+    { title: "2. Export the PS3 public key to a file", note: "Still on the PTK7 client.", cmd: "./ptk7tokmigration getid sn:<PS3_SERIAL> -p /tmp/<PS3_SERIAL>.pem" },
+    { title: "3. Copy the PS3 public key to the PTK5 client", note: "Transfers trust material across to the older HSM's client machine.", cmd: "scp /tmp/<PS3_SERIAL>.pem root@<PTK5_CLIENT_IP>:/tmp/<PS3_SERIAL>.pem" },
+    { title: "4. PS2 trusts the PS3 public key", note: "Run on the PTK5 client — establishes one direction of mutual trust.", cmd: "./ptk7tokmigration trust sn:<PS2_SERIAL> sn:<PS3_SERIAL> -p <PS3_SERIAL>.pem" },
+    { title: "5. Verify PS2 sees the PS3 key", note: "Should list the PS3 HSM's public key as a trusted peer.", cmd: "./ptk7tokmigration list sn:<PS2_SERIAL> -tpeer" },
+    { title: "6. Generate an HSM ID key pair for PS2", note: "Skip if it already exists. Run on the PTK5 client.", cmd: "./ptk7tokmigration gen sn:<PS2_SERIAL>" },
+    { title: "7. Export the PS2 public key to a file", note: "Also on the PTK5 client.", cmd: "./ptk7tokmigration getid sn:<PS2_SERIAL> -p /tmp/<PS2_SERIAL>.pem" },
+    { title: "8. Copy the PS2 public key to the PTK7 client", note: "Completes the key exchange in the other direction.", cmd: "scp /tmp/<PS2_SERIAL>.pem root@<PTK7_CLIENT_IP>:/tmp/<PS2_SERIAL>.pem" },
+    { title: "9. PS3 trusts the PS2 public key", note: "Run on the PTK7 client — you'll be prompted for the PS3 AdminToken SO PIN.", cmd: "./ptk7tokmigration trust sn:<PS3_SERIAL> sn:<PS2_SERIAL> -p <PS2_SERIAL>.pem" },
+    { title: "10. Verify PS3 sees the PS2 key — mutual trust complete", note: "Once this confirms, both HSMs trust each other and you can move on to token replication.", cmd: "./ptk7tokmigration list sn:<PS3_SERIAL> -tpeer" },
+    { title: "11. Create a token image on the PS2 (PTK5) client", note: "Binds the image to the target PS3 serial number at creation time.", cmd: "./ctkmu xt -s<source_slot> -S <PS3_SERIAL> <token_image>.bin" },
+    { title: "12. Transfer the token image to the PTK7 client", note: "The file created in the previous step needs to reach the PS3 client machine.", cmd: "scp /tmp/<token_image>.bin <PTK7_CLIENT_HOST>:/tmp/<token_image>.bin" },
+    { title: "13. Import the token image into PS3", note: "Run on the PTK7 client — you'll be prompted for the User PIN, which must match the source token's PIN.", cmd: "./ptk7tokmigration it -s<destination_slot> <token_image>.bin" },
+    { title: "14. Verify the migrated keys on PS3", note: "Confirms every object made it across intact.", cmd: "./ctkmu l -s<destination_slot>" },
+  ]},
+  { cat: "FIPS 140-2 Enablement (PS3)", note: "Run after key migration is verified and complete.", items: [
+    { title: "Generate a self-signed HSM identity certificate", note: "Needed as part of enabling FIPS mode on the PS3.", cmd: "ctident gen-selfsigned -f sn:<PS3_SERIAL>" },
+    { title: "Enable FIPS mode", note: "Switches the HSM into FIPS 140-2 compliant operation.", cmd: "ctconf -fF" },
+    { title: "Check current configuration / login flags", note: "Use after enabling FIPS to confirm the change and review login enforcement flags.", cmd: "ctconf --show" },
+  ]},
+  { cat: "Post-Migration Validation", note: "Work through this checklist before decommissioning the old HSM. Keep the PL2 unit in standby for at least 30 days after cutover.", items: [
+    { title: "Compare slot labels against the PL2 inventory", note: "Confirms nothing was missed during replication.", cmd: "ctkmu l" },
+    { title: "Compare object counts per slot", note: "Cross-check against your pre-migration inventory.", cmd: "ctkmu l -s <slot>" },
+    { title: "Verify a certificate chain with OpenSSL", note: "Independent check outside the ProtectToolkit utilities.", cmd: "openssl verify -CAfile <ca_chain.pem> <exported_cert.pem>" },
+  ]},
+];
+
+// ---------------- ENTRUST NSHIELD command data ----------------
+const ENTRUST_REF = [
+  { cat: "Understanding ACS, OCS & Quorum (K of N)", note: "The two card sets nShield uses are easy to mix up — here's the difference before you create either one.", items: [
+    { title: "What is an ACS (Administrator Card Set)?", note: "Created once, when the Security World itself is created. ACS cards are the master recovery keys for the whole Security World — if you lose enough of them to fall below quorum, the Security World cannot be recovered. Store them like you would a root CA's private key.", cmd: "Created via: new-world -i -Q <K>/<N>   (see \"Create a new Security World\" below)" },
+    { title: "What is an OCS (Operator Card Set)?", note: "Created per application/key, after the Security World exists. OCS cards (or a passphrase-based softcard) protect the individual keys your applications use day to day — e.g. one OCS for your PKI signing keys, another for database encryption.", cmd: "Created via front panel: Security World mgmt -> Cardset operations -> Create OCS" },
+    { title: "What does \"K of N\" (quorum) mean?", note: "N is the total number of cards in the set; K is how many of those N must be physically presented together to authorize an operation. A 3-of-5 ACS means any 3 of the 5 cards can recover the Security World — losing up to 2 cards is survivable, losing 3 is not.", cmd: "Example: -Q 3/5  →  K=3 (required), N=5 (total issued)" },
+    { title: "OCS vs. Softcard — which to use?", note: "OCS requires a physical smart card to be inserted for every key operation — good for high-value keys where a human must be present. A Softcard uses a passphrase instead, which is what lets an application restart and re-authenticate to its keys automatically without someone inserting a card.", cmd: "OCS: physical card required each time.\nSoftcard: passphrase only — enables unattended/automated failover." },
+  ]},
+  { cat: "Client Software Installation", note: "Install on every application server (Windows or Linux) that needs to talk to the HSM.", items: [
+    { title: "Locate the Windows installer", note: "From the mounted Security World Software ISO.", cmd: "\\windows\\amd64\\setup.msi" },
+    { title: "Add the tools to your system PATH — Windows", note: "Required or the command-line utilities (enquiry, generatekey, etc.) won't be found.", cmd: "C:\\Program Files\\nCipher\\nfast\\bin" },
+    { title: "Add the tools to your system PATH — Linux", note: "Same idea, on Linux clients.", cmd: "/opt/nfast/bin" },
+    { title: "Verify environment variables — Windows", note: "Open a new Command Prompt after install and confirm these are set.", cmd: "set n" },
+    { title: "Expected environment variables", note: "NFAST_KMDATA is where your Security World files actually live on this client.", cmd: "NFAST_HOME=C:\\Program Files\\nCipher\\nfast\nNFAST_KMDATA=C:\\Program Files\\nCipher\\nfast\\kmdata" },
+  ]},
+  { cat: "HSM Enrollment & RFS Setup", note: "Run these on the client machine, from the nfast\\bin directory. Get the HSM's IP, ESN, and KNETI hash from its front panel or via anonkneti first.", items: [
+    { title: "Get the ESN and KNETI hash of an HSM", note: "Works if your network is trusted — returns the ESN and key hash without authenticating.", cmd: "anonkneti <HSM_IP>" },
+    { title: "Enroll this client against the HSM", note: "Registers the HSM in the client's hardserver so it shows up as an importable module.", cmd: "nethsmenroll -p <HSM_IP> <ESN> <KNETI_HASH>" },
+    { title: "Set this client up as the RFS", note: "Run once on whichever machine will hold the master copy of the Security World data.", cmd: "rfs-setup <HSM_IP> <ESN> <KNETI_HASH>" },
+    { title: "Allow another client to read/write via this RFS", note: "--gang-client registers a second client machine against an RFS that's already set up.", cmd: "rfs-setup --gang-client --write-noauth <CLIENT_IP>" },
+    { title: "Point a client at the RFS (no authentication)", note: "Use only on a trusted network — authentication is skipped.", cmd: "rfs-sync --setup --no-authenticate <RFS_IP>" },
+    { title: "Show the current RFS sync configuration", note: "Confirms which RFS this client is pulling from.", cmd: "rfs-sync --show" },
+    { title: "Pull the latest Security World config from the RFS", note: "Run on a client after any change on the RFS (new OCS, new key, etc.) so the client picks it up.", cmd: "rfs-sync --update" },
+    { title: "Remove this client's RFS configuration", note: "Detaches the client from its configured RFS.", cmd: "rfs-sync --remove" },
+  ]},
+  { cat: "Security World Creation", note: "This is the step that creates your ACS — it can only be done once per Security World and cannot be undone without destroying the world.", items: [
+    { title: "Create a new Security World", note: "-Q sets the ACS quorum (K admin cards required out of N total). You'll be prompted to create and name each of the N cards during this step.", cmd: "new-world -i -m 1 -Q <K>/<N> -c DLf3072s256mAEScSP800131Ar1" },
+    { title: "Create a FIPS 140-2 Level 3 Security World", note: "Adds the --mode flag for a stricter compliance mode.", cmd: "new-world -i -m 1 -Q <K>/<N> --mode=fips-140-2-level-3" },
+    { title: "Program a module into an existing Security World", note: "Use on a second/replacement module that should join a Security World that already exists (e.g. an HA pair).", cmd: "new-world -l -m 1" },
+    { title: "Restore a module to factory state", note: "Wipes the module back to an unprogrammed state. Does not by itself destroy the Security World if other modules still hold it.", cmd: "new-world -e -m 1" },
+  ]},
+  { cat: "Key Generation & Management", note: "Run from the client, after the module is enrolled and programmed with a Security World.", items: [
+    { title: "Generate a new key (interactive)", note: "Prompts for protection method (token/module), key type, size, and a name. token protection means an OCS card or softcard passphrase is needed to use the key.", cmd: "generatekey pkcs11" },
+    { title: "List supported key types", note: "Shows every key algorithm this nShield build supports (RSA, ECDSA, AES, Ed25519, etc.).", cmd: "generatekey --list-key-types" },
+    { title: "Verify a key's security / integrity", note: "Confirms a generated key is valid and correctly protected.", cmd: "generatekey --verify" },
+    { title: "Check overall HSM and Security World status", note: "The everyday diagnostic command — confirms mode is operational and the module shows Usable.", cmd: "enquiry" },
+    { title: "Check Security World state in detail", note: "Shows generation, quorum (k-out-of-n), and per-slot cardset info.", cmd: "nfkminfo" },
+  ]},
+  { cat: "Importing External Keys (PKCS#12 / PFX)", note: "For bringing an existing certificate + private key (e.g. one issued externally) into the Security World, rather than generating a new key pair on the HSM.", items: [
+    { title: "1. Extract the private key from a .pfx", note: "-nodes keeps the extracted key unencrypted, since generatekey needs a plain key to import.", cmd: "openssl pkcs12 -in <file.pfx> -out <keyfile.pem> -nodes -nocerts" },
+    { title: "2. Convert PKCS#8 to PKCS#1 if needed", note: "If the extracted key's header reads -----BEGIN PRIVATE KEY----- (PKCS#8), convert it — generatekey needs PKCS#1 (-----BEGIN RSA PRIVATE KEY-----).", cmd: "openssl rsa -in <pkcs8-file.pem> -out <pkcs1-file.pem>" },
+    { title: "3. Import the private key into the Security World", note: "Prompts for protection method and other parameters interactively.", cmd: "generatekey --import <application>" },
+    { title: "4. Extract the certificate from the same .pfx", note: "Pulls out just the certificate, no key material.", cmd: "openssl pkcs12 -in <file.pfx> -out <certificate.pem> -nokeys" },
+    { title: "5a. Associate the certificate — PKCS#11 applications", note: "-L label must match the key's CKA_LABEL from the import step. Use -c for a cardset-protected key, -n for module-protected.", cmd: "ckcerttool -c <cardset_name> -f <certificate.pem> -k <key_ident> -L <label>" },
+    { title: "5b. Associate the certificate — Windows CAPI/CNG", note: "After importing the cert into the Windows certificate store via the standard Windows wizard, re-link it to the HSM-held key by thumbprint.", cmd: "certutil -repairstore -f -csp \"nCipher Enhanced Cryptographic Provider\" my <cert_thumbprint>" },
+    { title: "CNG variant of the provider name", note: "Use this CSP/KSP name instead of the CAPI one when the application uses CNG rather than legacy CAPI.", cmd: "\"nCipher Security World Key Storage Provider\"" },
+  ]},
+  { cat: "Create an Operator Card Set (front panel)", note: "Done per application, from the HSM's own front-panel menu — not from the client command line.", items: [
+    { title: "Menu path to create an OCS", note: "You'll be asked for a name, then the quorum (K of N, N up to 64), an optional timeout, and whether the set is persistent.", cmd: "Security World mgmt -> Cardset operations -> Create OCS" },
+    { title: "Persistence options", note: "Not persistent (default) removes the card's authorization as soon as it's removed from the reader; Persistent keeps it available until explicitly cleared; Remoteable/Persistent additionally allows remote operator card use.", cmd: "Options: Not persistent | Persistent | Remoteable/Persistent" },
+  ]},
+  { cat: "Firmware Updates", note: "Firmware packages are signed by Entrust and downloaded from the Entrust support portal for your specific model — there's no generic public download.", items: [
+    { title: "General firmware update procedure", note: "This is a security-sensitive operation on most nShield models and may require ACS card authorization to complete.", cmd: "1. Download the signed firmware package (.nff) for your HSM model from Entrust support.\n2. Place it on the RFS (or a USB drive, on models with a USB port).\n3. On the HSM front panel: System -> Firmware -> Upgrade Firmware.\n4. Present ACS cards if prompted to authorize the change.\n5. The module reboots automatically once the upgrade is applied." },
+    { title: "Verify the firmware version after upgrade", note: "Check the version string in the output against the version you just installed.", cmd: "enquiry" },
+  ]},
+];
+
+const HSM_REF_MAP = { luna: [LUNA_REF, 'hsm_filter_luna', 'hsm_root_luna'], protectserver: [PROTECTSERVER_REF, 'hsm_filter_ps', 'hsm_root_ps'], entrust: [ENTRUST_REF, 'hsm_filter_entrust', 'hsm_root_entrust'] };
+
+function hsmEsc(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function renderHsmRef(refData, filterId, rootId){
+  const root = document.getElementById(rootId);
+  if (!root) return;
+  const filterEl = document.getElementById(filterId);
+  const filter = (filterEl && filterEl.value || '').trim().toLowerCase();
+  let html = '';
+  let matchCount = 0;
+  for (const group of refData){
+    const items = filter
+      ? group.items.filter(it =>
+          it.title.toLowerCase().includes(filter) ||
+          it.note.toLowerCase().includes(filter) ||
+          it.cmd.toLowerCase().includes(filter) ||
+          group.cat.toLowerCase().includes(filter))
+      : group.items;
+    if (items.length === 0) continue;
+    matchCount += items.length;
+    html += '<div class="hsm-cat"><div class="hsm-cat-title">' + hsmEsc(group.cat) + '</div>';
+    if (group.note) html += '<p class="hsm-cat-note">' + hsmEsc(group.note) + '</p>';
+    for (const it of items){
+      html += '<div class="hsm-item">' +
+        '<h4>' + hsmEsc(it.title) + '</h4>' +
+        '<p class="hsm-note">' + hsmEsc(it.note) + '</p>' +
+        '<div class="hsm-item-body"><pre>' + hsmEsc(it.cmd) + '</pre>' +
+        '<button class="hsm-copy-btn hsm-copy-trigger" data-cmd="' + hsmEsc(it.cmd) + '">copy</button></div>' +
+      '</div>';
+    }
+    html += '</div>';
+  }
+  if (matchCount === 0){
+    html = '<div class="hsm-empty-filter">No commands match "' + hsmEsc(filter) + '". Try a shorter term — e.g. "clone", "ha group", "policy".</div>';
+  }
+  root.innerHTML = html;
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  Object.values(HSM_REF_MAP).forEach(function(entry){
+    const [refData, filterId, rootId] = entry;
+    renderHsmRef(refData, filterId, rootId);
+    const filterEl = document.getElementById(filterId);
+    if (filterEl) filterEl.addEventListener('input', function(){ renderHsmRef(refData, filterId, rootId); });
+  });
+  document.body.addEventListener('click', function(e){
+    const btn = e.target.closest('.hsm-copy-trigger');
+    if (!btn) return;
+    hsmCopy(btn.dataset.cmd);
+  });
+});
+</script>
+</body>
+</html>
